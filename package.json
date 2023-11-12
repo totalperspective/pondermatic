@@ -1,0 +1,19 @@
+{
+  "name": "pondermatic",
+  "version": "1.0.0",
+  "description": "Functional effect system driven rules engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/totalperspective/pondermatic.git"
+  },
+  "author": "bahul@totalperspective.tech",
+  "license": "EPL-2.0",
+  "bugs": {
+    "url": "https://github.com/totalperspective/pondermatic/issues"
+  },
+  "homepage": "https://github.com/totalperspective/pondermatic#readme"
+}

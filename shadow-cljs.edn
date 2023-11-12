@@ -1,0 +1,5 @@
+;; shadow-cljs configuration
+{:deps {:aliases [:cljs]}
+
+ :builds
+ {}}
