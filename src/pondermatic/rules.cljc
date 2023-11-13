@@ -83,7 +83,7 @@
   (list 'retract* id:attrs))
 
 (defn query-all []
-  (m/eduction (map #(o/query-all %)) |<))
+  (m/eduction (map #(o/query-all %)) (dedupe) |<))
 
 (defn query [rule-name]
   (m/eduction (map #(o/query-all % rule-name)) |<))
@@ -93,10 +93,11 @@
               ::character
               {:what
                '[[id ::x x]
-                 [id ::y y]]
+                 [id ::y y]
+                 [id ::z z]]
                :when
-               (fn [session {:keys [x y] :as match}]
-                 (and (pos? x) (pos? y)))
+               (fn [session {:keys [x y z] :as match}]
+                 (and (pos? x) (pos? y) (pos? z)))
                :then
                (fn [session match]
                  (println "This will fire twice"))
@@ -104,16 +105,19 @@
                (fn [session]
                  (println "This will fire once"))})]
 
-    (f/drain ::all (query ::character))
+    (f/drain ::all (f/diff (query-all)))
+
     (|> (add-rule rule))
-    (|> (insert 1 {::x 3 ::y -1}))
-    (|> (insert 2 {::x 10 ::y 2}))
-    (|> (insert 3 {::x 7 ::y 1}))
-    (|> (insert 3 {::x 7 ::y 1}))
-    (|> (insert* [[1 {::x 3 ::y -1}]
-                  [2 {::x 10 ::y 2}]
-                  [3 {::x 7 ::y 1}]]))
+    (|> (insert 1 {::x 3 ::y -1 ::z 0}))
+    (|> (insert 2 {::x 10 ::y 2 ::z 1}))
+    (|> (insert 3 {::x 7 ::y 1 ::z 2}))
+    (|> (insert 3 {::x 7 ::y 1 ::z 2}))
+    (|> (insert* [[1 {::x 3 ::y -1 ::z 4}]
+                  [2 {::x 10 ::y 2 ::z 5}]
+                  [3 {::x 7 ::y 1 ::z 6}]]))
     (|> (retract 1 ::x))
     (|> (retract* [[1 ::y]
+                   [1 ::z]
                    [2 ::x]
-                   [2 ::y]]))))
+                   [2 ::y]
+                   [2 ::z]]))))

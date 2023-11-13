@@ -38,3 +38,413 @@ cljs꞉cljs.user꞉> 
 cljs꞉cljs.user꞉> 
 ; [:dev] Build completed. (196 files, 2 compiled, 0 warnings, 0.08s)
 cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 2 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 2 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 2 compiled, 1 warnings, 0.07s)
+; 
+; ------ WARNING #1 - :undeclared-var --------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/rules.cljc:107:21
+; --------------------------------------------------------------------------------
+;  104 |                (fn [session]
+;  105 |                  (println "This will fire once"))})]
+;  106 | 
+;  107 |     (f/drain ::all (f.changes (query-all)))
+; ---------------------------^----------------------------------------------------
+;  Use of undeclared Var pondermatic.rules/f
+; --------------------------------------------------------------------------------
+;  108 |     (|> (add-rule rule))
+;  109 |     (|> (insert 1 {::x 3 ::y -1}))
+;  110 |     (|> (insert 2 {::x 10 ::y 2}))
+;  111 |     (|> (insert 3 {::x 7 ::y 1}))
+; --------------------------------------------------------------------------------
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 2 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.10s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.11s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.10s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 1 warnings, 0.07s)
+; 
+; ------ WARNING #1 - :undeclared-var --------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/rules.cljc:107:21
+; --------------------------------------------------------------------------------
+;  104 |                (fn [session]
+;  105 |                  (println "This will fire once"))})]
+;  106 | 
+;  107 |     (f/drain ::all (f/changes (query-all)))
+; ---------------------------^----------------------------------------------------
+;  Use of undeclared Var pondermatic.flow/changes
+; --------------------------------------------------------------------------------
+;  108 |     (|> (add-rule rule))
+;  109 |     (|> (insert 1 {::x 3 ::y -1}))
+;  110 |     (|> (insert 2 {::x 10 ::y 2}))
+;  111 |     (|> (insert 3 {::x 7 ::y 1}))
+; --------------------------------------------------------------------------------
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 2 compiled, 1 warnings, 0.08s)
+; 
+; ------ WARNING #1 - :undeclared-var --------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/rules.cljc:107:21
+; --------------------------------------------------------------------------------
+;  104 |                (fn [session]
+;  105 |                  (println "This will fire once"))})]
+;  106 | 
+;  107 |     (f/drain ::all (f/changes (query-all)))
+; ---------------------------^----------------------------------------------------
+;  Use of undeclared Var pondermatic.flow/changes
+; --------------------------------------------------------------------------------
+;  108 |     (|> (add-rule rule))
+;  109 |     (|> (insert 1 {::x 3 ::y -1}))
+;  110 |     (|> (insert 2 {::x 10 ::y 2}))
+;  111 |     (|> (insert 3 {::x 7 ::y 1}))
+; --------------------------------------------------------------------------------
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 2 compiled, 0 warnings, 0.10s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 2 compiled, 0 warnings, 0.06s)
+cljs꞉cljs.user꞉> 
+(sorted-set [1] [2] [0])
+#{[0] [2] [1]}
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.10s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 2 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.06s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 1 warnings, 0.08s)
+; 
+; ------ WARNING #1 - :undeclared-var --------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/flow.cljc:30:23
+; --------------------------------------------------------------------------------
+;   27 | 
+;   28 | (defn diff [flow]
+;   29 |   (m/eduction (map (fn [[n-1 n]]
+;   30 |                      (difference n n-1)))
+; -----------------------------^--------------------------------------------------
+;  Use of undeclared Var pondermatic.flow/difference
+; --------------------------------------------------------------------------------
+;   31 |               (m/reductions (fn [[_ n-1] n]
+;   32 |                               [n-1 n])
+;   33 |                             [#{} #{}]
+;   34 |                             (m/eduction (map (partial apply sorted-set)) flow))))
+; --------------------------------------------------------------------------------
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.11s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.06s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 2 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (196 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+; [:dev] Build failure:
+; The required namespace "editscript.core" is not available, it was required by "pondermatic/flow.cljc".
+; 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+; [:dev] Build failure:
+; The required namespace "editscript.core" is not available, it was required by "pondermatic/flow.cljc".
+; 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+; [:dev] Build failure:
+; The required namespace "editscript.core" is not available, it was required by "pondermatic/flow.cljc".
+; 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; nREPL Connection was closed
+; Jacking in...
+; Connecting using "shadow-cljs" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; npx shadow-cljs -d cider/cider-nrepl:0.28.5 watch :dev ; popd
+; Using host:port localhost:62595 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; TIPS:
+;   - You can edit the contents here. Use it as a REPL if you like.
+;   - `alt+enter` evaluates the current top level form.
+;   - `ctrl+enter` evaluates the current form.
+;   - `alt+up` and `alt+down` traverse up and down the REPL command history
+;      when the cursor is after the last contents at the prompt
+;   - Clojure lines in stack traces are peekable and clickable.
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉shadow.user꞉> 
+clj꞉shadow.user꞉> 
+; Creating cljs repl session...
+; Connecting cljs repl: shadow-cljs...
+;   The Calva Connection Log might have more connection progress information.
+; Please start your ClojureScript app (load it in the browser, or whatever is appropriate) so that Calva can connect to its REPL...
+; Connected session: cljs, repl: :dev
+; TIPS: You can choose which REPL to use (clj or cljs):
+;    *Calva: Toggle REPL connection*
+;    (There is a button in the status bar for this)
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.cljs'
+nil
+cljs꞉cljs.user꞉> 
+; Jack-in done.
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.10s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 2 compiled, 0 warnings, 0.12s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.11s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.11s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build failure:
+; ------ ERROR -------------------------------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/flow.cljc:15:16
+; --------------------------------------------------------------------------------
+;   12 | (defn tap [prefix]
+;   13 |   (fn [_ x]
+;   14 |     (when prefix
+;   15 |       (tap> ^{:}{prefix x}))
+; ----------------------^---------------------------------------------------------
+; pondermatic/flow.cljc [line 15, col 16] Invalid keyword: :.
+; 
+; --------------------------------------------------------------------------------
+;   16 |     x))
+;   17 | 
+;   18 | (defn run [task]
+;   19 |   (task #(tap> {"Success" %})
+; --------------------------------------------------------------------------------
+; 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+; [:dev] Build failure:
+; ------ ERROR -------------------------------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/flow.cljc:15:30
+; --------------------------------------------------------------------------------
+;   12 | (defn tap [prefix]
+;   13 |   (fn [_ x]
+;   14 |     (when prefix
+;   15 |       (tap> ^{:portal.viewer} {prefix x}))
+; ------------------------------------^-------------------------------------------
+; pondermatic/flow.cljc [line 15, col 30] The map literal starting with :portal.viewer on line 15 column 14 contains 1 form(s). Map literals must contain an even number of forms.
+; 
+; --------------------------------------------------------------------------------
+;   16 |     x))
+;   17 | 
+;   18 | (defn run [task]
+;   19 |   (task #(tap> {"Success" %})
+; --------------------------------------------------------------------------------
+; 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 1 compiled, 0 warnings, 0.05s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 2 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 2 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 2 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (203 files, 3 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
