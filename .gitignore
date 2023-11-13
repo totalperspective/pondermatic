@@ -20,3 +20,4 @@ pom.xml.asc
 .dist/
 .cljs_node_repl/
 node_modules/
+src/pondermatic/flow.cljc

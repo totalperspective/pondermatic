@@ -29,12 +29,11 @@
   (run (m/reduce (tap prefix) flow)))
 
 (defn diff [flow]
-  (m/eduction (map (fn [[n-1 n]]
-                     {:old n-1
-                      :new n
-                      :edits (es/get-edits (es/diff n-1 n))}))
-              (m/reductions (fn [[_ n-1] n]
-                              [n-1 n])
-                            [[] []]
-                            flow
-                            #_(m/eduction (map (partial apply sorted-set)) flow))))
+  (->> flow
+       (m/reductions (fn [[_ n-1] n]
+                       [n-1 n])
+                     [[] []])
+       (m/eduction (map (fn [[n-1 n]]
+                          {:old n-1
+                           :new n
+                           :edits (es/get-edits (es/diff n-1 n))})))))
