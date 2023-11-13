@@ -5,9 +5,14 @@
         missionary/missionary {:mvn/version "b.33"}
         net.cgrand/macrovich {:mvn/version "0.2.1"}
         expound/expound {:mvn/version "0.9.0"}
-        net.sekao/odoyle-rules {:mvn/version "1.3.1"}}
+        net.sekao/odoyle-rules {:mvn/version "1.3.1"}
+        org.clojars.quoll/asami {:mvn/version "2.3.4"}
+        com.hyperfiddle/electric {:mvn/version "v2-alpha-349-ge9996713"}}
  :aliases
- {:cljs
+ {:dev
+  {:extra-paths ["dev"]}
+  :cljs
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.60"}
                 thheller/shadow-cljs {:mvn/version "2.26.0"}
+                djblue/portal {:mvn/version "0.49.0"}
                 com.google.javascript/closure-compiler-unshaded {:mvn/version "v20230802"}}}}}

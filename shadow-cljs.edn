@@ -1,5 +1,17 @@
 ;; shadow-cljs configuration
-{:deps {:aliases [:cljs]}
+{:deps {:aliases [:cljs :dev]}
 
  :builds
- {}}
+ {:dev
+  {:target :node-script
+   :main user/-main
+   :output-to "dist/dev.js"
+   :devtools {:repl-init-ns user
+              :repl-pprint true}}
+  :npm {:target :npm-module
+        :output-dir "dist/module"
+        :entries [pondermatic.njs]}
+  :esm
+  {:target :esm
+   :output-dir "dist/esm"
+   :modules {:esm {:exports {default pondermatic.esm/exports}}}}}}

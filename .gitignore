@@ -17,3 +17,6 @@ pom.xml.asc
 .lsp/
 .portal/
 .shadow-cljs/
+.dist/
+.cljs_node_repl/
+node_modules/
