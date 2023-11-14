@@ -58,18 +58,15 @@
   (fn [<session]
     (m/eduction (map #(o/query-all % rule-name)) <session)))
 
-(defn engine
-  [session]
-  (fn [return cmd]
-    (->> session
-         (exec cmd)
-         o/fire-rules
-         return
-         engine)))
+(defn process
+  [session cmd]
+  (->> session
+       (exec cmd)
+       o/fire-rules))
 
-(def session (-> (o/->session)
-                 engine
-                 a/actor))
+(def session (->> (o/->session)
+                  (a/engine process)
+                  a/actor))
 
 (defn run-test []
   (let [rule (o/->rule

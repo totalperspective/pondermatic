@@ -1,0 +1,53 @@
+; Jacking in...
+; Connecting using "shadow-cljs" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; npx shadow-cljs -d cider/cider-nrepl:0.28.5 watch :dev ; popd
+; Using host:port localhost:55608 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; TIPS:
+;   - You can edit the contents here. Use it as a REPL if you like.
+;   - `alt+enter` evaluates the current top level form.
+;   - `ctrl+enter` evaluates the current form.
+;   - `alt+up` and `alt+down` traverse up and down the REPL command history
+;      when the cursor is after the last contents at the prompt
+;   - Clojure lines in stack traces are peekable and clickable.
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉shadow.user꞉> 
+clj꞉shadow.user꞉> 
+; Creating cljs repl session...
+; Connecting cljs repl: shadow-cljs...
+;   The Calva Connection Log might have more connection progress information.
+; Please start your ClojureScript app (load it in the browser, or whatever is appropriate) so that Calva can connect to its REPL...
+
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Connected session: cljs, repl: :dev
+; TIPS: You can choose which REPL to use (clj or cljs):
+;    *Calva: Toggle REPL connection*
+;    (There is a button in the status bar for this)
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.cljs'
+nil
+cljs꞉cljs.user꞉> 
+; Jack-in done.
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.10s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.12s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.13s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.10s)
+cljs꞉cljs.user꞉> 

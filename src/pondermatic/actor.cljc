@@ -29,6 +29,15 @@
     {::send self
      ::recieve >return}))
 
+(defn engine
+  [process session]
+  (let [engine (partial engine process)]
+    (fn [return cmd]
+      (-> session
+          (process cmd)
+          return
+          engine))))
+
 (def done ::done)
 
 (defn |> [{:keys [::send] :as a} msg]
