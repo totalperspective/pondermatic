@@ -1,4 +1,4 @@
-(ns pondermatic.actor
+(ns pondermatic.shell
   (:require [missionary.core :as m]
             [pondermatic.flow :as f]))
 

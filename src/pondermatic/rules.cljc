@@ -1,6 +1,6 @@
 (ns pondermatic.rules
   (:require [odoyle.rules :as o]
-            [pondermatic.actor :as a :refer [|> |< |<=]]
+            [pondermatic.shell :as a :refer [|> |< |<=]]
             [pondermatic.flow :as f]))
 
 (defn cmd-type
@@ -86,9 +86,9 @@
                  (println "This will fire once"))})]
 
     (-> session
-        (|< query-all)
+        (|< (query ::character))
         f/diff
-        (f/drain ::all))
+        (f/drain :character-query))
 
     (-> session
         (|> (add-rule rule))

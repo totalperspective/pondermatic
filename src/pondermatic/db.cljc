@@ -1,21 +1,22 @@
 (ns pondermatic.db
   (:require [asami.core :as d]
-            [pondermatic.actor :as a :refer [|> |< |<=]]
+            [pondermatic.shell :as a :refer [|> |< |<=]]
             [pondermatic.flow :as f]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
 
 (defn transactor
-  [{:keys [::conn]} tx]
-  (-> conn
+  [{:keys [::db-uri]} tx]
+  (-> db-uri
+      (d/connect)
       (d/transact tx)
       deref
-      (assoc ::conn conn)))
+      (assoc ::db-uri db-uri)))
 
 (defn ->conn [db-uri]
-  (->> (d/connect db-uri)
-       (assoc {} ::conn)
+  (->> db-uri
+       (assoc {} ::db-uri)
        (a/engine transactor)
        a/actor))
 
@@ -40,7 +41,7 @@
     (-> conn
         (|< (q '[:find ?movie-title
                  :where [?m :movie/title ?movie-title]]))
-        (f/drain ::movie-titles))
+        (f/drain :movie-titles))
     (-> conn
         (|> {:tx-data first-movies})
         (|> a/done))))
