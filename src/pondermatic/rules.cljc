@@ -1,45 +1,14 @@
 (ns pondermatic.rules
   (:require [odoyle.rules :as o]
+            [pondermatic.actor :as a :refer [|> |<]]
             [missionary.core :as m]
             [pondermatic.flow :as f]))
-
-(defn actor
-  ([init] (actor init f/crash))
-  ([init fail]
-   (let [self (m/mbx)
-         >return (m/stream
-                  (m/eduction
-                   (remove nil?)
-                   (m/ap
-                    (loop [process init]
-                      (let [cmd (m/? self)]
-                        (when (not= ::done cmd)
-                          (let [emit (m/rdv)
-                                next (process emit cmd)]
-                            (m/amb
-                             (m/? emit)
-                             (recur next)))))))))]
-     (f/drain nil >return)
-     {:actor self
-      :return >return})))
 
 (defn cmd-type
   [[cmd] _]
   cmd)
 
 (defmulti exec cmd-type)
-
-(def session
-  (let [proc (fn proc [session]
-               (fn [emit cmd]
-                 (let [session' (o/fire-rules (exec cmd session))
-                       run (m/sp (m/? (emit session')))]
-                   (run identity f/crash)
-                   (proc session'))))]
-    (actor (proc (o/->session)))))
-
-(def |< (:return session))
-(def |> (:actor session))
 
 (defmethod exec 'add-rule
   [[_ rule] session]
@@ -82,11 +51,25 @@
 (defn retract* [id:attrs]
   (list 'retract* id:attrs))
 
-(defn query-all []
-  (m/eduction (map #(o/query-all %)) (dedupe) |<))
+(defn query-all [<session]
+  (m/eduction (map #(o/query-all %)) (dedupe) <session))
 
 (defn query [rule-name]
-  (m/eduction (map #(o/query-all % rule-name)) |<))
+  (fn [<session]
+    (m/eduction (map #(o/query-all % rule-name)) <session)))
+
+(defn engine
+  [session]
+  (fn [return cmd]
+    (->> session
+         (exec cmd)
+         o/fire-rules
+         return
+         engine)))
+
+(def session (-> (o/->session)
+                 engine
+                 a/actor))
 
 (defn run-test []
   (let [rule (o/->rule
@@ -105,19 +88,21 @@
                (fn [session]
                  (println "This will fire once"))})]
 
-    (f/drain ::all (f/diff (query-all)))
+    (f/drain ::all (f/diff (|< session query-all)))
 
-    (|> (add-rule rule))
-    (|> (insert 1 {::x 3 ::y -1 ::z 0}))
-    (|> (insert 2 {::x 10 ::y 2 ::z 1}))
-    (|> (insert 3 {::x 7 ::y 1 ::z 2}))
-    (|> (insert 3 {::x 7 ::y 1 ::z 2}))
-    (|> (insert* [[1 {::x 3 ::y -1 ::z 4}]
-                  [2 {::x 10 ::y 2 ::z 5}]
-                  [3 {::x 7 ::y 1 ::z 6}]]))
-    (|> (retract 1 ::x))
-    (|> (retract* [[1 ::y]
-                   [1 ::z]
-                   [2 ::x]
-                   [2 ::y]
-                   [2 ::z]]))))
+    (-> session
+        (|> (add-rule rule))
+        (|> (insert 1 {::x 3 ::y -1 ::z 0}))
+        (|> (insert 2 {::x 10 ::y 2 ::z 1}))
+        (|> (insert 3 {::x 7 ::y 1 ::z 2}))
+        (|> (insert 3 {::x 7 ::y 1 ::z 2}))
+        (|> (insert* [[1 {::x 3 ::y -1 ::z 4}]
+                      [2 {::x 10 ::y 2 ::z 5}]
+                      [3 {::x 7 ::y 1 ::z 6}]]))
+        (|> (retract 1 ::x))
+        (|> (retract* [[1 ::y]
+                       [1 ::z]
+                       [2 ::x]
+                       [2 ::y]
+                       [2 ::z]]))
+        (|> a/done))))

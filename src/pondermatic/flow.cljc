@@ -34,6 +34,8 @@
                        [n-1 n])
                      [[] []])
        (m/eduction (map (fn [[n-1 n]]
-                          {:old n-1
-                           :new n
-                           :edits (es/get-edits (es/diff n-1 n))})))))
+                          {:old (with-meta n-1 {:portal.viewer/default :portal.viewer/table})
+                           :new (with-meta n {:portal.viewer/default :portal.viewer/table})
+                           :edits (with-meta
+                                    (es/get-edits (es/diff n-1 n))
+                                    {:portal.viewer/default :portal.viewer/table})})))))
