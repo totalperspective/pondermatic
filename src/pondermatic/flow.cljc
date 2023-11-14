@@ -25,8 +25,11 @@
 
 (defn latest [p n] (or n p))
 
-(defn drain [prefix flow]
-  (run (m/reduce (tap prefix) flow)))
+(defn drain
+  ([flow]
+   (drain flow nil))
+  ([flow prefix]
+   (run (m/reduce (tap prefix) flow))))
 
 (defn diff [flow]
   (->> flow

@@ -1,37 +1,16 @@
 (ns user
-  (:require [pondermatic.db :as db]
-            [pondermatic.rules :as rules]
-            [pondermatic.flow :as f]
+  (:require [pondermatic.rules :as rules]
+            [pondermatic.db :as db]
             [portal.api :as p]
-            [asami.core :as d]))
+            [clojure.datafy :as datafy]))
 
-(defonce _ (let [p (p/open {:launcher :vs-code})]
-             (add-tap #'p/submit)
-             p)) ; Add portal as a tap> target
+(def submit (comp p/submit datafy/datafy))
 
-(def db-name
-  (str (gensym "user")))
-(def db-uri (db/name->mem-uri db-name))
+(defonce portal (let [p (p/open {:launcher :vs-code})]
+                  (add-tap #'submit)
+                  p)) ; Add portal as a tap> target
 
-(def conn (db/conn db-uri))
-(def db (db/db conn))
-;; (drain (db/<db conn) ::db)
-
-(defn -main
-  []
-  (let [txs [[{:db/ident "id1" :name :test}]
-             [{:db/ident "id2" :name :test2}]
-             [{:db/ident "id3" :name :test3 :other-name :other}]]
-        query '[:find ?name :where [_ :name ?name]]]
-    (f/run (db/transact* conn txs))
-    (f/run (db/q query db)))
-  (d/delete-database db-uri))
-
-(defonce reload? (atom 0))
-
-(when @reload?
-  (-main))
-
-(swap! reload? inc)
-
-(rules/run-test)
+(defn ^:dev/after-load -main
+  [& _]
+  (rules/run-test)
+  (db/run-test))

@@ -51,3 +51,473 @@ cljs꞉cljs.user꞉> 
 cljs꞉cljs.user꞉> 
 ; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.10s)
 cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+; [:dev] Build failure:
+; The required namespace "asami.datom.Datom" is not available, it was required by "pondermatic/db.cljc".
+; 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.16s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.11s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.16s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.18s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.13s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.13s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build failure:
+; ------ ERROR -------------------------------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/dev/user.cljs:11:14
+; --------------------------------------------------------------------------------
+;    8 | 
+;    9 | (defonce _ (let [p (p/open {:launcher :vs-code})
+;   10 |                  submit (comp p/submit datafy/datafy)]
+;   11 |              (add-tap #'submit)
+; --------------------^-----------------------------------------------------------
+; null
+; Unable to resolve var: submit in this context at line 11 user.cljs
+; --------------------------------------------------------------------------------
+;   12 |              p)) ; Add portal as a tap> target
+;   13 | 
+;   14 | (def db-name
+;   15 |   (str (gensym "user")))
+; --------------------------------------------------------------------------------
+; 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.06s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+; [:dev] Build failure:
+; The required namespace "pondermatic.db" is not available, it was required by "user.cljs".
+; 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.11s)
+cljs꞉cljs.user꞉> 
+; nREPL Connection was closed
+; Jacking in...
+; Connecting using "shadow-cljs" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; npx shadow-cljs -d cider/cider-nrepl:0.28.5 watch :dev ; popd
+; Using host:port localhost:51947 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; TIPS:
+;   - You can edit the contents here. Use it as a REPL if you like.
+;   - `alt+enter` evaluates the current top level form.
+;   - `ctrl+enter` evaluates the current form.
+;   - `alt+up` and `alt+down` traverse up and down the REPL command history
+;      when the cursor is after the last contents at the prompt
+;   - Clojure lines in stack traces are peekable and clickable.
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉shadow.user꞉> 
+clj꞉shadow.user꞉> 
+; Creating cljs repl session...
+; Connecting cljs repl: shadow-cljs...
+;   The Calva Connection Log might have more connection progress information.
+; Please start your ClojureScript app (load it in the browser, or whatever is appropriate) so that Calva can connect to its REPL...
+; Connected session: cljs, repl: :dev
+; TIPS: You can choose which REPL to use (clj or cljs):
+;    *Calva: Toggle REPL connection*
+;    (There is a button in the status bar for this)
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.cljs'
+nil
+clj꞉cljs.user꞉> 
+; Jack-in done.
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.07s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.05s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.12s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.08s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.05s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.07s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.08s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.04s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.10s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.05s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.10s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.09s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.09s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.05s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.10s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.08s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.17s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.17s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.15s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.09s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.07s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.07s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; nREPL Connection was closed
+; Jacking in...
+; Connecting using "shadow-cljs" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; npx shadow-cljs -d cider/cider-nrepl:0.28.5 watch :dev ; popd
+; Using host:port localhost:57568 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; TIPS:
+;   - You can edit the contents here. Use it as a REPL if you like.
+;   - `alt+enter` evaluates the current top level form.
+;   - `ctrl+enter` evaluates the current form.
+;   - `alt+up` and `alt+down` traverse up and down the REPL command history
+;      when the cursor is after the last contents at the prompt
+;   - Clojure lines in stack traces are peekable and clickable.
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉shadow.user꞉> 
+clj꞉shadow.user꞉> 
+; Creating cljs repl session...
+; Connecting cljs repl: shadow-cljs...
+;   The Calva Connection Log might have more connection progress information.
+; Please start your ClojureScript app (load it in the browser, or whatever is appropriate) so that Calva can connect to its REPL...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Connected session: cljs, repl: :dev
+; TIPS: You can choose which REPL to use (clj or cljs):
+;    *Calva: Toggle REPL connection*
+;    (There is a button in the status bar for this)
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.cljs'
+nil
+clj꞉cljs.user꞉> 
+; Jack-in done.
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 1 compiled, 0 warnings, 0.05s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.13s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.15s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.13s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.18s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.14s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.12s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.10s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build failure:
+; ------ ERROR -------------------------------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/db.cljc:22:14
+; --------------------------------------------------------------------------------
+;   19 |        a/actor))
+;   20 | 
+;   21 | (defn q [query]
+;   22 |   (|<= (map :)))
+; --------------------^-----------------------------------------------------------
+; pondermatic/db.cljc [line 22, col 14] Invalid keyword: :.
+; 
+; --------------------------------------------------------------------------------
+;   23 | 
+;   24 | (defn run-test []
+;   25 |   (let [conn (-> "test" name->mem-uri ->conn)
+;   26 |         first-movies [{:movie/title "Explorers"
+; --------------------------------------------------------------------------------
+; 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build failure:
+; ------ ERROR -------------------------------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/db.cljc:22:14
+; --------------------------------------------------------------------------------
+;   19 |        a/actor))
+;   20 | 
+;   21 | (defn q [query]
+;   22 |   (|<= (map :)))
+; --------------------^-----------------------------------------------------------
+; pondermatic/db.cljc [line 22, col 14] Invalid keyword: :.
+; 
+; --------------------------------------------------------------------------------
+;   23 | 
+;   24 | (defn run-test []
+;   25 |   (let [conn (-> "test" name->mem-uri ->conn)
+;   26 |         first-movies [{:movie/title "Explorers"
+; --------------------------------------------------------------------------------
+; 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 1 warnings, 0.10s)
+; 
+; ------ WARNING #1 - :fn-arity --------------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/db.cljc:23:8
+; --------------------------------------------------------------------------------
+;   20 | 
+;   21 | (defn q [query]
+;   22 |   (|<= (map :db-after)
+;   23 |        (map)))
+; --------------^-----------------------------------------------------------------
+;  Wrong number of args (0) passed to cljs.core/map
+; --------------------------------------------------------------------------------
+;   24 | 
+;   25 | (defn run-test []
+;   26 |   (let [conn (-> "test" name->mem-uri ->conn)
+;   27 |         first-movies [{:movie/title "Explorers"
+; --------------------------------------------------------------------------------
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.09s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 1 warnings, 0.09s)
+; 
+; ------ WARNING #1 - :fn-arity --------------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/db.cljc:39:9
+; --------------------------------------------------------------------------------
+;   36 |                       {:movie/title "Toy Story"
+;   37 |                        :movie/genre "animation/adventure"
+;   38 |                        :movie/release-year 1995}]]
+;   39 |     (-> (|< (q '[])))
+; ---------------^----------------------------------------------------------------
+;  Wrong number of args (1) passed to pondermatic.actor/|<
+; --------------------------------------------------------------------------------
+;   40 |     (-> conn
+;   41 |         (|> {:tx-data first-movies})
+;   42 |         (|> a/done))))
+;   43 | 
+; --------------------------------------------------------------------------------
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.11s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.13s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 1 warnings, 0.10s)
+; 
+; ------ WARNING #1 - :fn-arity --------------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/actor.cljc:28:5
+; --------------------------------------------------------------------------------
+;   25 |                          (do
+;   26 |                            (println ::done)
+;   27 |                            nil)))))))]
+;   28 |     (f/drain >return)
+; -----------^--------------------------------------------------------------------
+;  Wrong number of args (1) passed to pondermatic.flow/drain
+; --------------------------------------------------------------------------------
+;   29 |     {::send self
+;   30 |      ::receive >return}))
+;   31 | 
+;   32 | (defn engine
+; --------------------------------------------------------------------------------
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 3 compiled, 0 warnings, 0.12s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.06s)
+clj꞉cljs.user꞉> 
+; [:dev] Compiling ...
+clj꞉cljs.user꞉> 
+; [:dev] Build completed. (204 files, 2 compiled, 0 warnings, 0.09s)
+clj꞉cljs.user꞉> 

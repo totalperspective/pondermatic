@@ -1,7 +1,6 @@
 (ns pondermatic.rules
   (:require [odoyle.rules :as o]
-            [pondermatic.actor :as a :refer [|> |<]]
-            [missionary.core :as m]
+            [pondermatic.actor :as a :refer [|> |< |<=]]
             [pondermatic.flow :as f]))
 
 (defn cmd-type
@@ -51,12 +50,11 @@
 (defn retract* [id:attrs]
   (list 'retract* id:attrs))
 
-(defn query-all [<session]
-  (m/eduction (map #(o/query-all %)) (dedupe) <session))
+(def query-all (|<= (map #(o/query-all %))
+                    (dedupe)))
 
 (defn query [rule-name]
-  (fn [<session]
-    (m/eduction (map #(o/query-all % rule-name)) <session)))
+  (|<= (map #(o/query-all % rule-name))))
 
 (defn process
   [session cmd]
@@ -87,7 +85,10 @@
                (fn [session]
                  (println "This will fire once"))})]
 
-    (f/drain ::all (f/diff (|< session query-all)))
+    (-> session
+        (|< query-all)
+        f/diff
+        (f/drain ::all))
 
     (-> session
         (|> (add-rule rule))

@@ -25,9 +25,9 @@
                          (do
                            (println ::done)
                            nil)))))))]
-    (f/drain nil >return)
+    (f/drain >return)
     {::send self
-     ::recieve >return}))
+     ::receive >return}))
 
 (defn engine
   [process session]
@@ -47,9 +47,15 @@
       a)
     (throw (ex-info "Not a valid actor" {:actor a}))))
 
-(defn |< [{:keys [::recieve] :as a} create-flow]
-  (if recieve
-    (create-flow recieve)
+(defn |< [{:keys [::receive] :as a} create-flow]
+  (if receive
+    (create-flow receive)
     (m/ap
      (m/amb nil)
      (throw (ex-info "Not a valid actor" {:actor a})))))
+
+(defn |<= [& xf*]
+  (fn [& arg*]
+    (->> arg*
+         (into (vec xf*))
+         (apply m/eduction))))
