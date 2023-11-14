@@ -64,12 +64,14 @@
        (exec cmd)
        o/fire-rules))
 
-(def session (->> (o/->session)
-                  (a/engine process)
-                  a/actor))
+(defn ->session []
+  (->> (o/->session)
+       (a/engine process)
+       a/actor))
 
 (defn run-test []
-  (let [rule (o/->rule
+  (let [session (->session)
+        rule (o/->rule
               ::character
               {:what
                '[[id ::x x]
