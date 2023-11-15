@@ -7,7 +7,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node dist/dev.js"
+    "dev": "[ -f ./out/dev.js ] || shadow-cljs compile :dev; node out/dev.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/totalperspective/pondermatic#readme",
   "devDependencies": {
+    "karma": "6.3.17",
+    "karma-chrome-launcher": "3.1.1",
+    "karma-cljs-test": "0.1.0",
+    "puppeteer": "13.5.2",
     "shadow-cljs": "^2.26.0"
   }
 }

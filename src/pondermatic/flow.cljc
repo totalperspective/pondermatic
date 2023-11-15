@@ -1,13 +1,15 @@
 (ns pondermatic.flow
   (:require [missionary.core :as m]
             [clojure.string :as str]
-            [clojure.set :refer [difference]]
             [editscript.core :as es]))
 
 (defn crash [e]                                ;; let it crash philosophy
   (println e)
   (println (.-stack e))
-  (.exit js/process -1))
+  #?(:cljs
+     (.exit js/process -1)
+     :clj
+     (System/exit -1)))
 
 (defn tap [prefix]
   (fn [_ x]

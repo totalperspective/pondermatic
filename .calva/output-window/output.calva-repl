@@ -1,0 +1,354 @@
+; Jacking in...
+; Connecting using "shadow-cljs" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; npx shadow-cljs -d cider/cider-nrepl:0.28.5 watch :dev ; popd
+; Using host:port localhost:50812 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; TIPS:
+;   - You can edit the contents here. Use it as a REPL if you like.
+;   - `alt+enter` evaluates the current top level form.
+;   - `ctrl+enter` evaluates the current form.
+;   - `alt+up` and `alt+down` traverse up and down the REPL command history
+;      when the cursor is after the last contents at the prompt
+;   - Clojure lines in stack traces are peekable and clickable.
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉shadow.user꞉> 
+clj꞉shadow.user꞉> 
+; Creating cljs repl session...
+; Connecting cljs repl: shadow-cljs...
+;   The Calva Connection Log might have more connection progress information.
+; Please start your ClojureScript app (load it in the browser, or whatever is appropriate) so that Calva can connect to its REPL...
+; Connected session: cljs, repl: :dev
+; TIPS: You can choose which REPL to use (clj or cljs):
+;    *Calva: Toggle REPL connection*
+;    (There is a button in the status bar for this)
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.cljs'
+nil
+cljs꞉cljs.user꞉> 
+; Jack-in done.
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 1 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 1 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.14s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.07s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.11s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.08s)
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.15s)
+cljs꞉cljs.user꞉> 
+; Evaluating file: rules.cljc
+nil
+cljs꞉user꞉> 
+; [:dev] Compiling ...
+cljs꞉user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.09s)
+cljs꞉user꞉> 
+; Evaluating file: rules.cljc
+nil
+cljs꞉user꞉> 
+; [:dev] Compiling ...
+cljs꞉user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 1 warnings, 0.07s)
+; 
+; ------ WARNING #1 - :undeclared-var --------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/dev/user.cljs:23:4
+; --------------------------------------------------------------------------------
+;   20 | 
+;   21 | (defn ^:dev/after-load start []
+;   22 |   (hyperfiddle.rcf/enable!)
+;   23 |   (rules/run-test)
+; ----------^---------------------------------------------------------------------
+;  Use of undeclared Var pondermatic.rules/run-test
+; --------------------------------------------------------------------------------
+;   24 |   (db/run-test))
+;   25 | 
+; --------------------------------------------------------------------------------
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+cljs꞉user꞉> 
+; [:dev] Compiling ...
+cljs꞉user꞉> 
+; [:dev] Build completed. (210 files, 1 compiled, 0 warnings, 0.06s)
+cljs꞉user꞉> 
+; [:dev] Compiling ...
+cljs꞉user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.10s)
+cljs꞉user꞉> 
+; [:dev] Compiling ...
+cljs꞉user꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.08s)
+cljs꞉user꞉> 
+; Evaluating file: rules.cljc
+nil
+cljs꞉scratch.db꞉> 
+; [:dev] Compiling ...
+cljs꞉scratch.db꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.10s)
+cljs꞉scratch.db꞉> 
+; Evaluating file: rules.cljc
+nil
+cljs꞉scratch.db꞉> 
+; [:dev] Compiling ...
+cljs꞉scratch.db꞉> 
+; [:dev] Build completed. (210 files, 2 compiled, 0 warnings, 0.06s)
+cljs꞉scratch.db꞉> 
+; [:dev] Compiling ...
+cljs꞉scratch.db꞉> 
+; [:dev] Build completed. (210 files, 1 compiled, 0 warnings, 0.08s)
+cljs꞉scratch.db꞉> 
+; [:dev] Compiling ...
+cljs꞉scratch.db꞉> 
+; [:dev] Build completed. (210 files, 1 compiled, 0 warnings, 0.07s)
+cljs꞉scratch.db꞉> 
+; Evaluating file: production.cljc
+nil
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Compiling ...
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Build completed. (210 files, 1 compiled, 0 warnings, 0.07s)
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Compiling ...
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.06s)
+cljs꞉pondermatic.rules.production꞉> 
+; Evaluating file: production.cljc
+nil
+cljs꞉pondermatic.rules.production꞉> 
+; Evaluating file: production.cljc
+nil
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Compiling ...
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Build completed. (211 files, 1 compiled, 0 warnings, 0.11s)
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Compiling ...
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Build completed. (211 files, 1 compiled, 0 warnings, 0.09s)
+cljs꞉pondermatic.rules.production꞉> 
+; Evaluating file: production.cljc
+nil
+cljs꞉pondermatic.rules.production꞉> 
+; Evaluating file: production.cljc
+nil
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Compiling ...
+; [:dev] Build failure:
+; The required namespace "user" is not available.
+; 
+cljs꞉pondermatic.rules.production꞉> 
+cljs꞉pondermatic.rules.production꞉> 
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Compiling ...
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Build completed. (211 files, 5 compiled, 0 warnings, 0.12s)
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Compiling ...
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.08s)
+cljs꞉pondermatic.rules.production꞉> 
+; shadow-cljs - HTTP config change, restarting servers
+cljs꞉pondermatic.rules.production꞉> 
+; shadow-cljs - HTTP config change, restarting servers
+; [:dev] Configuring build.
+; [:dev] Compiling ...
+cljs꞉pondermatic.rules.production꞉> 
+cljs꞉pondermatic.rules.production꞉> 
+cljs꞉pondermatic.rules.production꞉> 
+; [:dev] Build completed. (211 files, 1 compiled, 0 warnings, 1.00s)
+cljs꞉pondermatic.rules.production꞉> 
+; shadow-cljs - HTTP config change, restarting servers
+cljs꞉pondermatic.rules.production꞉> 
+; shadow-cljs - HTTP config change, restarting servers
+cljs꞉pondermatic.rules.production꞉> 
+; shadow-cljs - HTTP config change, restarting servers
+cljs꞉pondermatic.rules.production꞉> 
+; shadow-cljs - HTTP config change, restarting servers
+cljs꞉pondermatic.rules.production꞉> 
+; Evaluating file: user.cljc
+nil
+cljs꞉run-tests꞉> 
+; [:dev] Compiling ...
+cljs꞉run-tests꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.07s)
+cljs꞉run-tests꞉> 
+; Evaluating file: production.cljc
+nil
+clj꞉pondermatic.rules.production꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules.production꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.08s)
+clj꞉pondermatic.rules.production꞉> 
+; Evaluating file: production.cljc
+nil
+clj꞉pondermatic.rules.production꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules.production꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.05s)
+clj꞉pondermatic.rules.production꞉> 
+; nREPL Connection was closed
+; Jacking in...
+; Connecting using "deps.edn + shadow-cljs" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; clojure -Sdeps '{:deps {nrepl/nrepl {:mvn/version,"1.0.0"},cider/cider-nrepl {:mvn/version,"0.28.5"}}}' -M:cljs:dev -m nrepl.cmdline --middleware "[cider.nrepl/cider-middleware shadow.cljs.devtools.server.nrepl/middleware]" ; popd
+; Jacking in...
+; Connecting using "deps.edn + shadow-cljs" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; clojure -Sdeps '{:deps {nrepl/nrepl {:mvn/version,"1.0.0"},cider/cider-nrepl {:mvn/version,"0.28.5"}}}' -M:cljs:dev -m nrepl.cmdline --middleware "[cider.nrepl/cider-middleware shadow.cljs.devtools.server.nrepl/middleware]" ; popd
+; Using host:port localhost:65426 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; TIPS:
+;   - You can edit the contents here. Use it as a REPL if you like.
+;   - `alt+enter` evaluates the current top level form.
+;   - `ctrl+enter` evaluates the current form.
+;   - `alt+up` and `alt+down` traverse up and down the REPL command history
+;      when the cursor is after the last contents at the prompt
+;   - Clojure lines in stack traces are peekable and clickable.
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉user꞉> 
+clj꞉user꞉> 
+; Creating cljs repl session...
+; Connecting cljs repl: deps.edn + shadow-cljs...
+;   The Calva Connection Log might have more connection progress information.
+; Starting cljs repl for: deps.edn + shadow-cljs...
+; [:dev] Configuring build.
+; [:dev] Compiling ...
+; [:dev] Build completed. (211 files, 1 compiled, 0 warnings, 2.62s)
+; Cljs builds started
+; Please start your ClojureScript app (load it in the browser, or whatever is appropriate) so that Calva can connect to its REPL...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Timed out waiting for Shadow CLJS runtimes, pretending we are connected.
+; Connected session: cljs, repl: :dev
+; TIPS: You can choose which REPL to use (clj or cljs):
+;    *Calva: Toggle REPL connection*
+;    (There is a button in the status bar for this)
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.cljs'
+nil
+cljs꞉cljs.user꞉> 
+; Jack-in done.
+cljs꞉cljs.user꞉> 
+clj꞉user꞉> 
+; Evaluating file: production.cljc
+nil
+clj꞉pondermatic.rules.production꞉> 
+; Evaluating file: user.cljc
+✅:enabled
+clj꞉user꞉> 
+; Worker shutdown.
+clj꞉user꞉> 
+; nREPL Connection was closed
+; Jacking in...
+; Connecting using "deps.edn + shadow-cljs" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; clojure -Sdeps '{:deps {nrepl/nrepl {:mvn/version,"1.0.0"},cider/cider-nrepl {:mvn/version,"0.28.5"}}}' -M:cljs:dev -m nrepl.cmdline --middleware "[cider.nrepl/cider-middleware shadow.cljs.devtools.server.nrepl/middleware]" ; popd
+; Using host:port localhost:49964 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; TIPS:
+;   - You can edit the contents here. Use it as a REPL if you like.
+;   - `alt+enter` evaluates the current top level form.
+;   - `ctrl+enter` evaluates the current form.
+;   - `alt+up` and `alt+down` traverse up and down the REPL command history
+;      when the cursor is after the last contents at the prompt
+;   - Clojure lines in stack traces are peekable and clickable.
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉user꞉> 
+clj꞉user꞉> 
+; Creating cljs repl session...
+; Connecting cljs repl: deps.edn + shadow-cljs...
+;   The Calva Connection Log might have more connection progress information.
+; Starting cljs repl for: deps.edn + shadow-cljs...
+; [:dev] Configuring build.
+; [:dev] Compiling ...
+; [:dev] Build completed. (211 files, 0 compiled, 0 warnings, 2.44s)
+; Cljs builds started
+; Please start your ClojureScript app (load it in the browser, or whatever is appropriate) so that Calva can connect to its REPL...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Evaluating file: user.cljc
+✅:enabled
+clj꞉user꞉> 
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Evaluating file: user.cljc
+✅:enabled
+clj꞉user꞉> 
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Waiting for Shadow CLJS runtimes, start your CLJS app...
+; Timed out waiting for Shadow CLJS runtimes, pretending we are connected.
+; Connected session: cljs, repl: :dev
+; TIPS: You can choose which REPL to use (clj or cljs):
+;    *Calva: Toggle REPL connection*
+;    (There is a button in the status bar for this)
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.cljs'
+nil
+cljs꞉cljs.user꞉> 
+; Jack-in done.
+cljs꞉cljs.user꞉> 

@@ -17,7 +17,8 @@ pom.xml.asc
 .lsp/
 .portal/
 .shadow-cljs/
-.dist/
+dist/
+out/
 .cljs_node_repl/
 node_modules/
 src/pondermatic/flow.cljc

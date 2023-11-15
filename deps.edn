@@ -8,12 +8,24 @@
         net.sekao/odoyle-rules {:mvn/version "1.3.1"}
         org.clojars.quoll/asami {:mvn/version "2.3.4"}
         com.hyperfiddle/electric {:mvn/version "v2-alpha-349-ge9996713"}
-        juji/editscript {:mvn/version "0.6.3"}}
+        juji/editscript {:mvn/version "0.6.3"}
+        com.hyperfiddle/rcf {:mvn/version "20220926-202227"}}
  :aliases
  {:dev
-  {:extra-paths ["dev"]}
+  {:extra-paths ["dev"]
+   :extra-deps {djblue/portal {:mvn/version "0.49.0"}}
+   :main user}
   :cljs
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.60"}
                 thheller/shadow-cljs {:mvn/version "2.26.0"}
-                djblue/portal {:mvn/version "0.49.0"}
-                com.google.javascript/closure-compiler-unshaded {:mvn/version "v20230802"}}}}}
+                com.google.javascript/closure-compiler-unshaded {:mvn/version "v20230802"}}}
+  :test
+  {:jvm-opts    ["-XX:-OmitStackTraceInFastThrow"
+                 "-Dhyperfiddle.rcf.generate-tests=true"]
+   :extra-paths ["example"]
+   :extra-deps  {thheller/shadow-cljs   {:mvn/version "2.16.8"}
+                 nubank/matcher-combinators {:mvn/version "3.5.1"}
+                 io.github.cognitect-labs/test-runner
+                 {:git/url "https://github.com/cognitect-labs/test-runner.git"
+                  :sha     "cc75980b43011773162b485f46f939dc5fba91e4"}}
+   :exec-fn     cognitect.test-runner.api/test}}}

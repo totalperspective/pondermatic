@@ -5,12 +5,24 @@
  {:dev
   {:target :node-script
    :main user/-main
-   :output-to "dist/dev.js"
+   :output-to "out/dev.js"
    :devtools {:repl-init-ns user
               :repl-pprint true}}
-  :npm {:target :npm-module
-        :output-dir "dist/module"
-        :entries [pondermatic.njs]}
+  :test
+  {:target    :node-test
+   :output-to "out/node-tests.js"
+   :ns-regexp "^(pondermatic.*|example.*)"}
+  
+  :browser-test
+  {:target    :karma
+   :output-to "out/karma-tests.js"
+   :ns-regexp "^(pondermatic.*|example.*)"}
+  
+  :npm
+  {:target :npm-module
+   :output-dir "dist/module"
+   :entries [pondermatic.njs]}
+
   :esm
   {:target :esm
    :output-dir "dist/esm"
