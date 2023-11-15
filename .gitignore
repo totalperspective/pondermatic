@@ -22,4 +22,4 @@ out/
 .cljs_node_repl/
 node_modules/
 src/pondermatic/flow.cljc
-/output.calva-repl
+.calva/
