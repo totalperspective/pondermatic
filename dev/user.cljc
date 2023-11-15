@@ -19,13 +19,10 @@
   (hyperfiddle.rcf/enable! false))
 
 (defn ^:dev/after-load start []
-  (hyperfiddle.rcf/enable!)
-  (rules/run-test)
-  (db/run-test))
+  (hyperfiddle.rcf/enable!))
 
 (defn ^:dev/after-load -main
-  [& _]
-  (start))
+  [& _])
 
 (tests
  :enabled := :enabled)

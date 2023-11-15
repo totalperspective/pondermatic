@@ -11,27 +11,37 @@
      :clj
      (System/exit -1)))
 
+(defn tapper
+  [tap]
+  (fn
+    ([] nil)
+    ([_ x]
+     (tap x)
+     x)))
+
 (defn tap [prefix]
-  (fn [_ x]
-    (when prefix
-      (tap> (with-meta {prefix x}
-              {:portal.viewer/default :portal.viewer/inspector})))
-    x))
+  (tapper
+   (fn [x]
+     (when prefix
+       (tap> (with-meta {prefix x}
+               {:portal.viewer/default :portal.viewer/inspector}))))))
 
 (defn run [task]
   (task #(tap> {"Success" %})
-        #(tap> {"Error" %
-                :info (str/split-lines (.-stack %))})))
+        #(tap> {"Error" %})))
 
 (defn counter [r _] (inc r))    ;; A reducing function counting the number of items.
 
 (defn latest [p n] (or n p))
 
+(defn drain-using [flow tap]
+  (run (m/reduce tap flow)))
+
 (defn drain
   ([flow]
    (drain flow nil))
   ([flow prefix]
-   (run (m/reduce (tap prefix) flow))))
+   (drain-using flow (tap prefix))))
 
 (defn diff [flow]
   (->> flow

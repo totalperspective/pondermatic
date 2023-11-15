@@ -352,3 +352,1811 @@ nil
 cljs꞉cljs.user꞉> 
 ; Jack-in done.
 cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 1 warnings, 0.21s)
+; 
+; ------ WARNING #1 - :undeclared-var --------------------------------------------
+;  File: /Users/bahulneel/Projects/TotalPerspective/pondermatic/dev/user.cljc:23:4
+; --------------------------------------------------------------------------------
+;   20 | 
+;   21 | (defn ^:dev/after-load start []
+;   22 |   (hyperfiddle.rcf/enable!)
+;   23 |   (rules/run-test)
+; ----------^---------------------------------------------------------------------
+;  Use of undeclared Var pondermatic.rules/run-test
+; --------------------------------------------------------------------------------
+;   24 |   (db/run-test))
+;   25 | 
+;   26 | (defn ^:dev/after-load -main
+;   27 |   [& _]
+; --------------------------------------------------------------------------------
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+cljs꞉cljs.user꞉> 
+; [:dev] Compiling ...
+cljs꞉cljs.user꞉> 
+; [:dev] Build completed. (211 files, 1 compiled, 0 warnings, 0.09s)
+cljs꞉cljs.user꞉> 
+; Evaluating file: user.cljc
+✅:enabled
+clj꞉user꞉> 
+; Evaluating file: rules.cljc
+; Execution error (IllegalArgumentException) at pondermatic.flow/run$fn (flow.cljc:24).
+; No matching field found: stack for class clojure.lang.ArityException
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.21s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+; Execution error (IllegalArgumentException) at pondermatic.flow/run$fn (flow.cljc:24).
+; No matching field found: stack for class clojure.lang.ArityException
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x6a28a2e9 "missionary.impl.Mailbox$Port@6a28a2e9"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x2b078115 "missionary.impl.Propagator$Publisher@2b078115"]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.23s)
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.12s)
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.18s)
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.14s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+; Syntax error compiling at (src/pondermatic/rules.cljc:71:1).
+; No such var: f/drain-using
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x5da085c2 "missionary.impl.Mailbox$Port@5da085c2"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x31c0eac1 "missionary.impl.Propagator$Publisher@31c0eac1"]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.14s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+:hyperfiddle.rcf/timeout
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.15s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x34d7e1ee "missionary.impl.Mailbox$Port@34d7e1ee"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x4e83f23b "missionary.impl.Propagator$Publisher@4e83f23b"]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.17s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+❌ FAIL in () (rules.cljc:72)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0xd0e1d27 "missionary.impl.Mailbox$Port@d0e1d27"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x13952e0 "missionary.impl.Propagator$Publisher@13952e0"]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.20s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+❌ FAIL in () (rules.cljc:72)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+❌ FAIL in () (rules.cljc:72)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+:hyperfiddle.rcf/timeout
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.23s)
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.22s)
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.17s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+; Execution error (ArityException) at missionary.impl.Propagator/propagate (Propagator.java:193).
+; Wrong number of args (0) passed to: pondermatic.flow/run/fn--54128
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.27s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Connecting using "undefined" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Aborting connect, error determining connect sequence.
+; Evaluating file: rules.cljc
+; Execution error (ArityException) at missionary.impl.Propagator/propagate (Propagator.java:193).
+; Wrong number of args (0) passed to: pondermatic.flow/run/fn--54477
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+*e
+#error {
+ :cause "Wrong number of args (0) passed to: pondermatic.flow/run/fn--54477"
+ :via
+ [{:type clojure.lang.Compiler$CompilerException
+   :message "Syntax error macroexpanding at (/Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/rules.cljc:72:1)."
+   :data #:clojure.error{:phase :execution, :line 72, :column 1, :source "/Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/rules.cljc"}
+   :at [clojure.lang.Compiler load "Compiler.java" 7665]}
+  {:type clojure.lang.ArityException
+   :message "Wrong number of args (0) passed to: pondermatic.flow/run/fn--54477"
+   :at [clojure.lang.AFn throwArity "AFn.java" 429]}]
+ :trace
+ [[clojure.lang.AFn throwArity "AFn.java" 429]
+  [clojure.lang.AFn invoke "AFn.java" 28]
+  [missionary.impl.Propagator propagate "Propagator.java" 193]
+  [missionary.impl.Propagator exit "Propagator.java" 220]
+  [missionary.impl.Propagator sub "Propagator.java" 416]
+  [missionary.impl.Propagator$Publisher invoke "Propagator.java" 55]
+  [pondermatic.flow$run invokeStatic "flow.cljc" 22]
+  [pondermatic.flow$run invoke "flow.cljc" 21]
+  [pondermatic.flow$drain_using invokeStatic "flow.cljc" 30]
+  [pondermatic.flow$drain_using invoke "flow.cljc" 29]
+  [pondermatic.rules$eval54600 invokeStatic "rules.cljc" 72]
+  [pondermatic.rules$eval54600 invoke "rules.cljc" 72]
+  [clojure.lang.Compiler eval "Compiler.java" 7194]
+  [clojure.lang.Compiler load "Compiler.java" 7653]
+  [user$eval54507 invokeStatic "NO_SOURCE_FILE" 1]
+  [user$eval54507 invoke "NO_SOURCE_FILE" 1]
+  [clojure.lang.Compiler eval "Compiler.java" 7194]
+  [clojure.lang.Compiler eval "Compiler.java" 7149]
+  [clojure.core$eval invokeStatic "core.clj" 3215]
+  [clojure.core$eval invoke "core.clj" 3211]
+  [nrepl.middleware.interruptible_eval$evaluate$fn__1265$fn__1266 invoke "interruptible_eval.clj" 87]
+  [clojure.lang.AFn applyToHelper "AFn.java" 152]
+  [clojure.lang.AFn applyTo "AFn.java" 144]
+  [clojure.core$apply invokeStatic "core.clj" 667]
+  [clojure.core$with_bindings_STAR_ invokeStatic "core.clj" 1990]
+  [clojure.core$with_bindings_STAR_ doInvoke "core.clj" 1990]
+  [clojure.lang.RestFn invoke "RestFn.java" 425]
+  [nrepl.middleware.interruptible_eval$evaluate$fn__1265 invoke "interruptible_eval.clj" 87]
+  [clojure.main$repl$read_eval_print__9206$fn__9209 invoke "main.clj" 437]
+  [clojure.main$repl$read_eval_print__9206 invoke "main.clj" 437]
+  [clojure.main$repl$fn__9215 invoke "main.clj" 458]
+  [clojure.main$repl invokeStatic "main.clj" 458]
+  [clojure.main$repl doInvoke "main.clj" 368]
+  [clojure.lang.RestFn invoke "RestFn.java" 1523]
+  [nrepl.middleware.interruptible_eval$evaluate invokeStatic "interruptible_eval.clj" 84]
+  [nrepl.middleware.interruptible_eval$evaluate invoke "interruptible_eval.clj" 56]
+  [nrepl.middleware.interruptible_eval$interruptible_eval$fn__1298$fn__1302 invoke "interruptible_eval.clj" 152]
+  [clojure.lang.AFn run "AFn.java" 22]
+  [nrepl.middleware.session$session_exec$main_loop__1368$fn__1372 invoke "session.clj" 218]
+  [nrepl.middleware.session$session_exec$main_loop__1368 invoke "session.clj" 217]
+  [clojure.lang.AFn run "AFn.java" 22]
+  [java.lang.Thread run "Thread.java" 1589]]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.22s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.flow꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.17s)
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+; Execution error (ArityException) at missionary.impl.Propagator/propagate (Propagator.java:193).
+; Wrong number of args (0) passed to: pondermatic.flow/run/fn--54826
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: shell.cljc
+#'pondermatic.shell/|<=
+clj꞉pondermatic.shell꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.shell꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.18s)
+clj꞉pondermatic.shell꞉> 
+; Evaluating file: rules.cljc
+; Execution error (ArityException) at missionary.impl.Propagator/propagate (Propagator.java:193).
+; Wrong number of args (0) passed to: pondermatic.flow/run/fn--54826
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+; Syntax error compiling at (src/pondermatic/rules.cljc:72:5).
+; Unable to resolve symbol: session in this context
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+{:old [], :new [], :edits []}
+; Execution error (ArityException) at missionary.impl.Propagator/propagate (Propagator.java:193).
+; Wrong number of args (0) passed to: pondermatic.flow/run/fn--54826
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.16s)
+clj꞉pondermatic.rules꞉> 
+*e
+#error {
+ :cause "Wrong number of args (0) passed to: pondermatic.flow/run/fn--54826"
+ :via
+ [{:type clojure.lang.Compiler$CompilerException
+   :message "Syntax error macroexpanding at (/Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/rules.cljc:71:4)."
+   :data #:clojure.error{:phase :execution, :line 71, :column 4, :source "/Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/rules.cljc"}
+   :at [clojure.lang.Compiler load "Compiler.java" 7665]}
+  {:type clojure.lang.ArityException
+   :message "Wrong number of args (0) passed to: pondermatic.flow/run/fn--54826"
+   :at [clojure.lang.AFn throwArity "AFn.java" 429]}]
+ :trace
+ [[clojure.lang.AFn throwArity "AFn.java" 429]
+  [clojure.lang.AFn invoke "AFn.java" 28]
+  [missionary.impl.Propagator propagate "Propagator.java" 193]
+  [missionary.impl.Propagator exit "Propagator.java" 220]
+  [missionary.impl.Propagator sub "Propagator.java" 416]
+  [missionary.impl.Propagator$Publisher invoke "Propagator.java" 55]
+  [pondermatic.flow$run invokeStatic "flow.cljc" 22]
+  [pondermatic.flow$run invoke "flow.cljc" 21]
+  [pondermatic.flow$drain_using invokeStatic "flow.cljc" 30]
+  [pondermatic.flow$drain_using invoke "flow.cljc" 29]
+  [pondermatic.rules$eval55585 invokeStatic "rules.cljc" 74]
+  [pondermatic.rules$eval55585 invoke "rules.cljc" 71]
+  [clojure.lang.Compiler eval "Compiler.java" 7194]
+  [clojure.lang.Compiler load "Compiler.java" 7653]
+  [user$eval55498 invokeStatic "NO_SOURCE_FILE" 1]
+  [user$eval55498 invoke "NO_SOURCE_FILE" 1]
+  [clojure.lang.Compiler eval "Compiler.java" 7194]
+  [clojure.lang.Compiler eval "Compiler.java" 7149]
+  [clojure.core$eval invokeStatic "core.clj" 3215]
+  [clojure.core$eval invoke "core.clj" 3211]
+  [nrepl.middleware.interruptible_eval$evaluate$fn__1265$fn__1266 invoke "interruptible_eval.clj" 87]
+  [clojure.lang.AFn applyToHelper "AFn.java" 152]
+  [clojure.lang.AFn applyTo "AFn.java" 144]
+  [clojure.core$apply invokeStatic "core.clj" 667]
+  [clojure.core$with_bindings_STAR_ invokeStatic "core.clj" 1990]
+  [clojure.core$with_bindings_STAR_ doInvoke "core.clj" 1990]
+  [clojure.lang.RestFn invoke "RestFn.java" 425]
+  [nrepl.middleware.interruptible_eval$evaluate$fn__1265 invoke "interruptible_eval.clj" 87]
+  [clojure.main$repl$read_eval_print__9206$fn__9209 invoke "main.clj" 437]
+  [clojure.main$repl$read_eval_print__9206 invoke "main.clj" 437]
+  [clojure.main$repl$fn__9215 invoke "main.clj" 458]
+  [clojure.main$repl invokeStatic "main.clj" 458]
+  [clojure.main$repl doInvoke "main.clj" 368]
+  [clojure.lang.RestFn invoke "RestFn.java" 1523]
+  [nrepl.middleware.interruptible_eval$evaluate invokeStatic "interruptible_eval.clj" 84]
+  [nrepl.middleware.interruptible_eval$evaluate invoke "interruptible_eval.clj" 56]
+  [nrepl.middleware.interruptible_eval$interruptible_eval$fn__1298$fn__1302 invoke "interruptible_eval.clj" 152]
+  [clojure.lang.AFn run "AFn.java" 22]
+  [nrepl.middleware.session$session_exec$main_loop__1368$fn__1372 invoke "session.clj" 218]
+  [nrepl.middleware.session$session_exec$main_loop__1368 invoke "session.clj" 217]
+  [clojure.lang.AFn run "AFn.java" 22]
+  [java.lang.Thread run "Thread.java" 1589]]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.20s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+; Execution error (ArityException) at missionary.impl.Propagator/propagate (Propagator.java:193).
+; Wrong number of args (0) passed to: pondermatic.flow/run/fn--54826
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+*e
+#error {
+ :cause "Wrong number of args (0) passed to: pondermatic.flow/run/fn--54826"
+ :via
+ [{:type clojure.lang.Compiler$CompilerException
+   :message "Syntax error macroexpanding at (/Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/rules.cljc:71:1)."
+   :data #:clojure.error{:phase :execution, :line 71, :column 1, :source "/Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/rules.cljc"}
+   :at [clojure.lang.Compiler load "Compiler.java" 7665]}
+  {:type clojure.lang.ArityException
+   :message "Wrong number of args (0) passed to: pondermatic.flow/run/fn--54826"
+   :at [clojure.lang.AFn throwArity "AFn.java" 429]}]
+ :trace
+ [[clojure.lang.AFn throwArity "AFn.java" 429]
+  [clojure.lang.AFn invoke "AFn.java" 28]
+  [missionary.impl.Propagator propagate "Propagator.java" 193]
+  [missionary.impl.Propagator exit "Propagator.java" 220]
+  [missionary.impl.Propagator sub "Propagator.java" 416]
+  [missionary.impl.Propagator$Publisher invoke "Propagator.java" 55]
+  [pondermatic.flow$run invokeStatic "flow.cljc" 22]
+  [pondermatic.flow$run invoke "flow.cljc" 21]
+  [pondermatic.flow$drain_using invokeStatic "flow.cljc" 30]
+  [pondermatic.flow$drain_using invoke "flow.cljc" 29]
+  [pondermatic.rules$eval55819 invokeStatic "rules.cljc" 71]
+  [pondermatic.rules$eval55819 invoke "rules.cljc" 71]
+  [clojure.lang.Compiler eval "Compiler.java" 7194]
+  [clojure.lang.Compiler load "Compiler.java" 7653]
+  [user$eval55726 invokeStatic "NO_SOURCE_FILE" 1]
+  [user$eval55726 invoke "NO_SOURCE_FILE" 1]
+  [clojure.lang.Compiler eval "Compiler.java" 7194]
+  [clojure.lang.Compiler eval "Compiler.java" 7149]
+  [clojure.core$eval invokeStatic "core.clj" 3215]
+  [clojure.core$eval invoke "core.clj" 3211]
+  [nrepl.middleware.interruptible_eval$evaluate$fn__1265$fn__1266 invoke "interruptible_eval.clj" 87]
+  [clojure.lang.AFn applyToHelper "AFn.java" 152]
+  [clojure.lang.AFn applyTo "AFn.java" 144]
+  [clojure.core$apply invokeStatic "core.clj" 667]
+  [clojure.core$with_bindings_STAR_ invokeStatic "core.clj" 1990]
+  [clojure.core$with_bindings_STAR_ doInvoke "core.clj" 1990]
+  [clojure.lang.RestFn invoke "RestFn.java" 425]
+  [nrepl.middleware.interruptible_eval$evaluate$fn__1265 invoke "interruptible_eval.clj" 87]
+  [clojure.main$repl$read_eval_print__9206$fn__9209 invoke "main.clj" 437]
+  [clojure.main$repl$read_eval_print__9206 invoke "main.clj" 437]
+  [clojure.main$repl$fn__9215 invoke "main.clj" 458]
+  [clojure.main$repl invokeStatic "main.clj" 458]
+  [clojure.main$repl doInvoke "main.clj" 368]
+  [clojure.lang.RestFn invoke "RestFn.java" 1523]
+  [nrepl.middleware.interruptible_eval$evaluate invokeStatic "interruptible_eval.clj" 84]
+  [nrepl.middleware.interruptible_eval$evaluate invoke "interruptible_eval.clj" 56]
+  [nrepl.middleware.interruptible_eval$interruptible_eval$fn__1298$fn__1302 invoke "interruptible_eval.clj" 152]
+  [clojure.lang.AFn run "AFn.java" 22]
+  [nrepl.middleware.session$session_exec$main_loop__1368$fn__1372 invoke "session.clj" 218]
+  [nrepl.middleware.session$session_exec$main_loop__1368 invoke "session.clj" 217]
+  [clojure.lang.AFn run "AFn.java" 22]
+  [java.lang.Thread run "Thread.java" 1589]]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.16s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+#object[missionary.impl.Propagator$Publisher 0x3c736188 "missionary.impl.Propagator$Publisher@3c736188"]
+#object[missionary.impl.Propagator$Publisher 0x55597b66 "missionary.impl.Propagator$Publisher@55597b66"]
+; Execution error (ArityException) at missionary.impl.Propagator/propagate (Propagator.java:193).
+; Wrong number of args (0) passed to: pondermatic.flow/run/fn--56063
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.19s)
+; Evaluating file: flow.cljc
+clj꞉pondermatic.rules꞉> 
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+; Execution error (IllegalArgumentException) at pondermatic.flow/drain-using (flow.cljc:31).
+; Don't know how to create ISeq from: missionary.impl.Propagator$Publisher
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 4 compiled, 0 warnings, 0.14s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= {:old [], :new [], :edits []} nil))
+This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+:hyperfiddle.rcf/timeout
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.15s)
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.15s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= {:old [], :new [], :edits []} nil))
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+:hyperfiddle.rcf/timeout
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.15s)
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.12s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+:hyperfiddle.rcf/timeout
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.14s)
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.14s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+This will fire once
+; Execution error (ArityException) at pondermatic.rules/eval57659 (rules.cljc:71).
+; Wrong number of args (1) passed to: pondermatic.shell/|>
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.14s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+:hyperfiddle.rcf/timeout
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+:hyperfiddle.rcf/timeout
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.13s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x267c7bb "missionary.impl.Mailbox$Port@267c7bb"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x7d42a091 "missionary.impl.Propagator$Publisher@7d42a091"]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.12s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= {:old [], :new [], :edits []} nil))
+This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x4a779292 "missionary.impl.Mailbox$Port@4a779292"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x42c0b014 "missionary.impl.Propagator$Publisher@42c0b014"]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.16s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+✅This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x2a7c60c1 "missionary.impl.Mailbox$Port@2a7c60c1"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x32e01538 "missionary.impl.Propagator$Publisher@32e01538"]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.15s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+✅❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x796935e6 "missionary.impl.Mailbox$Port@796935e6"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x53420884 "missionary.impl.Propagator$Publisher@53420884"]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.17s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+✅✅This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x34ea2181 "missionary.impl.Mailbox$Port@34ea2181"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x2cbb999 "missionary.impl.Propagator$Publisher@2cbb999"]}
+clj꞉pondermatic.rules꞉> 
+; [:dev] Compiling ...
+clj꞉pondermatic.rules꞉> 
+; [:dev] Build completed. (211 files, 2 compiled, 0 warnings, 0.16s)
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--31739]
+#function[missionary.core/reduce/fn--31739]
+✅✅This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x4e9b857d "missionary.impl.Mailbox$Port@4e9b857d"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x1a191ca4 "missionary.impl.Propagator$Publisher@1a191ca4"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: user.cljc
+✅:enabled
+clj꞉user꞉> 
+nil
+clj꞉user꞉> 
+nil
+clj꞉user꞉> 
+nil
+clj꞉user꞉> 
+(p/open {:launcher :vs-code})
+{:session-id #uuid "9f45bbf0-3146-460a-a469-d3006ac40426"}
+clj꞉user꞉> 
+; Worker shutdown.
+clj꞉user꞉> 
+; nREPL Connection was closed
+; Jacking in...
+; Connecting using "deps.edn" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; clojure -Sdeps '{:deps {nrepl/nrepl {:mvn/version,"1.0.0"},cider/cider-nrepl {:mvn/version,"0.28.5"}}}' -M:dev -m nrepl.cmdline --middleware "[cider.nrepl/cider-middleware]" ; popd
+; Using host:port localhost:59885 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; TIPS:
+;   - You can edit the contents here. Use it as a REPL if you like.
+;   - `alt+enter` evaluates the current top level form.
+;   - `ctrl+enter` evaluates the current form.
+;   - `alt+up` and `alt+down` traverse up and down the REPL command history
+;      when the cursor is after the last contents at the prompt
+;   - Clojure lines in stack traces are peekable and clickable.
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉user꞉> 
+clj꞉user꞉> 
+; Jack-in done.
+clj꞉user꞉> 
+; Evaluating file: user.cljc
+✅:enabled
+clj꞉user꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+✅❌ FAIL in () (rules.cljc:71)
+expected: (= % :hyperfiddle.rcf/timeout)
+  actual: (not (= {:old [], :new [], :edits []} :hyperfiddle.rcf/timeout))
+This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= {:old [], :new [], :edits []} nil))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x94b9832 "missionary.impl.Mailbox$Port@94b9832"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x4e8d3fb4 "missionary.impl.Propagator$Publisher@4e8d3fb4"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:71)
+expected: (= % :hyperfiddle.rcf/timeout)
+  actual: (not (= {:old [], :new [], :edits []} :hyperfiddle.rcf/timeout))
+✅✅This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x54b142aa "missionary.impl.Mailbox$Port@54b142aa"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x30d1c6b5 "missionary.impl.Propagator$Publisher@30d1c6b5"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+✅❌ FAIL in () (rules.cljc:71)
+expected: (= % :hyperfiddle.rcf/timeout)
+  actual: (not (= {:old [], :new [], :edits []} :hyperfiddle.rcf/timeout))
+This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= {:old [], :new [], :edits []} nil))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x3d1073dc "missionary.impl.Mailbox$Port@3d1073dc"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0xf590a9d "missionary.impl.Propagator$Publisher@f590a9d"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:71)
+expected: (= % {:old [], :new [], :edits []})
+  actual: (not (= [] {:old [], :new [], :edits []}))
+✅This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x725343c7 "missionary.impl.Mailbox$Port@725343c7"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x33d0c437 "missionary.impl.Propagator$Publisher@33d0c437"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+✅This will fire once
+❌ FAIL in () (rules.cljc:71)
+expected: (= % nil)
+  actual: (not (= [] nil))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x761a28e4 "missionary.impl.Mailbox$Port@761a28e4"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x1f919f0c "missionary.impl.Propagator$Publisher@1f919f0c"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+✅This will fire once
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x645867a5 "missionary.impl.Mailbox$Port@645867a5"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0xa2f2f67 "missionary.impl.Propagator$Publisher@a2f2f67"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+✅This will fire once
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [#:pondermatic.rules{:x 3, :y -1, :z 0}])
+  actual: (not (= :hyperfiddle.rcf/timeout [#:pondermatic.rules{:x 3, :y -1, :z 0}]))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x5065eab "missionary.impl.Mailbox$Port@5065eab"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x4282ecae "missionary.impl.Propagator$Publisher@4282ecae"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+#object[missionary.impl.Propagator$Publisher 0x79e3b425 "missionary.impl.Propagator$Publisher@79e3b425"]
+#object[missionary.impl.Propagator$Publisher 0x1259e27d "missionary.impl.Propagator$Publisher@1259e27d"]
+; Execution error (ArityException) at missionary.impl.Propagator/propagate (Propagator.java:193).
+; Wrong number of args (0) passed to: pondermatic.flow/run/fn--33474
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [#:pondermatic.rules{:x 3, :y -1, :z 0}])
+  actual: (not (= :hyperfiddle.rcf/timeout [#:pondermatic.rules{:x 3, :y -1, :z 0}]))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x6890b1c5 "missionary.impl.Mailbox$Port@6890b1c5"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x47e64273 "missionary.impl.Propagator$Publisher@47e64273"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [#:pondermatic.rules{:x 3, :y -1, :z 0}])
+  actual: (not (= :hyperfiddle.rcf/timeout [#:pondermatic.rules{:x 3, :y -1, :z 0}]))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x68d35527 "missionary.impl.Mailbox$Port@68d35527"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x283421b0 "missionary.impl.Propagator$Publisher@283421b0"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: db.cljc
+#'scratch.db/transact*
+clj꞉scratch.db꞉> 
+; Evaluating file: shell.cljc
+#'pondermatic.shell/|<=
+clj꞉pondermatic.shell꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [])
+  actual: (not (= #object["[Ljava.lang.Object;" 0x29565248 "[Ljava.lang.Object;@29565248"] []))
+This will fire once
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [#:pondermatic.rules{:x 3, :y -1, :z 0}])
+  actual: (not (= :hyperfiddle.rcf/timeout [#:pondermatic.rules{:x 3, :y -1, :z 0}]))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x4880464e "missionary.impl.Mailbox$Port@4880464e"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x128b63f0 "missionary.impl.Propagator$Publisher@128b63f0"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: production.cljc
+✅1
+clj꞉pondermatic.rules.production꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [])
+  actual: (not (= #object["[Ljava.lang.Object;" 0x5c34fd60 "[Ljava.lang.Object;@5c34fd60"] []))
+This will fire once
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [#:pondermatic.rules{:x 3, :y -1, :z 0}])
+  actual: (not (= :hyperfiddle.rcf/timeout [#:pondermatic.rules{:x 3, :y -1, :z 0}]))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x5dff0bd8 "missionary.impl.Mailbox$Port@5dff0bd8"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x4f50433d "missionary.impl.Propagator$Publisher@4f50433d"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: shell.cljc
+#'pondermatic.shell/|<=
+clj꞉pondermatic.shell꞉> 
+; Evaluating file: shell.cljc
+#'pondermatic.shell/|<=
+clj꞉pondermatic.shell꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [#:pondermatic.rules{:x 3, :y -1, :z 0}])
+  actual: (not (= :hyperfiddle.rcf/timeout [#:pondermatic.rules{:x 3, :y -1, :z 0}]))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x2d188b6 "missionary.impl.Mailbox$Port@2d188b6"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x1751824f "missionary.impl.Propagator$Publisher@1751824f"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:72)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+❌ FAIL in () (rules.cljc:72)
+expected: (= % [#:pondermatic.rules{:x 3, :y -1, :z 0}])
+  actual: (not (= :hyperfiddle.rcf/timeout [#:pondermatic.rules{:x 3, :y -1, :z 0}]))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x53144e99 "missionary.impl.Mailbox$Port@53144e99"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x708074d9 "missionary.impl.Propagator$Publisher@708074d9"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+✅This will fire once
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [#:pondermatic.rules{:x 3, :y -1, :z 0}])
+  actual: (not (= :hyperfiddle.rcf/timeout [#:pondermatic.rules{:x 3, :y -1, :z 0}]))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x4a3e8dd1 "missionary.impl.Mailbox$Port@4a3e8dd1"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x4b60c1b6 "missionary.impl.Propagator$Publisher@4b60c1b6"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+✅This will fire once
+✅✅#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x6f688ada "missionary.impl.Mailbox$Port@6f688ada"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x6dcae2f3 "missionary.impl.Propagator$Publisher@6dcae2f3"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+✅This will fire once
+✅❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x52c69cc9 "missionary.impl.Mailbox$Port@52c69cc9"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x31b1de5 "missionary.impl.Propagator$Publisher@31b1de5"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x932b7da "missionary.impl.Mailbox$Port@932b7da"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x718ca04c "missionary.impl.Propagator$Publisher@718ca04c"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x7cca7e0a "missionary.impl.Mailbox$Port@7cca7e0a"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x4f481c7a "missionary.impl.Propagator$Publisher@4f481c7a"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x700f5928 "missionary.impl.Mailbox$Port@700f5928"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x26c1e277 "missionary.impl.Propagator$Publisher@26c1e277"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x5e1bf46e "missionary.impl.Mailbox$Port@5e1bf46e"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x610894be "missionary.impl.Propagator$Publisher@610894be"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+❌ FAIL in () (rules.cljc:73)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x45d3e3ba "missionary.impl.Mailbox$Port@45d3e3ba"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x504e263e "missionary.impl.Propagator$Publisher@504e263e"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+; Syntax error compiling at (src/pondermatic/rules.cljc:73:1).
+; No such namespace: b
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+; Syntax error compiling at (src/pondermatic/rules.cljc:73:1).
+; No such namespace: m
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+; Execution error (ClassCastException) at missionary.core/buffer (core.cljc:679).
+; class missionary.core$e__12474$fn__12475 cannot be cast to class java.lang.Number (missionary.core$e__12474$fn__12475 is in unnamed module of loader clojure.lang.DynamicClassLoader @5f9df9c3; java.lang.Number is in module java.base of loader 'bootstrap')
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x2a8881f5 "missionary.impl.Mailbox$Port@2a8881f5"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x31744934 "missionary.impl.Propagator$Publisher@31744934"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x3dcd3109 "missionary.impl.Mailbox$Port@3dcd3109"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x3dc146e4 "missionary.impl.Propagator$Publisher@3dc146e4"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x2bdc403c "missionary.impl.Mailbox$Port@2bdc403c"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x6dd957a4 "missionary.impl.Propagator$Publisher@6dd957a4"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x4598fba4 "missionary.impl.Mailbox$Port@4598fba4"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x3cdf6d00 "missionary.impl.Propagator$Publisher@3cdf6d00"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x595e8527 "missionary.impl.Mailbox$Port@595e8527"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x7256a3da "missionary.impl.Propagator$Publisher@7256a3da"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: user.cljc
+✅:enabled
+clj꞉user꞉> 
+; Evaluating file: user.cljc
+✅:enabled
+clj꞉user꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x7f01e26b "missionary.impl.Mailbox$Port@7f01e26b"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x7c9b414 "missionary.impl.Propagator$Publisher@7c9b414"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x61f6a8c9 "missionary.impl.Mailbox$Port@61f6a8c9"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x3b63c3c2 "missionary.impl.Propagator$Publisher@3b63c3c2"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0xcf91d2b "missionary.impl.Mailbox$Port@cf91d2b"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x69cf1c69 "missionary.impl.Propagator$Publisher@69cf1c69"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x639df52c "missionary.impl.Mailbox$Port@639df52c"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x759da835 "missionary.impl.Propagator$Publisher@759da835"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x62b4304 "missionary.impl.Mailbox$Port@62b4304"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0xc60e838 "missionary.impl.Propagator$Publisher@c60e838"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x29d9f6be "missionary.impl.Mailbox$Port@29d9f6be"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x46eac158 "missionary.impl.Propagator$Publisher@46eac158"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x4005128c "missionary.impl.Mailbox$Port@4005128c"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x5137b7d7 "missionary.impl.Propagator$Publisher@5137b7d7"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+#function[missionary.core/reduce/fn--12463]
+#function[missionary.core/reduce/fn--12463]
+This will fire once
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x549ea686 "missionary.impl.Mailbox$Port@549ea686"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x5e0ed105 "missionary.impl.Propagator$Publisher@5e0ed105"]}
+clj꞉pondermatic.rules꞉> 
+; nREPL Connection was closed
+; Jacking in...
+; Connecting using "deps.edn" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+; Starting Jack-in Terminal: pushd /Users/bahulneel/Projects/TotalPerspective/pondermatic ; clojure -Sdeps '{:deps {nrepl/nrepl {:mvn/version,"1.0.0"},cider/cider-nrepl {:mvn/version,"0.28.5"}}}' -M:dev -m nrepl.cmdline --middleware "[cider.nrepl/cider-middleware]" ; popd
+; Using host:port localhost:55240 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; TIPS:
+;   - You can edit the contents here. Use it as a REPL if you like.
+;   - `alt+enter` evaluates the current top level form.
+;   - `ctrl+enter` evaluates the current form.
+;   - `alt+up` and `alt+down` traverse up and down the REPL command history
+;      when the cursor is after the last contents at the prompt
+;   - Clojure lines in stack traces are peekable and clickable.
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉user꞉> 
+clj꞉user꞉> 
+; Jack-in done.
+clj꞉user꞉> 
+; Evaluating file: user.cljc
+✅:enabled
+clj꞉user꞉> 
+; Evaluating file: rules.cljc
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x624908e5 "missionary.impl.Mailbox$Port@624908e5"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x4b1b228d "missionary.impl.Propagator$Publisher@4b1b228d"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x581fabb4 "missionary.impl.Mailbox$Port@581fabb4"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x70c0431c "missionary.impl.Propagator$Publisher@70c0431c"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: flow.cljc
+#'pondermatic.flow/diff
+clj꞉pondermatic.flow꞉> 
+; Evaluating file: rules.cljc
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x6d86fe51 "missionary.impl.Mailbox$Port@6d86fe51"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x32330889 "missionary.impl.Propagator$Publisher@32330889"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x74c31b52 "missionary.impl.Mailbox$Port@74c31b52"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x6e0a6b57 "missionary.impl.Propagator$Publisher@6e0a6b57"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+[]
+This will fire once
+[[1 :pondermatic.rules/x 3] [1 :pondermatic.rules/y -1] [1 :pondermatic.rules/z 0]]
+This will fire twice
+This will fire once
+[[1 :pondermatic.rules/x 3] [1 :pondermatic.rules/y -1] [1 :pondermatic.rules/z 0] [2 :pondermatic.rules/x 10] [2 :pondermatic.rules/y 2] [2 :pondermatic.rules/z 1]]
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+[[1 :pondermatic.rules/x 3] [1 :pondermatic.rules/z 0] [3 :pondermatic.rules/x 7] [1 :pondermatic.rules/y -1] [3 :pondermatic.rules/y 1] [2 :pondermatic.rules/x 10] [2 :pondermatic.rules/z 1] [3 :pondermatic.rules/z 2] [2 :pondermatic.rules/y 2]]
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+[[1 :pondermatic.rules/x 3] [1 :pondermatic.rules/z 4] [3 :pondermatic.rules/x 7] [1 :pondermatic.rules/y -1] [3 :pondermatic.rules/y 1] [2 :pondermatic.rules/x 10] [2 :pondermatic.rules/z 5] [3 :pondermatic.rules/z 6] [2 :pondermatic.rules/y 2]]
+This will fire once
+[[1 :pondermatic.rules/z 4] [3 :pondermatic.rules/x 7] [1 :pondermatic.rules/y -1] [3 :pondermatic.rules/y 1] [2 :pondermatic.rules/x 10] [2 :pondermatic.rules/z 5] [3 :pondermatic.rules/z 6] [2 :pondermatic.rules/y 2]]
+This will fire once
+[[3 :pondermatic.rules/x 7] [3 :pondermatic.rules/y 1] [3 :pondermatic.rules/z 6]]
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x1537090f "missionary.impl.Mailbox$Port@1537090f"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x54d3ad22 "missionary.impl.Propagator$Publisher@54d3ad22"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x3c5873c4 "missionary.impl.Mailbox$Port@3c5873c4"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x586e778a "missionary.impl.Propagator$Publisher@586e778a"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= [[1 :pondermatic.rules/x 3] [1 :pondermatic.rules/y -1] [1 :pondermatic.rules/z 0]] []))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x5b9ffbe4 "missionary.impl.Mailbox$Port@5b9ffbe4"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x2b5b34ab "missionary.impl.Propagator$Publisher@2b5b34ab"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x49471bb "missionary.impl.Mailbox$Port@49471bb"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x5f9e720d "missionary.impl.Propagator$Publisher@5f9e720d"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= [{:id 2, :x 10, :y 2, :z 1}] []))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x208ffaae "missionary.impl.Mailbox$Port@208ffaae"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x6e00f66b "missionary.impl.Propagator$Publisher@6e00f66b"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+✅This will fire twice
+This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [{:id 2, :x 10, :y 2, :z 1}])
+  actual: (not (= :hyperfiddle.rcf/timeout [{:id 2, :x 10, :y 2, :z 1}]))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x2f23a36 "missionary.impl.Mailbox$Port@2f23a36"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x4adfbf0b "missionary.impl.Propagator$Publisher@4adfbf0b"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x289fddda "missionary.impl.Mailbox$Port@289fddda"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x539d654d "missionary.impl.Propagator$Publisher@539d654d"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+; Execution error (ArityException) at pondermatic.rules/eval33974 (rules.cljc:74).
+; Wrong number of args (3) passed to: pondermatic.shell/|>
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x333b924c "missionary.impl.Mailbox$Port@333b924c"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x26464278 "missionary.impl.Propagator$Publisher@26464278"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [{:id 2, :x 10, :y 2, :z 1}])
+  actual: (not (= :hyperfiddle.rcf/timeout [{:id 2, :x 10, :y 2, :z 1}]))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x397171bb "missionary.impl.Mailbox$Port@397171bb"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x4342cd65 "missionary.impl.Propagator$Publisher@4342cd65"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [{:id 3, :x 7, :y 1, :z 2}])
+  actual: (not (= [{:id 2, :x 10, :y 2, :z 1} {:id 3, :x 7, :y 1, :z 2}] [{:id 3, :x 7, :y 1, :z 2}]))
+This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x2f83a9e3 "missionary.impl.Mailbox$Port@2f83a9e3"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x5e709ae5 "missionary.impl.Propagator$Publisher@5e709ae5"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x761b0624 "missionary.impl.Mailbox$Port@761b0624"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x6d1b85ac "missionary.impl.Propagator$Publisher@6d1b85ac"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire twice
+This will fire twice
+This will fire once
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0xb37722a "missionary.impl.Mailbox$Port@b37722a"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x3f718257 "missionary.impl.Propagator$Publisher@3f718257"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= [{:id 2, :x 10, :y 2, :z 5} {:id 3, :x 7, :y 1, :z 6}] []))
+This will fire once
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x69f0c21e "missionary.impl.Mailbox$Port@69f0c21e"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x27be2858 "missionary.impl.Propagator$Publisher@27be2858"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x16adece5 "missionary.impl.Mailbox$Port@16adece5"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x377766fb "missionary.impl.Propagator$Publisher@377766fb"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+❌ FAIL in () (rules.cljc:74)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x108ad340 "missionary.impl.Mailbox$Port@108ad340"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x1b91952f "missionary.impl.Propagator$Publisher@1b91952f"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+❌ FAIL in () (rules.cljc:77)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x402b6c54 "missionary.impl.Mailbox$Port@402b6c54"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x76a793d3 "missionary.impl.Propagator$Publisher@76a793d3"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+❌ FAIL in () (rules.cljc:77)
+expected: (= % [])
+  actual: (not (= :hyperfiddle.rcf/timeout []))
+This will fire once
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x6c6b778e "missionary.impl.Mailbox$Port@6c6b778e"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x5df71e67 "missionary.impl.Propagator$Publisher@5df71e67"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+This will fire once
+❌ FAIL in () (rules.cljc:77)
+expected: (= % [])
+  actual: (not (= [{:id 3, :x 7, :y 1, :z 6}] []))
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x5cc1cef0 "missionary.impl.Mailbox$Port@5cc1cef0"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x7dd6c8cc "missionary.impl.Propagator$Publisher@7dd6c8cc"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+This will fire once
+❌ FAIL in () (rules.cljc:77)
+expected: (= % [[{:id 3, :x 7, :y 1, :z 6}]])
+  actual: (not (= [{:id 3, :x 7, :y 1, :z 6}] [[{:id 3, :x 7, :y 1, :z 6}]]))
+:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x50709422 "missionary.impl.Mailbox$Port@50709422"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x5753d927 "missionary.impl.Propagator$Publisher@5753d927"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+This will fire once
+✅:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x4b26a0f1 "missionary.impl.Mailbox$Port@4b26a0f1"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x11b634eb "missionary.impl.Propagator$Publisher@11b634eb"]}
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+This will fire once
+✅:pondermatic.shell/done
+❌ FAIL in () (rules.cljc:77)
+expected: (= % nil)
+  actual: (not (= :hyperfiddle.rcf/timeout nil))
+:hyperfiddle.rcf/timeout
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+This will fire once
+✅:pondermatic.shell/done
+; Execution error (ArityException) at pondermatic.rules/eval36064 (rules.cljc:77).
+; Wrong number of args (2) passed to: missionary.impl.Reduce/Process
+; Evaluation of file rules.cljc failed: class clojure.lang.Compiler$CompilerException
+clj꞉pondermatic.rules꞉> 
+; Evaluating file: rules.cljc
+✅This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire once
+✅This will fire twice
+This will fire once
+This will fire twice
+This will fire twice
+This will fire once
+✅This will fire once
+This will fire once
+✅:pondermatic.shell/done
+#:pondermatic.shell{:send #object[missionary.impl.Mailbox$Port 0x5e7508ae "missionary.impl.Mailbox$Port@5e7508ae"],
+                    :receive
+                    #object[missionary.impl.Propagator$Publisher 0x59212396 "missionary.impl.Propagator$Publisher@59212396"]}
+clj꞉pondermatic.rules꞉> 
