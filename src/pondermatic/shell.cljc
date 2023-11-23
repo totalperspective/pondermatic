@@ -40,21 +40,29 @@
 
 (def done ::done)
 
-(defn |> [{:keys [::send] :as a} msg]
+(defn ^:export |> [{:keys [::send] :as a} msg]
   (if send
     (do
       (send msg)
       a)
     (throw (ex-info "Not a valid actor" {:actor a}))))
 
-(defn |< [{:keys [::receive] :as a} create-flow]
+(defn ^:export |< [{:keys [::receive] :as a} create-flow]
   (if receive
     (create-flow receive)
     (m/ap
      (m/amb nil)
      (throw (ex-info "Not a valid actor" {:actor a})))))
 
-(defn |<= [& xf*]
+(defn ^:export >< [flow]
+  (->> flow
+       (m/eduction (take 1))
+       (m/reduce f/latest)))
+
+(defn ^:export |>< [a flow]
+  (>< (|< a flow)))
+
+(defn ^:export |<= [& xf*]
   (fn [& arg*]
     (->> arg*
          (into (vec xf*))

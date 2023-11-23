@@ -1,6 +1,5 @@
 (ns pondermatic.flow
   (:require [missionary.core :as m]
-            [clojure.string :as str]
             [editscript.core :as es]))
 
 (defn crash [e]                                ;; let it crash philosophy
@@ -19,31 +18,31 @@
      (tap x)
      x)))
 
-(defn tap [prefix]
+(defn ^:export tap [prefix]
   (tapper
-   (fn [x]
+   (fn [x _]
      (when prefix
        (tap> (with-meta {prefix x}
                {:portal.viewer/default :portal.viewer/inspector}))))))
 
-(defn run [task]
+(defn ^:export run [task]
   (task #(tap> {"Success" %})
         #(tap> {"Error" %})))
 
-(defn counter [r _] (inc r))    ;; A reducing function counting the number of items.
+(defn ^:export counter [r _] (inc r))    ;; A reducing function counting the number of items.
 
-(defn latest [p n] (or n p))
+(defn ^:export latest [p n] (or n p))
 
-(defn drain-using [flow tap]
+(defn ^:export drain-using [flow tap]
   (run (m/reduce tap flow)))
 
-(defn drain
+(defn ^:export drain
   ([flow]
    (drain flow nil))
   ([flow prefix]
    (drain-using flow (tap prefix))))
 
-(defn diff [flow]
+(defn ^:export diff [flow]
   (->> flow
        (m/reductions (fn [[_ n-1] n]
                        [n-1 n])

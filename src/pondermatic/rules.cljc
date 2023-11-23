@@ -2,9 +2,7 @@
   (:require [odoyle.rules :as o]
             [pondermatic.shell :as a :refer [|> |< |<=]]
             [pondermatic.flow :as f]
-            [hyperfiddle.rcf :refer [tests %]]
-            [hyperfiddle.rcf :as rcf]
-            [missionary.core :as m]))
+            [hyperfiddle.rcf :as rcf :refer [tests %]]))
 
 (defn cmd-type
   [[cmd] _]
@@ -38,25 +36,25 @@
           session
           id:attrs))
 
-(defn add-rule [rule]
+(defn ^:export add-rule [rule]
   (list 'add-rule rule))
 
-(defn insert [id attr->val]
+(defn ^:export insert [id attr->val]
   (list 'insert id attr->val))
 
-(defn insert* [id:attr->vals]
+(defn ^:export insert* [id:attr->vals]
   (list 'insert* id:attr->vals))
 
-(defn retract [id attr]
+(defn ^:export retract [id attr]
   (list 'retract id attr))
 
-(defn retract* [id:attrs]
+(defn ^:export retract* [id:attrs]
   (list 'retract* id:attrs))
 
-(def query-all (|<= (map #(o/query-all %))
-                    (dedupe)))
+(def ^:export query-all (|<= (map #(o/query-all %))
+                             (dedupe)))
 
-(defn query [rule-name]
+(defn ^:export query [rule-name]
   (|<= (map #(o/query-all % rule-name))
        (dedupe)))
 
@@ -69,7 +67,7 @@
        (exec cmd)
        o/fire-rules))
 
-(defn ->session []
+(defn ^:export ->session []
   (->> (o/->session)
        (a/engine process)
        a/actor))
@@ -87,13 +85,13 @@
                 [id ::y y]
                 [id ::z z]]
               :when
-              (fn [session {:keys [x y z] :as match}]
+              (fn [_ {:keys [x y z]}]
                 (and (pos? x) (pos? y) (pos? z)))
               :then
-              (fn [session match]
+              (fn [_ _]
                 (println "This will fire twice"))
               :then-finally
-              (fn [session]
+              (fn [_]
                 (println "This will fire once"))})]
 
    (rcf/set-timeout! 100)

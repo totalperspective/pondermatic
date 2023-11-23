@@ -1,34 +1,23 @@
 (ns pondermatic.rules.production
-  (:require [hyperfiddle.rcf :refer [tests tap %]]
+  (:require [hyperfiddle.rcf :refer [tests]]
             [meander.epsilon :as m]))
 
 (defn throwable? [e]
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
 
-(defn parse-pattern [pattern]
-  (let [parsed (m/rewrite
-                [pattern {::ident :id}]
+(defn parse-pattern [pattern opts]
+  (let [defaults {::identity :id}
+        env (merge defaults opts)
+        parsed (m/rewrite
+                [pattern env]
 
-                [{?ident ?id & ?rest} {::ident ?ident :as ?env}]
-                (m/cata [{& ?rest} {:id ?id & ?env}])
+                [(m/symbol _ (m/re #"^?.+") :as ?symbol) _]
+                {:tag :logic-variable
+                 :symbol ?symbol}
 
-                [{& (m/seqable [!as !vs] ...)} {:id (m/some ?id) & ?rest}]
-                (m/cata [([?id !as !vs] ...) {& ?rest}])
-
-                (m/and [{& ?rest} {::ident ?ident :as ?env}]
-                       (m/let [?id (gensym "?id")]))
-                (m/cata [{?ident ?id & ?rest} ?env])
-
-
-                [([?e ?a ?v] & ?rest) ?env]
-                [[?e ?a ?v] & (m/cata [(& ?rest) {::sub-clause true & ?env}])]
-
-                [?expr {::sub-clause true :as ?env}]
-                ?expr
-
-                (m/and [?expr ?env]
-                       (m/let [?e (ex-info "Failed to parse pattern" {:expr ?expr :env ?env})]))
-                ?e)]
+                [?value _]
+                {:tag :value
+                 :value ?value})]
     (if (throwable? parsed)
       (throw parsed)
       parsed)))
@@ -46,7 +35,7 @@
 
 (defn pattern->what [pattern]
   (-> pattern
-      parse-pattern
+      (parse-pattern {})
       compile-what))
 
 (tests

@@ -1,9 +1,11 @@
+
+
 (ns scratch.db
   (:import (missionary Cancelled))
   (:require [asami.core :as d]
             [asami.datom]
             [missionary.core :as m]
-            [clojure.core.protocols :as ccp :refer [nav]]
+            [clojure.core.protocols :as ccp]
             [clojure.datafy :refer [datafy]]))
 
 (extend-protocol ccp/Datafiable
@@ -13,6 +15,7 @@
 
 (def dbs (atom {}))
 
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defonce _ (add-watch d/connections ::dbs
                       (fn [_ _ old-v new-v]
                         (prn "Connection change" (keys old-v) (keys new-v))

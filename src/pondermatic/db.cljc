@@ -1,5 +1,6 @@
 (ns pondermatic.db
   (:require [asami.core :as d]
+            [asami.datom :as datom]
             [pondermatic.shell :as a :refer [|> |< |<=]]
             [pondermatic.flow :as f]))
 
@@ -12,21 +13,30 @@
       (d/connect)
       (d/transact tx)
       deref
+      (update :tx-data (partial mapv datom/as-vec))
       (assoc ::db-uri db-uri)))
 
-(defn ->conn [db-uri]
+(defn ^:export ->conn [db-uri]
   (->> db-uri
        (assoc {} ::db-uri)
        (a/engine transactor)
        a/actor))
 
-(defn q [query]
+(defn ^:export q [query]
   (|<= (map :db-after)
        (map (partial d/q query))))
 
-(defn run-test []
+(defn ^:export entity [id]
+  (|<= (map :db-after)
+       (map #(d/entity % id))))
+
+(defn ^:export upsert-name [attr]
+  (symbol (str attr "'")))
+
+(defn ^:export run-test []
   (let [conn (-> "test" name->mem-uri ->conn)
-        first-movies [{:movie/title "Explorers"
+        first-movies [{:db/ident :first
+                       :movie/title "Explorers"
                        :movie/genre "adventure/comedy/family"
                        :movie/release-year 1985}
                       {:movie/title "Demolition Man"

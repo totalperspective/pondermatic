@@ -1,0 +1,17 @@
+{:lint-as {hyperfiddle.rcf/tests clojure.core/do
+           meander.epsilon/let clojure.core/let
+           meander.epsilon/match clojure.core.match/match
+           meander.epsilon/rewrite clojure.core.match/match}
+ :linters {:redundant-expression {:level :off}
+           :redundant-do {:level :off}}
+ :config-in-call {meander.epsilon/rewrite
+                  {:ignore [:syntax :unused-binding]
+                   :linters {:unresolved-symbol {:exclude [(meander.epsilon/rewrite [&])]}
+                             :unresolved-var {:exclude [(meander.epsilon/rewrite [meander.epsilon/cata])]}}}
+                  hyperfiddle.rcf/tests
+                  {:linters {:unused-value {:level :off}
+                             :unresolved-symbol {:exclude [(hyperfiddle.rcf/tests [_ ?id ?a ?b ?c ?d])]}}}}
+ :ns-groups [{:pattern "scratch\\..*" :name scratch-group}]
+ :config-in-ns {scratch.db {:ignore true
+                            :linters {:unused-namespace {:level :off}
+                                      :clojure-lsp/unused-public-var {:level :off}}}}}
