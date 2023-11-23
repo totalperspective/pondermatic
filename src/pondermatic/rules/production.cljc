@@ -1,6 +1,7 @@
 (ns pondermatic.rules.production
   (:require [hyperfiddle.rcf :refer [tests]]
             [meander.epsilon :as m]
+            [clojure.edn :as edn]
             [sci.core :as sci]))
 
 (defn throwable? [e]
@@ -33,12 +34,12 @@
                        (m/let [?id (gensym "?id-")]))
                 (m/cata [{?identier ?id & ?m} ?env])
 
-                [(m/symbol _ (m/re #"^?.+") :as ?symbol) {:part :sub-clause}]
+                [(m/symbol _ (m/re #"^[?].+") :as ?symbol) {:part :sub-clause}]
                 {:tag :logic-variable
                  :symbol ?symbol}
 
                 (m/and [(m/pred string? ?attr-str) {:part :sub-clause :type :attr :as ?env}]
-                       (m/let [?attr (read-string ?attr-str)]))
+                       (m/let [?attr (edn/read-string ?attr-str)]))
                 (m/cata [?attr ?env])
 
                 [(?mod ?attr) {:part :sub-clause :type :attr :as ?env}]
@@ -164,6 +165,14 @@
                                                         :val {:tag :value
                                                               :value :val}}]}
 
+ (parse-pattern '{:id ?id :attr ?val} {}) := {:tag :join
+                                              :id '?id
+                                              :select [{:tag :project
+                                                        :attr {:tag :attribute
+                                                               :attribute :attr}
+                                                        :val {:tag :logic-variable
+                                                              :symbol '?val}}]}
+
  (parse-pattern '{:attr :val} {}) := {:tag :join
                                       :id ?id
                                       :select [{:tag :project
@@ -238,4 +247,5 @@
  (pattern->what '{:id ?id
                   "(not= :a)" ?a})
  := [['?id :a '?a {:then not=}]]
+
  nil)
