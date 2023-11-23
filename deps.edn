@@ -9,7 +9,8 @@
         org.clojars.quoll/asami {:mvn/version "2.3.4"}
         com.hyperfiddle/electric {:mvn/version "v2-alpha-349-ge9996713"}
         juji/editscript {:mvn/version "0.6.3"}
-        com.hyperfiddle/rcf {:mvn/version "20220926-202227"}}
+        com.hyperfiddle/rcf {:mvn/version "20220926-202227"}
+        org.babashka/sci {:mvn/version "0.8.40"}}
  :aliases
  {:dev
   {:extra-paths ["dev"]

@@ -7,7 +7,7 @@
  :config-in-call {meander.epsilon/rewrite
                   {:ignore [:syntax :unused-binding]
                    :linters {:unresolved-symbol {:exclude [(meander.epsilon/rewrite [&])]}
-                             :unresolved-var {:exclude [(meander.epsilon/rewrite [meander.epsilon/cata])]}}}
+                             :unresolved-var {:exclude [(meander.epsilon/rewrite [m/cata])]}}}
                   hyperfiddle.rcf/tests
                   {:linters {:unused-value {:level :off}
                              :unresolved-symbol {:exclude [(hyperfiddle.rcf/tests [_ ?id ?a ?b ?c ?d])]}}}}
