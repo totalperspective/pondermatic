@@ -1,6 +1,6 @@
 (ns pondermatic.rules
   (:require [odoyle.rules :as o]
-            [pondermatic.shell :as a :refer [|> |< |<=]]
+            [pondermatic.shell :as sh :refer [|> |< |<=]]
             [pondermatic.flow :as f]
             [hyperfiddle.rcf :as rcf :refer [tests %]]))
 
@@ -63,14 +63,15 @@
   (tap> {:in ::process
          :cmd (with-meta cmd
                 {:portal.viewer/default :portal.viewer/pr-str})})
-  (->> session
-       (exec cmd)
-       o/fire-rules))
+  (when-not (= cmd sh/done)
+    (->> session
+         (exec cmd)
+         o/fire-rules)))
 
 (defn ^:export ->session []
   (->> (o/->session)
-       (a/engine process)
-       a/actor))
+       (sh/engine process)
+       sh/actor))
 
 (tests
  (let [tap (f/tapper #(do (tap> (with-meta %
@@ -129,5 +130,5 @@
                   [2 ::z]]))
    % := [{:id 3, :x 7, :y 1, :z 6}]
 
-   (|> a/done)))
+   (|> sh/done)))
 

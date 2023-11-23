@@ -8,6 +8,8 @@
     (run identity f/crash)
     result))
 
+(def done ::done)
+
 (defn actor [init]
   (let [self (m/mbx)
         >return (m/stream
@@ -16,14 +18,15 @@
                   (m/ap
                    (loop [process init]
                      (let [cmd (m/? self)]
-                       (if (not= ::done cmd)
+                       (if (not= done cmd)
                          (let [emit (m/rdv)
                                next (process (partial return emit) cmd)]
                            (m/amb
                             (m/? emit)
                             (recur next)))
                          (do
-                           (println ::done)
+                           (process done)
+                           (println done)
                            nil)))))))]
     (f/drain >return)
     {::send self
@@ -37,8 +40,6 @@
           (process cmd)
           return
           engine))))
-
-(def done ::done)
 
 (defn ^:export |> [{:keys [::send] :as a} msg]
   (if send
