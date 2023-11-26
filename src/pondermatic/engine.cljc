@@ -51,6 +51,6 @@
          (sh/engine engine)
          sh/actor)))
 
-(defmethod dispatch :upsert [{:keys [::conn] :as e} [_ data]]
+(defmethod dispatch :db/upsert [{:keys [::conn] :as e} [_ data]]
   (sh/|> conn {:tx-data data})
   e)

@@ -63,4 +63,5 @@
 
 (def engine (p/->engine "donuts"))
 
-(p/|> engine {:upsert rules})
+; (p/|> engine {:})
+(p/|> engine {:db/upsert rules})
