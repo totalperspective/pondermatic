@@ -34,7 +34,11 @@
 
 (defn counter [r _] (inc r))    ;; A reducing function counting the number of items.
 
-(defn latest [p n] (or n p))
+(defn latest
+  ([]
+   nil)
+  ([p n]
+   (or n p)))
 
 (defn drain-using [flow tap]
   (run (m/reduce tap flow)))
@@ -56,3 +60,11 @@
                            :edits (with-meta
                                     (es/get-edits (es/diff n-1 n))
                                     {:portal.viewer/default :portal.viewer/table})})))))
+
+(defn split [flow]
+  (m/eduction (remove nil?)
+              (m/ap (let [items (m/?> flow)]
+                      (loop [items items]
+                        (when-some [item (first items)]
+                          (m/amb item
+                                 (recur (rest items)))))))))

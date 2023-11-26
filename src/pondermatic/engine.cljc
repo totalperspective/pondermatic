@@ -2,7 +2,15 @@
   (:require [pondermatic.shell :as sh]
             [pondermatic.flow :as flow]
             [pondermatic.rules :as rules]
-            [pondermatic.portal :as p]))
+            [pondermatic.portal :as p]
+            [pondermatic.db :as db]
+            [pondermatic.rules.production :as prp]
+            [odoyle.rules :as o]
+            [hasch.core :as h]
+            [missionary.core :as m]))
+
+(def type-name ::type)
+(def rule-type ::rule)
 
 (defn datum->eav [[e a v]]
   [e a v])
@@ -14,13 +22,12 @@
            (map #(update % false (partial mapv datum->eav)))))
 
 (defn msg-type [_ cmd]
-  (prn cmd)
   (first cmd))
 
 (defmulti dispatch msg-type)
 
 (defn engine [{:keys [::conn ::rules ::dispose:db=>rules] :as env} msg]
-  (prn msg)
+  (tap> msg)
   (if (= msg sh/done)
     (do
       (sh/|> conn sh/done)
@@ -43,7 +50,44 @@
             (sh/|> rule-session (rules/retract* retractions))
             (sh/|> rule-session (rules/insert* assertions))))))))
 
+(defn add-base-rules [conn rules]
+  (let [ruleset
+        (o/ruleset
+         {::update-rule
+          [:what
+           [?id ::type ::rule]
+           [?id :db/ident ?ident]
+           [?id :rule/name ?name]
+           [?id :rule/when ?when-id]
+           [?id :rule/then ?then-id]
+           :then
+           (let [rule {::type ::rule-info
+                       ::hash (h/uuid5 (h/edn-hash [?name ?when-id ?then-id]))}]
+             (sh/|> rules (rules/insert ?ident rule)))]
+          ::rules
+          [:what
+           [?id ::type ::rule-info]
+           [?id ::hash ?hash {:then not=}]]})
+        rules< (flow/split (sh/|< rules (rules/query ::rules)))]
+    (reduce (fn [rules rule]
+              (sh/|> rules (rules/add-rule rule)))
+            rules
+            ruleset)
+    (flow/drain (m/ap (let [{:keys [?id]} (m/?> rules<)
+                            db (db/db! conn)
+                            {:keys [:rule/when]} (db/lookup-entity db [:db/ident ?id] :nested? true)
+                            what (prp/pattern->what when)
+                            rule (o/->rule
+                                  ?id
+                                  {:what what
+                                   :then (fn [_ match]
+                                           (tap> {?id match}))})]
+                        (tap> {::add-rule (p/table what)})
+                        (sh/|> rules (rules/add-rule rule))))
+                ::rules)))
+
 (defn ->engine [conn rules]
+  (add-base-rules conn rules)
   (let [dispose:db=>rules (db=>rules conn rules)]
     (->> (hash-map ::conn conn
                    ::rules rules

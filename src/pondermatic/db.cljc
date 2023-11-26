@@ -7,7 +7,7 @@
             [pyramid.core :as p]
             [asami.memory]
             [hyperfiddle.rcf :refer [tests]]
-            [clojure.pprint]))
+            [missionary.core :as m]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
@@ -22,19 +22,28 @@
         (update :tx-data (partial mapv datom/as-vec))
         (assoc ::db-uri db-uri))))
 
-(defn ->conn [db-uri]
-  (->> db-uri
-       (assoc {} ::db-uri)
-       (sh/engine transactor)
-       sh/actor))
+(defn ->conn
+  ([db-uri]
+   (->conn db-uri false))
+  ([db-uri delete-old?]
+   (when delete-old?
+     (d/delete-database db-uri))
+   (assoc (->> db-uri
+               (assoc {} ::db-uri)
+               (sh/engine transactor)
+               sh/actor)
+          ::db-uri db-uri)))
+
+(defn db! [{:keys [::db-uri]}]
+  (d/db (d/connect db-uri)))
 
 (defn q [query]
   (|<= (map :db-after)
        (map (partial d/q query))))
 
-(defn entity [id]
+(defn entity [id & {:keys [nested?] :or {nested? false}}]
   (|<= (map :db-after)
-       (map #(d/entity % id))))
+       (map #(d/entity % id nested?))))
 
 (defn upsert-name [attr]
   (symbol (str attr "'")))
@@ -46,9 +55,11 @@
          [?id ?attr ?val]]
        db attr val))
 
-(defn lookup-entity [db lookup-ref not-found]
+(defn lookup-entity [db lookup-ref & {:keys [not-found nested?]
+                                      :or {not-found nil
+                                           nested? false}}]
   (if-let [id (lookup-id db lookup-ref)]
-    (d/entity db id)
+    (d/entity db id nested?)
     not-found))
 
 (defn pull [db eql]
@@ -87,9 +98,9 @@
        (|> sh/done)))
  (let [conn (d/connect (name->mem-uri "test"))
        db (d/db conn)]
-   (lookup-entity db [:db/ident :other] ::not-found) := ::not-found
-   (-> (lookup-entity db [:movie/title "Explorers"] ::not-found) :movie/title) := "Explorers"
-   (-> (lookup-entity db [:db/ident :first] ::not-found) :movie/title) := "Explorers"
+   (lookup-entity db [:db/ident :other] :not-found ::not-found) := ::not-found
+   (-> (lookup-entity db [:movie/title "Explorers"]) :movie/title) := "Explorers"
+   (-> (lookup-entity db [:db/ident :first]) :movie/title) := "Explorers"
    (-> db
        (pull [{[:db/ident :first] [:movie/title :movie/release-year]}])
        (get [:db/ident :first]))

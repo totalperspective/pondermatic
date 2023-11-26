@@ -11,7 +11,8 @@
         juji/editscript {:mvn/version "0.6.3"}
         com.hyperfiddle/rcf {:mvn/version "20220926-202227"}
         org.babashka/sci {:mvn/version "0.8.40"}
-        town.lilac/pyramid {:mvn/version "3.4.0"}}
+        town.lilac/pyramid {:mvn/version "3.4.0"}
+        io.replikativ/hasch {:mvn/version "0.3.94"}}
  :aliases
  {:dev
   {:extra-paths ["dev"]

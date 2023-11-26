@@ -5,11 +5,25 @@
             [pondermatic.shell :as sh]
             [clojure.walk :as w]))
 
-(defn ->engine [name]
+(defn ->engine [name & {:keys [:reset-db?] :or {reset-db? false}}]
   (let [db-uri (db/name->mem-uri name)
-        conn (db/->conn db-uri)
+        conn (db/->conn db-uri reset-db?)
         session (rules/->session)]
     (engine/->engine conn session)))
+
+(defn kw->qkw
+  ([data]
+   (kw->qkw data "data"))
+  ([data ns]
+   (w/postwalk (fn [node]
+                 #_{:clj-kondo/ignore [:unresolved-symbol]}
+                 (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.IMapEntry)  node)
+                   (let [[attr val] node]
+                     (if (and (keyword? attr) (nil? (namespace attr)))
+                       [(keyword ns (name attr)) val]
+                       [attr val]))
+                   node))
+               data)))
 
 (defn id->ident
   ([data]
@@ -31,4 +45,11 @@
 
 (def |>< sh/|><)
 
-(def rule-type :pondermatic/rule)
+(def type-name engine/type-name)
+
+(def rule-type engine/rule-type)
+
+(defn ruleset [rules]
+  (-> (map #(assoc % type-name rule-type) rules)
+      id->ident
+      kw->qkw))

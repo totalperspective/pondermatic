@@ -48,9 +48,11 @@
       a)
     (throw (ex-info "Not a valid actor" {:actor a}))))
 
-(defn |< [{:keys [::receive] :as a} create-flow]
+(defn |< [{:keys [::receive] :as a} create-flow & {:keys [signal?] :or {signal? false}}]
   (if receive
-    (create-flow receive)
+    (create-flow (if signal?
+                   (m/signal receive)
+                   receive))
     (m/ap
      (m/amb nil)
      (throw (ex-info "Not a valid actor" {:actor a})))))
@@ -60,11 +62,15 @@
        (m/eduction (take 1))
        (m/reduce f/latest)))
 
-(defn |>< [a flow]
-  (>< (|< a flow)))
+(defn flow [{:keys [::receive]}]
+  receive)
+
+(defn |>< [a flow & {:keys [signal?] :or {signal? false}}]
+  (>< (|< a flow :signal? signal?)))
 
 (defn |<= [& xf*]
   (fn [& arg*]
     (->> arg*
          (into (vec xf*))
          (apply m/eduction))))
+
