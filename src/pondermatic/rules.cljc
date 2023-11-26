@@ -20,8 +20,8 @@
 
 (defmethod exec 'insert*
   [[_ id:attr->vals] session]
-  (reduce (fn [session [id attr->val]]
-            (o/insert session id attr->val))
+  (reduce (fn [session data]
+            (apply o/insert session data))
           session
           id:attr->vals))
 

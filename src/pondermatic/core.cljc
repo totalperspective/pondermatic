@@ -16,10 +16,12 @@
    (id->ident data :id))
   ([data id-attr]
    (w/postwalk (fn [node]
-                 (if (instance? clojure.lang.IMapEntry node)
+                 #_{:clj-kondo/ignore [:unresolved-symbol]}
+                 (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.IMapEntry)  node)
                    (let [[attr val] node]
                      (if (= attr id-attr)
-                       [:db/ident val]))
+                       [:db/ident val]
+                       [attr val]))
                    node))
                data)))
 

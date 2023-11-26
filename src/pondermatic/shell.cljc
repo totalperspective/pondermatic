@@ -25,7 +25,7 @@
                             (m/? emit)
                             (recur next)))
                          (do
-                           (process done)
+                           (process identity done)
                            (println done)
                            nil)))))))]
     (f/drain >return)
