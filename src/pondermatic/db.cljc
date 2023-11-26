@@ -17,24 +17,24 @@
         (update :tx-data (partial mapv datom/as-vec))
         (assoc ::db-uri db-uri))))
 
-(defn ^:export ->conn [db-uri]
+(defn ->conn [db-uri]
   (->> db-uri
        (assoc {} ::db-uri)
        (sh/engine transactor)
        sh/actor))
 
-(defn ^:export q [query]
+(defn q [query]
   (|<= (map :db-after)
        (map (partial d/q query))))
 
-(defn ^:export entity [id]
+(defn entity [id]
   (|<= (map :db-after)
        (map #(d/entity % id))))
 
-(defn ^:export upsert-name [attr]
+(defn upsert-name [attr]
   (symbol (str attr "'")))
 
-(defn ^:export run-test []
+(defn run-test []
   (let [conn (-> "test" name->mem-uri ->conn)
         first-movies [{:db/ident :first
                        :movie/title "Explorers"

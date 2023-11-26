@@ -35,35 +35,35 @@
 (defn engine
   [process session]
   (let [engine (partial engine process)]
-    (fn [return cmd]
+    (fn processor [return cmd]
       (-> session
           (process cmd)
           return
           engine))))
 
-(defn ^:export |> [{:keys [::send] :as a} msg]
+(defn |> [{:keys [::send] :as a} msg]
   (if send
     (do
       (send msg)
       a)
     (throw (ex-info "Not a valid actor" {:actor a}))))
 
-(defn ^:export |< [{:keys [::receive] :as a} create-flow]
+(defn |< [{:keys [::receive] :as a} create-flow]
   (if receive
     (create-flow receive)
     (m/ap
      (m/amb nil)
      (throw (ex-info "Not a valid actor" {:actor a})))))
 
-(defn ^:export >< [flow]
+(defn >< [flow]
   (->> flow
        (m/eduction (take 1))
        (m/reduce f/latest)))
 
-(defn ^:export |>< [a flow]
+(defn |>< [a flow]
   (>< (|< a flow)))
 
-(defn ^:export |<= [& xf*]
+(defn |<= [& xf*]
   (fn [& arg*]
     (->> arg*
          (into (vec xf*))

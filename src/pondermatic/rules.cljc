@@ -36,25 +36,25 @@
           session
           id:attrs))
 
-(defn ^:export add-rule [rule]
+(defn add-rule [rule]
   (list 'add-rule rule))
 
-(defn ^:export insert [id attr->val]
+(defn insert [id attr->val]
   (list 'insert id attr->val))
 
-(defn ^:export insert* [id:attr->vals]
+(defn insert* [id:attr->vals]
   (list 'insert* id:attr->vals))
 
-(defn ^:export retract [id attr]
+(defn retract [id attr]
   (list 'retract id attr))
 
-(defn ^:export retract* [id:attrs]
+(defn retract* [id:attrs]
   (list 'retract* id:attrs))
 
-(def ^:export query-all (|<= (map #(o/query-all %))
-                             (dedupe)))
+(def query-all (|<= (map #(o/query-all %))
+                    (dedupe)))
 
-(defn ^:export query [rule-name]
+(defn query [rule-name]
   (|<= (map #(o/query-all % rule-name))
        (dedupe)))
 
@@ -68,7 +68,7 @@
          (exec cmd)
          o/fire-rules)))
 
-(defn ^:export ->session []
+(defn ->session []
   (->> (o/->session)
        (sh/engine process)
        sh/actor))

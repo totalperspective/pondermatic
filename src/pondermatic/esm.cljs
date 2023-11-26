@@ -1,3 +1,3 @@
 (ns pondermatic.esm)
 
-(def ^:export exports #js {})
+(def exports #js {})

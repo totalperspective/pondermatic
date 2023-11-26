@@ -12,37 +12,40 @@
 
 (defn tapper
   [tap]
-  (fn
+  (fn tapper
     ([] nil)
+    ([x]
+     (tap x)
+     x)
     ([_ x]
      (tap x)
      x)))
 
-(defn ^:export tap [prefix]
+(defn tap [prefix]
   (tapper
-   (fn [x _]
+   (fn [x]
      (when prefix
        (tap> (with-meta {prefix x}
                {:portal.viewer/default :portal.viewer/inspector}))))))
 
-(defn ^:export run [task]
+(defn run [task]
   (task #(tap> {"Success" %})
         #(tap> {"Error" %})))
 
-(defn ^:export counter [r _] (inc r))    ;; A reducing function counting the number of items.
+(defn counter [r _] (inc r))    ;; A reducing function counting the number of items.
 
-(defn ^:export latest [p n] (or n p))
+(defn latest [p n] (or n p))
 
-(defn ^:export drain-using [flow tap]
+(defn drain-using [flow tap]
   (run (m/reduce tap flow)))
 
-(defn ^:export drain
+(defn drain
   ([flow]
    (drain flow nil))
   ([flow prefix]
    (drain-using flow (tap prefix))))
 
-(defn ^:export diff [flow]
+(defn diff [flow]
   (->> flow
        (m/reductions (fn [[_ n-1] n]
                        [n-1 n])
