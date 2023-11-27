@@ -160,6 +160,52 @@
        (parse-pattern opts)
        compile-what)))
 
+(defn eval-expr [expr env]
+  (let [vars (reduce-kv (fn [m k v]
+                          (assoc m k (sci/new-var k v)))
+                        {} env)]
+    (sci/eval-string (str expr)
+                     {:namespaces {'user vars}})))
+
+(defn unify-pattern [pattern env]
+  (m/rewrite
+   [pattern env]
+
+   (m/and [[$ ?expr] ?env]
+          (m/let [?result (eval-expr ?expr ?env)]))
+   ?result
+
+   [(m/symbol _ (m/re #"^[?].+") :as ?symbol) {?symbol (m/some ?val) & ?env}]
+   ?val
+
+   (m/and [(m/symbol _ (m/re #"^[?].+") :as ?symbol) ?env]
+          (m/let [?e (throw (ex-info "Failed to unify symbol" {:symbol ?symbol :env ?env}))]))
+   ?e
+
+   (m/and [{(m/pred string? ?k-str) (m/some ?v) & ?rest} ?env]
+          (m/let [?k (edn/read-string ?k-str)]))
+   (m/cata [{?k ?v & ?rest} ?env])
+
+   [{?k ?v & (m/some ?rest)} ?env]
+   {?k (m/cata [?v ?env])
+    & (m/cata [{& ?rest} ?env])}
+
+   [{?k (m/some ?v)} ?env]
+   {?k (m/cata [?v ?env])}
+
+   (m/and [(m/pred string? (m/re #"^\[\$ .*\]$") ?str) ?env]
+          (m/let [?expr (edn/read-string ?str)]))
+   (m/cata [?expr ?env])
+
+   [[?first] ?env]
+   [(m/cata [?first ?env])]
+
+   [[?first & ?rest] ?env]
+   [(m/cata [?first ?env]) & (m/cata [[& ?rest] ?env])]
+
+   [?expr ?env]
+   ?expr))
+
 (tests
  (defn ! [x] (prn x) x)
 
@@ -276,5 +322,24 @@
  (pattern->what '{:id ?id
                   "(not= :a)" ?a})
  := [['?id :a '?a {:then not=}]]
+
+ (unify-pattern '?x '{?x 1}) := 1
+
+ (unify-pattern '?y '{?x 1})
+ :throws #?(:clj java.lang.Exception :cljs js/Error)
+
+ (unify-pattern '{:x ?x} '{?x 1}) := {:x 1}
+
+ (unify-pattern '[?x] '{?x 1 ?y 2}) := [1]
+
+ (unify-pattern '[?x ?y] '{?x 1 ?y 2}) := [1 2]
+
+ (unify-pattern  '{:x ?x :y ?y} '{?x 1 ?y 2}) := {:x 1 :y 2}
+
+ (unify-pattern '{":x" ?x} '{?x 1}) := {:x 1}
+
+ (unify-pattern '{:y {:x ?x}} '{?x 1}) := {:y {:x 1}}
+
+ (unify-pattern (str '[$ (inc ?x)]) '{?x 1}) := 2
 
  nil)

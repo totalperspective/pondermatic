@@ -76,7 +76,7 @@
             ruleset)
     (flow/drain (m/ap (let [{:keys [?id]} (m/?> rules<)
                             db (db/db! conn)
-                            {:keys [:rule/when]} (db/lookup-entity db [:db/ident ?id] :nested? true)
+                            {:keys [:rule/when :rule/then]} (db/lookup-entity db [:db/ident ?id] :nested? true)
                             what (prp/pattern->what when)
                             rule (o/->rule
                                   ?id
@@ -94,8 +94,13 @@
                                            query {:find vars
                                                   :where what}
                                            bindings (map (partial zipmap vars)
-                                                         (d/q query db))]
-                                       (tap> {?id (p/table bindings)})))})]
+                                                         (d/q query db))
+                                           productions (map (fn [binding]
+                                                              (prp/unify-pattern then binding))
+                                                            bindings)]
+                                       (tap> {:rule ?id
+                                              :productions productions})
+                                       (sh/|> conn {:tx-data productions})))})]
                         (tap> {::add-rule (p/table what)})
                         (sh/|> rules (rules/add-rule rule))
                         rule))

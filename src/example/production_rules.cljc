@@ -96,12 +96,15 @@
   (p/ruleset
    [{:id ::combinations
      :rule/name "Combinations"
-     :rule/then '{":db/ident" ?donut-id}
      :rule/when '{:batters [{":db/ident" ?batter-id
                              :batter ?batter}]
                   :toppings [{":db/ident" ?topping-id
                               :type "topping"
-                              :topping ?topping}]}}
+                              :topping ?topping}]}
+     :rule/then '{":db/ident" [?batter-id ?topping-id]
+                  :type "combination"
+                  :batter-id ?batter-id
+                  :topping-id ?topping-id}}
     {:id ::regular-glazed-offer
      :rule/name "Regular glazed offer"
      :rule/when '{":db/ident" ?donut-id
@@ -114,10 +117,10 @@
                               :topping "Glazed"}]}
      :rule/then {:type "offer"
                  :ppu (str '[$ (* 0.7 ?ppu)])
-                 :name (str '[$ (str ?name \" - Regular Glazed \")])
-                 :donut '{:id ?donut-id}
-                 :batter '{:id ?batter-id}
-                 :topping '{:id ?topping-id}}}]))
+                 :name (str '[$ (str ?name " - Regular Glazed")])
+                 :donut-id '?donut-id
+                 :batter-id '?batter-id
+                 :topping-id '?topping-id}}]))
 
 (def engine (p/->engine "donuts" :reset-db? true))
 
