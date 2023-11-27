@@ -13,6 +13,12 @@
         parsed (m/rewrite
                 [pattern env]
 
+                (m/and [[?contains] ?env]
+                       (m/let [?id (gensym "?id-")]))
+                {:tag :contains
+                 :id ?id
+                 :contains (m/cata [?contains ?env])}
+
                 [{?identier [?ident ?id] & ?rest}
                  {:identity ?identier :as ?env}]
                 (m/cata [{?ident ?id & ?rest} ?env])
@@ -84,9 +90,17 @@
               [{:tag :modifier :modifier :skip} _]
               {:then false}
 
-              (m/and [{:tag :modifier :modifier (m/pred symbol? ?mod)} _]
+              (m/and [{:tag :modifier
+                       :modifier (m/pred symbol? ?mod)} _]
                      (m/let [?fn (sci/eval-string (str ?mod))]))
               {:then ?fn}
+
+              [{:tag :contains
+                :id ?id
+                :contains {:id ?item-id
+                           :as ?contains}} ?env]
+              [[?id :a/contains ?item-id]
+               & (m/cata [?contains {:id ?id & ?env}])]
 
               [{:tag :join
                 :id ?id
@@ -119,7 +133,7 @@
               [{:tag :project
                 :attr ?attr
                 :modifier ?mod
-                :val {:tag :join :id ?join-id :as ?val}}
+                :val {:id (m/some ?join-id) :as ?val}}
                {:id (m/some ?id) :as ?env}]
               [& (m/cata [[?id (m/cata [?attr ?env]) ?join-id ?mod] nil])
                & (m/cata [?val ?env])]
@@ -152,6 +166,12 @@
  (parse-pattern {} {}) := {:tag :join
                            :id ?id
                            :select []}
+
+ (parse-pattern [{}] {}) := {:tag :contains
+                             :id ?a
+                             :contains {:tag :join
+                                        :id ?id
+                                        :select []}}
 
  (parse-pattern '{:id ?id} {}) := {:tag :join
                                    :id '?id
@@ -212,6 +232,15 @@
 
  (pattern->what '{:attr ?val})
  := [[_ :attr '?val]]
+
+ (pattern->what '[{:attr ?val :id :id}])
+ := [[?id :a/contains :id]
+     [:id :attr '?val]]
+
+ (pattern->what '{:attr [{:attr2 ?val}]})
+ := [[?a :attr ?b]
+     [?b :a/contains ?c]
+     [?c :attr2 '?val]]
 
  (pattern->what '{:attr1 ?val :attr2 :val2})
  := [[?id :attr1 '?val]

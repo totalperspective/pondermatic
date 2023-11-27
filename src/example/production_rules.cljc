@@ -51,31 +51,20 @@
 
 (def rules
   (p/ruleset
-   [{:id ::test
-     :rule/name "test"
-     :rule/when '{:id ?id
-                  :type "donut"
-                  :ppu ?ppu
+   [{:db/ident ::regular-glazed-offer
+     :rule/name "Regular glazed offer"
+     :rule/when '{:type "donut"
                   :name ?name
-                  :batters {:batter {:type ?batter-type}}}
-     :rule/then '{:name ?name}}
-    #_{:id ::regular-glazed-offer
-       :rule/name "Regular glazed offer"
-       :rule/when '{:id ?donut-id
-                    :type "donut"
-                    :name ?name
-                    :ppu ?ppu
-                    :batters {:batter {:id ?batter-id
-                                       :type "Regular"}}
-                    :topping {:id ?topping-id
-                              :type "Glazed"}}
-       :rule/then {:type "offer"
-                   :ppu (str '[$ (* 0.7 ?ppu)])
-                   :name (str '[$ (str ?name \" - Regular Glazed \")])
-                   :donut '{:id ?donut-id}
-                   :batter '{:id ?batter-id}
-                   :topping '{:id ?topping-id}}}]))
-
+                  :ppu ?ppu
+                  :batters {:batter [{:type "Chocolate"}]}
+                  :topping [{:type "Maple"}]}
+     :rule/then {:type "offer"
+                 :ppu (str '[$ (* 0.7 ?ppu)])
+                 :name (str '[$ (str ?name \" - Regular Glazed \")])
+                 :donut '{:id ?donut-id}
+                 :batter '{:id ?batter-id}
+                 :topping '{:id ?topping-id}}}]))
+(prn rules)
 (def engine (p/->engine "donuts" :reset-db? true))
 
 ; (p/|> engine {:})
