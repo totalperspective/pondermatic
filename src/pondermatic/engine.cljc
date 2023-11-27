@@ -7,7 +7,8 @@
             [pondermatic.rules.production :as prp]
             [odoyle.rules :as o]
             [hasch.core :as h]
-            [missionary.core :as m]))
+            [missionary.core :as m]
+            [asami.core :as d]))
 
 (def type-name ::type)
 (def rule-type ::rule)
@@ -43,8 +44,8 @@
       (flow/drain-using
        (flow/tapper
         (fn update-session [datums]
-          (let [assertions (datums true)
-                retractions (datums false)]
+          (let [assertions (sort-by first (datums true))
+                retractions (sort-by first (datums false))]
             (tap> {:assertions (p/table assertions)
                    :retractions (p/table retractions)})
             (sh/|> rule-session (rules/retract* retractions))
@@ -80,10 +81,24 @@
                             rule (o/->rule
                                   ?id
                                   {:what what
-                                   :then (fn [_ match]
-                                           (tap> {?id match}))})]
+                                   :then-finally
+                                   (fn [_]
+                                     (let [vars (->> what
+                                                     flatten
+                                                     (filter symbol?)
+                                                     (map name)
+                                                     (remove
+                                                      (partial re-matches #"^\?production-id-\d+"))
+                                                     (mapv symbol))
+                                           db (db/db! conn)
+                                           query {:find vars
+                                                  :where what}
+                                           bindings (map (partial zipmap vars)
+                                                         (d/q query db))]
+                                       (tap> {?id (p/table bindings)})))})]
                         (tap> {::add-rule (p/table what)})
-                        (sh/|> rules (rules/add-rule rule))))
+                        (sh/|> rules (rules/add-rule rule))
+                        rule))
                 ::rules)))
 
 (defn ->engine [conn rules]

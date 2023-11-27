@@ -12,7 +12,12 @@
 
 (defmethod exec 'add-rule
   [[_ rule] session]
-  (o/add-rule session rule))
+  (try
+    (o/add-rule session rule)
+    (catch #?(:clj Exception :cljs js/Error) _
+      (-> session
+          (o/remove-rule (:name rule))
+          (o/add-rule rule)))))
 
 (defmethod exec 'insert
   [[_ id attr->val] session]
@@ -60,10 +65,10 @@
 
 (defn process
   [session cmd]
-  (tap> {:in ::process
-         :cmd (with-meta cmd
-                {:portal.viewer/default :portal.viewer/pr-str})})
   (when-not (= cmd sh/done)
+    (tap> {:in ::process
+           :cmd (with-meta cmd
+                  {:portal.viewer/default :portal.viewer/pr-str})})
     (->> session
          (exec cmd)
          o/fire-rules)))

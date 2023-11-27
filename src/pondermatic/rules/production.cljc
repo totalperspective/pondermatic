@@ -14,7 +14,7 @@
                 [pattern env]
 
                 (m/and [[?contains] ?env]
-                       (m/let [?id (gensym "?id-")]))
+                       (m/let [?id (gensym "?production-id-")]))
                 {:tag :contains
                  :id ?id
                  :contains (m/cata [?contains ?env])}
@@ -37,7 +37,7 @@
                   :val (m/cata [!val {:part :sub-clause :type :val & ?env}])} ...]
 
                 (m/and [(m/pred map? ?m) {:identity ?identier :as ?env}]
-                       (m/let [?id (gensym "?id-")]))
+                       (m/let [?id (gensym "?production-id-")]))
                 (m/cata [{?identier ?id & ?m} ?env])
 
                 [(m/symbol _ (m/re #"^[?].+") :as ?symbol) {:part :sub-clause}]
