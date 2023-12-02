@@ -8,7 +8,8 @@
             [odoyle.rules :as o]
             [hasch.core :as h]
             [missionary.core :as m]
-            [asami.core :as d]))
+            [asami.core :as d]
+            [pondermatic.flow :as f]))
 
 (def type-name ::type)
 (def rule-type ::rule)
@@ -48,22 +49,45 @@
                 retractions (sort-by first (datums false))]
             (tap> {:assertions (p/table assertions)
                    :retractions (p/table retractions)})
-            (sh/|> rule-session (rules/retract* retractions))
-            (sh/|> rule-session (rules/insert* assertions))))))))
+            (when (seq retractions)
+              (sh/|> rule-session (rules/retract* retractions)))
+            (when (seq assertions)
+              (sh/|> rule-session (rules/insert* assertions)))))))))
 
 (defn add-base-rules [conn rules]
   (let [ruleset
         (o/ruleset
-         {::update-rule
+         {::collection-head
+          [:what
+           [?first-node :a/first ?first-id]
+           [?entity-id ?attr ?first-node]
+           :when
+           (and (keyword? ?first-id)
+                (keyword? ?attr)
+                (not= "a" (namespace ?attr)))
+           :then
+           (o/insert! ?first-node {:p/contained-by ?entity-id
+                                   :p/attr ?attr
+                                   :p/index 1})]
+          ::collection-tail
+          [:what
+           [?node :p/contained-by ?entity-id]
+           [?node :p/attr ?attr]
+           [?node :p/index ?index]
+           [?node :a/rest ?rest-node]
+           :then
+           (o/insert! ?rest-node {:p/contained-by ?entity-id
+                                  :p/attr ?attr
+                                  :p/index (inc ?index)})]
+          ::update-rule
           [:what
            [?id ::type ::rule]
            [?id :db/ident ?ident]
-           [?id :rule/name ?name]
            [?id :rule/when ?when-id]
            [?id :rule/then ?then-id]
            :then
            (let [rule {::type ::rule-info
-                       ::hash (h/uuid5 (h/edn-hash [?name ?when-id ?then-id]))}]
+                       ::hash (h/uuid5 (h/edn-hash [?ident ?when-id ?then-id]))}]
              (sh/|> rules (rules/insert ?ident rule)))]
           ::rules
           [:what
@@ -82,25 +106,22 @@
                                   ?id
                                   {:what what
                                    :then-finally
-                                   (fn [_]
-                                     (let [vars (->> what
-                                                     flatten
-                                                     (filter symbol?)
-                                                     (map name)
-                                                     (remove
-                                                      (partial re-matches #"^\?production-id-\d+"))
-                                                     (mapv symbol))
-                                           db (db/db! conn)
-                                           query {:find vars
-                                                  :where what}
-                                           bindings (map (partial zipmap vars)
-                                                         (d/q query db))
-                                           productions (map (fn [binding]
-                                                              (prp/unify-pattern then binding))
-                                                            bindings)]
+                                   (fn then-finally [session]
+                                     (let [matches (o/query-all session ?id)
+                                           bindings (map (partial reduce-kv (fn [m k v]
+                                                                              (assoc m (symbol k) v))
+                                                                  {})
+                                                         matches)
+                                           production (map (partial prp/unify-pattern then) bindings)]
                                        (tap> {:rule ?id
-                                              :productions productions})
-                                       (sh/|> conn {:tx-data productions})))})]
+                                              :type (if (:local/id then)
+                                                      ::local
+                                                      ::db)
+                                              :production production})
+                                       (if (:local/id then)
+                                         (sh/|> rules (rules/insert* (map (juxt :local/id identity)
+                                                                          production)))
+                                         (sh/|> conn {:tx-data production}))))})]
                         (tap> {::add-rule (p/table what)})
                         (sh/|> rules (rules/add-rule rule))
                         rule))
@@ -115,6 +136,32 @@
          (sh/engine engine)
          sh/actor)))
 
-(defmethod dispatch :db/upsert [{:keys [::conn] :as e} [_ data]]
+(defn conn> [engine]
+  (sh/|!> engine ::conn))
+
+(defn rules> [engine]
+  (sh/|!> engine ::rules))
+
+(defn conn*> [engine]
+  (m/sp
+   (-> engine
+       (sh/|!> ::conn)
+       m/?
+       (sh/|!> ::db/db-uri)
+       m/?
+       d/connect)))
+
+(defn rule-atom [engine]
+  (let [atom (atom nil)]
+    (f/run (m/sp (let [rules (m/? (rules> engine))]
+                   (prn rules)
+                   (sh/->atom rules atom))))
+    atom))
+
+(defmethod dispatch :->db [{:keys [::conn] :as e} [_ data]]
   (sh/|> conn {:tx-data data})
+  e)
+
+(defmethod dispatch :->rules [{:keys [::rules] :as e} [_ msg]]
+  (sh/|> rules msg)
   e)

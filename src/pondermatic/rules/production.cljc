@@ -14,9 +14,11 @@
                 [pattern env]
 
                 (m/and [[?contains] ?env]
-                       (m/let [?id (gensym "?production-id-")]))
+                       (m/let [?item-id (gensym "?production-id-")
+                               ?node-id (gensym "?production-id-")]))
                 {:tag :contains
-                 :id ?id
+                 :id ?item-id
+                 :node-id ?node-id
                  :contains (m/cata [?contains ?env])}
 
                 [{?identier [?ident ?id] & ?rest}
@@ -97,9 +99,23 @@
 
               [{:tag :contains
                 :id ?id
+                :node-id ?node-id
+                :contains {:id ?item-id
+                           :as ?contains}}
+               {:id (m/some ?parent-id) :attr ?attr & ?env}]
+              [[?node-id :p/contained-by ?parent-id]
+               [?node-id :p/attr (m/cata [?attr ?env])]
+               [?node-id :a/first ?item-id]
+               & (m/cata [?contains {:id ?item-id & ?env}])]
+
+              [{:tag :contains
+                :id ?id
+                :node-id ?node-id
+                :attr nil
                 :contains {:id ?item-id
                            :as ?contains}} ?env]
-              [[?id :a/contains ?item-id]
+              [[?node-id :p/contained-by ?id]
+               [?node-id :a/first  ?item-id]
                & (m/cata [?contains {:id ?id & ?env}])]
 
               [{:tag :join
@@ -129,6 +145,13 @@
                         :modifier (m/cata [?mod ?env])
                         :attr ?attr
                         & ?project} ?env])
+
+              [{:tag :project
+                :attr ?attr
+                :modifier ?mod
+                :val {:tag :contains :as ?val}}
+               {:id (m/some ?id) :as ?env}]
+              [& (m/cata [?val {:attr ?attr :id ?id & ?env}])]
 
               [{:tag :project
                 :attr ?attr
@@ -209,57 +232,80 @@
 (tests
  (defn ! [x] (prn x) x)
 
- (parse-pattern {} {}) := {:tag :join
-                           :id ?id
-                           :select []}
+ (parse-pattern {} {})
+ := {:tag :join
+     :id ?id
+     :select []}
 
- (parse-pattern [{}] {}) := {:tag :contains
-                             :id ?a
-                             :contains {:tag :join
-                                        :id ?id
-                                        :select []}}
+ (parse-pattern [{}] {})
+ := {:tag :contains
+     :id ?a
+     :node-id ?b
+     :contains {:tag :join
+                :id ?id
+                :select []}}
 
- (parse-pattern '{:id ?id} {}) := {:tag :join
-                                   :id '?id
-                                   :select []}
+ (parse-pattern '{:id ?id} {})
+ := {:tag :join
+     :id '?id
+     :select []}
 
- (parse-pattern '{:id ?id :attr :val} {}) := {:tag :join
-                                              :id '?id
-                                              :select [{:tag :project
-                                                        :attr {:tag :attribute
-                                                               :attribute :attr}
-                                                        :val {:tag :value
-                                                              :value :val}}]}
+ (parse-pattern '{:id ?id :attr :val} {})
+ := {:tag :join
+     :id '?id
+     :select [{:tag :project
+               :attr {:tag :attribute
+                      :attribute :attr}
+               :val {:tag :value
+                     :value :val}}]}
 
- (parse-pattern '{:id ?id :attr ?val} {}) := {:tag :join
-                                              :id '?id
-                                              :select [{:tag :project
-                                                        :attr {:tag :attribute
-                                                               :attribute :attr}
-                                                        :val {:tag :logic-variable
-                                                              :symbol '?val}}]}
+ (parse-pattern '{:attr1 :val1 :attr2 :val2} {})
+ := {:tag :join
+     :id ?id
+     :select [{:tag :project
+               :attr {:tag :attribute
+                      :attribute :attr1}
+               :val {:tag :value
+                     :value :val1}}
+              {:tag :project
+               :attr {:tag :attribute
+                      :attribute :attr2}
+               :val {:tag :value
+                     :value :val2}}]}
 
- (parse-pattern '{:attr :val} {}) := {:tag :join
-                                      :id ?id
-                                      :select [{:tag :project
-                                                :attr {:tag :attribute
-                                                       :attribute :attr}
-                                                :val {:tag :value
-                                                      :value :val}}]}
+ (parse-pattern '{:id ?id :attr ?val} {})
+ := {:tag :join
+     :id '?id
+     :select [{:tag :project
+               :attr {:tag :attribute
+                      :attribute :attr}
+               :val {:tag :logic-variable
+                     :symbol '?val}}]}
+
+ (parse-pattern '{:attr :val} {})
+ := {:tag :join
+     :id ?id
+     :select [{:tag :project
+               :attr {:tag :attribute
+                      :attribute :attr}
+               :val {:tag :value
+                     :value :val}}]}
+
  (parse-pattern '{:id :id1
                   :attr {:id :id2
-                         :attr2 :val}} {}) := {:tag :join
-                                               :id :id1
-                                               :select [{:tag :project
-                                                         :attr {:tag :attribute
-                                                                :attribute :attr}
-                                                         :val {:tag :join
-                                                               :id :id2
-                                                               :select [{:tag :project
-                                                                         :attr {:tag :attribute
-                                                                                :attribute :attr2}
-                                                                         :val {:tag :value
-                                                                               :value :val}}]}}]}
+                         :attr2 :val}} {})
+ := {:tag :join
+     :id :id1
+     :select [{:tag :project
+               :attr {:tag :attribute
+                      :attribute :attr}
+               :val {:tag :join
+                     :id :id2
+                     :select [{:tag :project
+                               :attr {:tag :attribute
+                                      :attribute :attr2}
+                               :val {:tag :value
+                                     :value :val}}]}}]}
 
  (pattern->what '?val)
  :throws #?(:clj java.lang.Exception :cljs js/Error)
@@ -280,12 +326,14 @@
  := [[_ :attr '?val]]
 
  (pattern->what '[{:attr ?val :id :id}])
- := [[?id :a/contains :id]
+ := [[?a :p/contained-by ?id]
+     [?id :a/first :id]
      [:id :attr '?val]]
 
  (pattern->what '{:attr [{:attr2 ?val}]})
- := [[?a :attr ?b]
-     [?b :a/contains ?c]
+ := [[?b :p/contained-by ?a]
+     [?b :p/attr :attr]
+     [?b :a/first ?c]
      [?c :attr2 '?val]]
 
  (pattern->what '{:attr1 ?val :attr2 :val2})

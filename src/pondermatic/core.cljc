@@ -53,3 +53,12 @@
   (-> (map #(assoc % type-name rule-type) rules)
       id->ident
       kw->qkw))
+
+(defn dataset [data & {:keys [id-attr ns] :or {id-attr :id ns "data"}}]
+  (-> data
+      (id->ident id-attr)
+      (kw->qkw ns)))
+
+(def conn> engine/conn>)
+
+(def rule-atom engine/rule-atom)

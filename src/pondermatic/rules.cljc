@@ -2,7 +2,8 @@
   (:require [odoyle.rules :as o]
             [pondermatic.shell :as sh :refer [|> |< |<=]]
             [pondermatic.flow :as f]
-            [hyperfiddle.rcf :as rcf :refer [tests %]]))
+            [hyperfiddle.rcf :as rcf :refer [tests %]]
+            [pondermatic.portal :as p]))
 
 (defn cmd-type
   [[cmd] _]
@@ -10,8 +11,7 @@
 
 (defmulti exec cmd-type)
 
-(defmethod exec 'add-rule
-  [[_ rule] session]
+(defn upsert-rule [session rule]
   (try
     (o/add-rule session rule)
     (catch #?(:clj Exception :cljs js/Error) _
@@ -19,13 +19,23 @@
           (o/remove-rule (:name rule))
           (o/add-rule rule)))))
 
+(defmethod exec 'add-rule
+  [[_ rule] session]
+  (upsert-rule session rule))
+
+(defmethod exec 'add-rules
+  [[_ rules] session]
+  (reduce upsert-rule session rules))
+
 (defmethod exec 'insert
   [[_ id attr->val] session]
   (o/insert session id attr->val))
 
 (defmethod exec 'insert*
   [[_ id:attr->vals] session]
+  ;; (tap> (p/table id:attr->vals))
   (reduce (fn [session data]
+            ;; (tap> (p/table data))
             (apply o/insert session data))
           session
           id:attr->vals))
@@ -43,6 +53,9 @@
 
 (defn add-rule [rule]
   (list 'add-rule rule))
+
+(defn add-rules [rules]
+  (list 'add-rules rules))
 
 (defn insert [id attr->val]
   (list 'insert id attr->val))

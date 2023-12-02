@@ -30,7 +30,7 @@
 
 (defn run [task]
   (task #(tap> {"Success" %})
-        #(tap> {"Error" %})))
+        #(tap> %)))
 
 (defn counter [r _] (inc r))    ;; A reducing function counting the number of items.
 

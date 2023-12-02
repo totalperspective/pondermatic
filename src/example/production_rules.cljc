@@ -124,6 +124,5 @@
 
 (def engine (p/->engine "donuts" :reset-db? true))
 
-; (p/|> engine {:})
-(p/|> engine {:db/upsert rules})
-(p/|> engine {:db/upsert data})
+(p/|> engine {:->db rules})
+(p/|> engine {:->db data})

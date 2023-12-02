@@ -2,7 +2,6 @@
   (:require [missionary.core :as m]
             [pondermatic.flow :as f]))
 
-
 (defn return [emit result]
   (let [run (m/sp (m/? (emit result)))]
     (run identity f/crash)
@@ -35,11 +34,14 @@
 (defn engine
   [process session]
   (let [engine (partial engine process)]
-    (fn processor [return cmd]
-      (-> session
-          (process cmd)
-          return
-          engine))))
+    (fn processor [ret cmd]
+      (if-let [rdv (get cmd ::rdv)]
+        (do (return rdv session)
+            (-> session ret engine))
+        (-> session
+            (process cmd)
+            ret
+            engine)))))
 
 (defn |> [{:keys [::send] :as a} msg]
   (if send
@@ -74,3 +76,16 @@
          (into (vec xf*))
          (apply m/eduction))))
 
+(defn |!> [{:keys [::send] :as a} fn]
+  (if send
+    (let [return (m/rdv)]
+      (send {::rdv return})
+      (m/sp (fn (m/? return))))
+    (throw (ex-info "Not a valid actor" {:actor a}))))
+
+(defn ->atom
+  ([actor]
+   (->atom actor (atom nil)))
+  ([actor atom]
+   (f/drain (|< actor (|<= (map (partial reset! atom)))))
+   atom))
