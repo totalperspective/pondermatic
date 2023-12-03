@@ -17,7 +17,7 @@
   ([data ns]
    (w/postwalk (fn [node]
                  #_{:clj-kondo/ignore [:unresolved-symbol]}
-                 (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.IMapEntry)  node)
+                 (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
                    (let [[attr val] node]
                      (if (and (keyword? attr) (nil? (namespace attr)))
                        [(keyword ns (name attr)) val]

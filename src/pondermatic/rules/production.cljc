@@ -21,6 +21,10 @@
                  :node-id ?node-id
                  :contains (m/cata [?contains ?env])}
 
+                [{(m/symbol "&") ?id & ?rest}
+                 {:identity ?identier :as ?env}]
+                (m/cata [{?identier ?id & ?rest} ?env])
+
                 [{?identier [?ident ?id] & ?rest}
                  {:identity ?identier :as ?env}]
                 (m/cata [{?ident ?id & ?rest} ?env])
@@ -213,6 +217,12 @@
           (m/let [?k (edn/read-string ?k-str)]))
    (m/cata [{?k ?v & ?rest} ?env])
 
+   [{(m/symbol "&") ?e & ?rest} {?e ?id entities {?id {& ?entitiy}} :as ?env}]
+   {& [& ?entitiy & (m/cata [{& ?rest} ?env])]}
+
+   [{(m/symbol "&") ?e} {?e ?id entities {?id ?entity}}]
+   ?entity
+
    [{?k ?v & (m/some ?rest)} ?env]
    {?k (m/cata [?v ?env])
     & (m/cata [{& ?rest} ?env])}
@@ -329,6 +339,9 @@
  (pattern->what '{:attr nil})
  := [[_ :attr :a/nil]]
 
+ (pattern->what '{:attr :val & ?id})
+ := [['?id :attr :val]]
+
  (pattern->what '{":db/ident" :ident :attr nil})
  := [[?id :db/ident :ident]
      [?id :attr :a/nil]]
@@ -400,5 +413,11 @@
  (unify-pattern '{:y {:x ?x}} '{?x 1}) := {:y {:x 1}}
 
  (unify-pattern (str '[$ (inc ?x)]) '{?x 1}) := 2
+
+ (unify-pattern '{& ?e} '{?e 1 entities {1 {:foo :bar}}})
+ := {:foo :bar}
+
+ (unify-pattern '{:attr :val & ?e} '{?e 1 entities {1 {:foo :bar}}})
+ := {:attr :val :foo :bar}
 
  nil)

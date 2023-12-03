@@ -9,7 +9,8 @@
             [hasch.core :as h]
             [missionary.core :as m]
             [asami.core :as d]
-            [pondermatic.flow :as f]))
+            [pondermatic.flow :as f]
+            [clojure.walk :as w]))
 
 (def type-name ::type)
 (def rule-type ::rule)
@@ -39,13 +40,22 @@
       (reduce dispatch env (seq msg))
       (dispatch env msg))))
 
+(defn kw->ds [data]
+  (w/postwalk (fn [node]
+                #_{:clj-kondo/ignore [:unresolved-symbol]}
+                (cond
+                  (= :a/empty-list node) []
+                  :else node))
+              data))
+
 (defn db=>rules [conn rule-session]
   (-> conn
       (sh/|< db-diff)
       (flow/drain-using
        (flow/tapper
         (fn update-session [datums]
-          (let [assertions (sort-by first (datums true))
+          (let [datums (kw->ds datums)
+                assertions (sort-by first (datums true))
                 retractions (sort-by first (datums false))]
             (tap> {:assertions (p/table assertions)
                    :retractions (p/table retractions)})
@@ -102,6 +112,10 @@
                             db (db/db! conn)
                             {:keys [:rule/when :rule/then]} (db/lookup-entity db [:db/ident ?id] :nested? true)
                             what (prp/pattern->what when)
+                            entitiy-lvars (->> what
+                                               (map first)
+                                               (filter symbol?)
+                                               distinct)
                             rule (o/->rule
                                   ?id
                                   {:what what
@@ -112,7 +126,20 @@
                                                                               (assoc m (symbol k) v))
                                                                   {})
                                                          matches)
-                                           production (map (partial prp/unify-pattern then) bindings)]
+                                           ids (->> bindings
+                                                    (mapcat (fn [match]
+                                                              (prn match)
+                                                              (map (partial get match) entitiy-lvars)))
+                                                    (remove nil?)
+                                                    distinct)
+                                           db (db/db! conn)
+                                           entities (reduce (fn [m id]
+                                                              (assoc m id (d/entity db id)))
+                                                            {}
+                                                            ids)
+                                           production (map (fn [b]
+                                                             (prp/unify-pattern then (assoc b 'entities entities)))
+                                                           bindings)]
                                        (tap> {:rule ?id
                                               :type (if (:local/id then)
                                                       ::local
