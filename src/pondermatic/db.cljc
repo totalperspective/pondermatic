@@ -7,7 +7,8 @@
             [pyramid.core :as p]
             [asami.memory]
             [hyperfiddle.rcf :refer [tests]]
-            [missionary.core :as m]))
+            [missionary.core :as m]
+            [clojure.edn :as edn]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
@@ -46,7 +47,7 @@
        (map #(d/entity % id nested?))))
 
 (defn upsert-name [attr]
-  (symbol (str attr "'")))
+  (edn/read-string (str attr "'")))
 
 (defn lookup-id [db [attr val]]
   (d/q '[:find ?id .
