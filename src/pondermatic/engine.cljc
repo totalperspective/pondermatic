@@ -125,7 +125,7 @@
                         (tap> {::add-rule (p/table what)})
                         (sh/|> rules (rules/add-rule rule))
                         rule))
-                ::rules)))
+                ::update-rules)))
 
 (defn ->engine [conn rules]
   (add-base-rules conn rules)

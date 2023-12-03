@@ -59,6 +59,10 @@
                 {:tag :attribute
                  :attribute ?attr}
 
+                [nil {:part :sub-clause}]
+                {:tag :value
+                 :value :a/nil}
+
                 [?value {:part :sub-clause}]
                 {:tag :value
                  :value ?value}
@@ -321,6 +325,13 @@
 
  (pattern->what '{:id ?id})
  := []
+
+ (pattern->what '{:attr nil})
+ := [[_ :attr :a/nil]]
+
+ (pattern->what '{":db/ident" :ident :attr nil})
+ := [[?id :db/ident :ident]
+     [?id :attr :a/nil]]
 
  (pattern->what '{:attr ?val})
  := [[_ :attr '?val]]

@@ -31,7 +31,7 @@
   ([data id-attr]
    (w/postwalk (fn [node]
                  #_{:clj-kondo/ignore [:unresolved-symbol]}
-                 (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.IMapEntry)  node)
+                 (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
                    (let [[attr val] node]
                      (if (= attr id-attr)
                        [:db/ident val]
@@ -62,3 +62,6 @@
 (def conn> engine/conn>)
 
 (def rule-atom engine/rule-atom)
+
+(def rules<
+  (sh/|<= (map ::rules)))

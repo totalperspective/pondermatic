@@ -24,12 +24,14 @@
      :rule/when {":db/ident" ::state
                  :user nil}
      :rule/then {:local/id ::state
-                 :layout :unauthed}}
+                 :layout :unauthed
+                 :page :none}}
     {:id ::authed-layout
      :rule/when {":db/ident" ::state
                  :user {:email '?email}}
      :rule/then {:local/id ::state
-                 :layout ::authed}}]))
+                 :layout ::authed
+                 :page :none}}]))
 
 (def engine (p/->engine "layout" :reset-db? true))
 
