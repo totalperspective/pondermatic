@@ -3,7 +3,7 @@
 
 (def defaults
   {:src-pom "pom.xml"
-   :lib     'totalperspective/pondermatic})                          ; maven group-id and library name
+   :lib     'tech.totalperspective/pondermatic})                          ; maven group-id and library name
 
 (defn clean [opts]
   (bb/clean opts))
