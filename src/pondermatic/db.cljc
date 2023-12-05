@@ -8,20 +8,31 @@
             [asami.memory]
             [hyperfiddle.rcf :refer [tests]]
             [missionary.core :as m]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn]
+            [clojure.walk :as w]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
 
 (defn transactor
   [{:keys [::db-uri]} tx]
+  (tap> tx)
   (when-not (= tx sh/done)
-    (-> db-uri
-        (d/connect)
-        (d/transact tx)
-        deref
-        (update :tx-data (partial mapv datom/as-vec))
-        (assoc ::db-uri db-uri))))
+    (let [idents (->> tx
+                      :tx-data
+                      (filter map?)
+                      (map :db/ident)
+                      (remove nil?)
+                      (map #(do {:db/ident %})))]
+      (-> db-uri
+          d/connect
+          (d/transact {:tx-data idents}))
+      (-> db-uri
+          d/connect
+          (d/transact tx)
+          deref
+          (update :tx-data (partial mapv datom/as-vec))
+          (assoc ::db-uri db-uri)))))
 
 (defn ->conn
   ([db-uri]
@@ -48,6 +59,17 @@
 
 (defn upsert-name [attr]
   (edn/read-string (str attr "'")))
+
+(defn upsert [tx]
+  (w/postwalk (fn [node]
+                #_{:clj-kondo/ignore [:unresolved-symbol]}
+                (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
+                  (let [[attr val] node]
+                    (if (and (keyword? attr) (not= :db/ident attr))
+                      [(upsert-name attr) val]
+                      [attr val]))
+                  node))
+              tx))
 
 (defn lookup-id [db [attr val]]
   (d/q '[:find ?id .

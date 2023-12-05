@@ -35,5 +35,5 @@
 
 (def engine (p/->engine "layout" :reset-db? true))
 
-(p/|> engine {:->db rules})
-(p/|> engine {:->db data})
+(p/|> engine {:+>db rules})
+(p/|> engine {:+>db data})

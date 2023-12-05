@@ -189,6 +189,10 @@
   (sh/|> conn {:tx-data data})
   e)
 
+(defmethod dispatch :+>db [{:keys [::conn] :as e} [_ data]]
+  (sh/|> conn {:tx-data (db/upsert data)})
+  e)
+
 (defmethod dispatch :->rules [{:keys [::rules] :as e} [_ msg]]
   (sh/|> rules msg)
   e)
