@@ -12,11 +12,11 @@
         com.hyperfiddle/rcf {:mvn/version "20220926-202227"}
         org.babashka/sci {:mvn/version "0.8.40"}
         town.lilac/pyramid {:mvn/version "3.4.0"}
-        io.replikativ/hasch {:mvn/version "0.3.94"}}
+        io.replikativ/hasch {:mvn/version "0.3.94"}
+        djblue/portal {:mvn/version "0.49.0"}}
  :aliases
  {:dev
   {:extra-paths ["dev"]
-   :extra-deps {djblue/portal {:mvn/version "0.49.0"}}
    :main user/-main}
   :cljs
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.60"}

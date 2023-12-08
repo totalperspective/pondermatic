@@ -12,15 +12,20 @@
   {:target    :node-test
    :output-to "out/node-tests.js"
    :ns-regexp "^(pondermatic.*|example.*)"}
-  
+
   :browser-test
   {:target    :karma
    :output-to "out/karma-tests.js"
    :ns-regexp "^(pondermatic.*|example.*)"}
-  
+
   :npm
+  {:target :node-library
+   :output-to "dist/cjs/index.js"
+   :exports-var pondermatic.index/exports}
+  
+  :node
   {:target :npm-module
-   :output-dir "dist/cjs"
+   :output-dir "dist/module"
    :entries [pondermatic.index]}
 
   :esm
