@@ -1,6 +1,13 @@
 (ns pondermatic.index
   (:require [pondermatic.core :as p]
-            [pondermatic.rules :as r]))
+            [pondermatic.rules :as r]
+            [pondermatic.flow :as flow]
+            [missionary.core :as m]
+            [pondermatic.portal :as portal]
+            [clojure.edn :as edn]))
+
+(defn portal [launcher]
+  (portal/start (keyword launcher)))
 
 (defn create-engine
   ([name]
@@ -10,23 +17,45 @@
 
 (defn ruleset [ruleset]
   (-> ruleset
-      js->clj
+      (js->clj :keywordize-keys true)
+      (portal/trace 'ruleset)
       p/ruleset))
 
 (defn dataset [dataset]
   (-> dataset
-      js->clj
+      (js->clj :keywordize-keys true)
+      (portal/trace 'dataset)
       p/dataset))
 
 (defn sh [engine msg]
-  (p/|> engine (js->clj msg)))
+  (p/|> engine (-> msg
+                   (js->clj :keywordize-keys true)
+                   (portal/trace 'sh))))
 
 (defn add-rules-msg [rules]
-  (r/add-rules (js->clj rules)))
+  (r/add-rules (-> rules
+                   (js->clj :keywordize-keys true)
+                   (portal/trace 'add-rules-msg))))
+
+(defn q [engine q args cb]
+  (let [q (-> q
+              edn/read-string
+              (portal/trace 'q))
+        q<> (apply p/q<> engine q args)]
+    (flow/drain
+     (m/ap (let [q< (m/? q<>)
+                 result (m/?< q<)]
+             (cb (clj->js result)))))))
+
+(defn dispose! [task]
+  (task))
 
 (def exports
-  #js {:create-engine create-engine
+  #js {:createEngine create-engine
        :ruleset ruleset
        :dataset dataset
        :sh sh
-       :add-rules-msg add-rules-msg})
+       :addRulesMsg add-rules-msg
+       :q q
+       :portal portal
+       :dispose dispose!})

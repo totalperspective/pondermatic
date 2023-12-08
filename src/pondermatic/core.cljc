@@ -91,3 +91,5 @@
 
 (def rules<
   (sh/|<= (map ::rules)))
+
+(def q<> engine/q<>)

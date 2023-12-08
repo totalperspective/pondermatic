@@ -2,17 +2,13 @@
   #_{:clj-kondo/ignore [:unused-namespace]}
   (:require [pondermatic.rules :as rules]
             [pondermatic.db :as db]
+            [pondermatic.portal :as portal]
             [pondermatic.rules.production :as prod]
-            [portal.api :as p]
-            [clojure.datafy :as datafy]
             [hyperfiddle.rcf :refer [tests]]))
 
-(def submit (comp p/submit datafy/datafy))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-(defonce _portal (let [p (p/open {:launcher :vs-code})]
-                   (add-tap #'submit)
-                   p)) ; Add portal as a tap> target
+(defonce _portal (portal/start :vs-code))
 
 (hyperfiddle.rcf/enable!)
 

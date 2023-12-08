@@ -65,9 +65,9 @@
 (defn db! [{:keys [::db-uri]}]
   (d/db (d/connect db-uri)))
 
-(defn q [query]
+(defn q [query & args]
   (|<= (map :db-after)
-       (map (partial d/q query))))
+       (map #(apply d/q query % args))))
 
 (defn entity [id & {:keys [nested?] :or {nested? false}}]
   (|<= (map :db-after)

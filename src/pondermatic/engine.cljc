@@ -196,3 +196,8 @@
 (defmethod dispatch :->rules [{:keys [::rules] :as e} [_ msg]]
   (sh/|> rules msg)
   e)
+
+(defn q<> [engine q & args]
+  (m/sp (let [conn (m/? (conn> engine))
+              q< (apply db/q q args)]
+          (sh/|< conn q<))))
