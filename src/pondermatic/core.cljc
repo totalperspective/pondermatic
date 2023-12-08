@@ -4,7 +4,8 @@
             [pondermatic.engine :as engine]
             [pondermatic.shell :as sh]
             [clojure.walk :as w]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.edn :as edn]))
 
 (defn ->engine [name & {:keys [:reset-db?] :or {reset-db? false}}]
   (let [db-uri (db/name->mem-uri name)
@@ -25,6 +26,14 @@
                        [attr val]))
                    node))
                data)))
+
+(defn l-vars [data]
+  (w/postwalk (fn [node]
+                #_{:clj-kondo/ignore [:unresolved-symbol]}
+                (if (and (string? node) (re-matches #"^[?].*$" node))
+                  (edn/read-string node)
+                  node))
+              data))
 
 (defn id->ident
   ([data]
@@ -77,7 +86,8 @@
 (defn ruleset [rules]
   (-> (map #(assoc % type-name rule-type) rules)
       id->ident
-      kw->qkw))
+      kw->qkw
+      l-vars))
 
 (defn dataset [data & {:keys [id-attr ns] :or {id-attr :id ns "data"}}]
   (-> data

@@ -40,6 +40,7 @@
           ident-tx-data (-> db-uri
                             d/connect
                             (d/transact {:tx-data idents})
+                            deref
                             :tx-data)]
       (tap> (p.p/table idents))
       (-> db-uri
