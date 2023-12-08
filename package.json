@@ -1,9 +1,17 @@
 {
-  "name": "pondermatic",
+  "name": "@totalperspective/pondermatic",
   "version": "1.0.0",
   "description": "Functional effect system driven rules engine",
   "engines": {
     "node": ">=16"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
+    }
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,6 +28,7 @@
   },
   "homepage": "https://github.com/totalperspective/pondermatic#readme",
   "devDependencies": {
+    "jest": "^29.7.0",
     "karma": "6.3.17",
     "karma-chrome-launcher": "3.1.1",
     "karma-cljs-test": "0.1.0",

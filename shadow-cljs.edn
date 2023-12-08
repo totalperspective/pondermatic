@@ -20,10 +20,10 @@
   
   :npm
   {:target :npm-module
-   :output-dir "dist/module"
-   :entries [pondermatic.njs]}
+   :output-dir "dist/cjs"
+   :entries [pondermatic.index]}
 
   :esm
   {:target :esm
-   :output-dir "dist/esm"
-   :modules {:esm {:exports {default pondermatic.esm/exports}}}}}}
+   :output-dir "dist/mjs"
+   :modules {:index {:exports {default pondermatic.index/exports}}}}}}

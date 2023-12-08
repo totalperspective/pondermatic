@@ -9,10 +9,24 @@
             [hyperfiddle.rcf :refer [tests]]
             [missionary.core :as m]
             [clojure.edn :as edn]
-            [clojure.walk :as w]))
+            [clojure.walk :as w]
+            [pondermatic.portal :as p.p]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
+
+(defn idents [tx]
+  (let [idents! (atom [])]
+    (w/postwalk (fn [node]
+                  #_{:clj-kondo/ignore [:unresolved-symbol]}
+                  (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
+                    (let [[attr val] node]
+                      (when (= attr :db/ident)
+                        (swap! idents! conj val))
+                      node)
+                    node))
+                tx)
+    @idents!))
 
 (defn transactor
   [{:keys [::db-uri]} tx]
@@ -20,17 +34,19 @@
   (when-not (= tx sh/done)
     (let [idents (->> tx
                       :tx-data
-                      (filter map?)
-                      (map :db/ident)
+                      idents
                       (remove nil?)
-                      (map #(do {:db/ident %})))]
-      (-> db-uri
-          d/connect
-          (d/transact {:tx-data idents}))
+                      (map #(do {:db/ident %})))
+          ident-tx-data (-> db-uri
+                            d/connect
+                            (d/transact {:tx-data idents})
+                            :tx-data)]
+      (tap> (p.p/table idents))
       (-> db-uri
           d/connect
           (d/transact tx)
           deref
+          (update :tx-data (partial concat ident-tx-data))
           (update :tx-data (partial mapv datom/as-vec))
           (assoc ::db-uri db-uri)))))
 
