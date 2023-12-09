@@ -109,7 +109,7 @@
            :then
            (let [db (db/db! conn)
                  {:keys [:rule/when :rule/then]} (db/lookup-entity db [:db/ident ?id] :nested? true)
-                 what (prp/pattern->what when)
+                 what (prp/compile-what when)
                  entitiy-lvars (->> what
                                     (map first)
                                     (filter symbol?)

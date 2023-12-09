@@ -16,10 +16,10 @@
                 (m/and [[?contains] ?env]
                        (m/let [?item-id (gensym "?production-id-")
                                ?node-id (gensym "?production-id-")]))
-                {:tag :contains
-                 :id ?item-id
-                 :node-id ?node-id
-                 :contains (m/cata [?contains ?env])}
+                {::tag :contains
+                 ::id ?item-id
+                 ::node-id ?node-id
+                 ::contains (m/cata [?contains ?env])}
 
                 [{(m/symbol "&") ?id & ?rest}
                  {:identity ?identier :as ?env}]
@@ -31,45 +31,45 @@
 
                 [{?identier (m/some ?id) & ?rest}
                  {:identity ?identier :as ?env}]
-                {:tag :join
-                 :id ?id
-                 :select (m/cata [{& ?rest}
-                                  {:part :sub-clause :type :select & ?env}])}
+                {::tag :join
+                 ::id ?id
+                 ::select (m/cata [{& ?rest}
+                                   {:part :sub-clause :type :select & ?env}])}
 
                 [{& (m/seqable [!attr !val] ...)}
                  {:part :sub-clause :type :select & ?env}]
-                [{:tag :project
-                  :attr (m/cata [!attr {:part :sub-clause :type :attr & ?env}])
-                  :val (m/cata [!val {:part :sub-clause :type :val & ?env}])} ...]
+                [{::tag :project
+                  ::attr (m/cata [!attr {:part :sub-clause :type :attr & ?env}])
+                  ::val (m/cata [!val {:part :sub-clause :type :val & ?env}])} ...]
 
                 (m/and [(m/pred map? ?m) {:identity ?identier :as ?env}]
                        (m/let [?id (gensym "?production-id-")]))
                 (m/cata [{?identier ?id & ?m} ?env])
 
                 [(m/symbol _ (m/re #"^[?].+") :as ?symbol) {:part :sub-clause}]
-                {:tag :logic-variable
-                 :symbol ?symbol}
+                {::tag :logic-variable
+                 ::symbol ?symbol}
 
                 (m/and [(m/pred string? ?attr-str) {:part :sub-clause :type :attr :as ?env}]
                        (m/let [?attr (edn/read-string ?attr-str)]))
                 (m/cata [?attr ?env])
 
                 [(?mod ?attr) {:part :sub-clause :type :attr :as ?env}]
-                {:tag :modifier
-                 :modifier ?mod
-                 :attr (m/cata [?attr ?env])}
+                {::tag :modifier
+                 ::modifier ?mod
+                 ::attr (m/cata [?attr ?env])}
 
                 [?attr {:part :sub-clause :type :attr}]
-                {:tag :attribute
-                 :attribute ?attr}
+                {::tag :attribute
+                 ::attribute ?attr}
 
                 [nil {:part :sub-clause}]
-                {:tag :value
-                 :value :a/nil}
+                {::tag :value
+                 ::value :a/nil}
 
                 [?value {:part :sub-clause}]
-                {:tag :value
-                 :value ?value}
+                {::tag :value
+                 ::value ?value}
 
                 (m/and [?expr ?env]
                        (m/let [?e (throw (ex-info "Failed to parse expression" {:expr ?expr :env ?env}))]))
@@ -88,91 +88,92 @@
               [[?e ?a ?v (m/pred map? ?mod)] nil]
               [[?e ?a ?v ?mod]]
 
-              [{:tag :value :value ?value} _]
+              [{::tag :value ::value ?value} _]
               ?value
 
-              [{:tag :attribute :attribute ?attr} _]
+              [{::tag :attribute ::attribute ?attr} _]
               ?attr
 
-              [{:tag :logic-variable :symbol ?symbol} _]
+              [{::tag :logic-variable ::symbol ?symbol} _]
               ?symbol
 
-              [{:tag :modifier :modifier :skip} _]
+              [{::tag :modifier ::modifier :skip} _]
               {:then false}
 
-              (m/and [{:tag :modifier
-                       :modifier (m/pred symbol? ?mod)} _]
+              (m/and [{::tag :modifier
+                       ::modifier (m/pred symbol? ?mod)} _]
                      (m/let [?fn (sci/eval-string (str ?mod))]))
               {:then ?fn}
 
-              [{:tag :contains
-                :id ?id
-                :node-id ?node-id
-                :contains {:id ?item-id
-                           :as ?contains}}
+              [{::tag :contains
+                ::id ?id
+                ::node-id ?node-id
+                ::contains {::id ?item-id
+                            :as ?contains}}
                {:id (m/some ?parent-id) :attr ?attr & ?env}]
               [[?node-id :p/contained-by ?parent-id]
                [?node-id :p/attr (m/cata [?attr ?env])]
                [?node-id :a/first ?item-id]
                & (m/cata [?contains {:id ?item-id & ?env}])]
 
-              [{:tag :contains
-                :id ?id
-                :node-id ?node-id
-                :attr nil
-                :contains {:id ?item-id
-                           :as ?contains}} ?env]
+              [{::tag :contains
+                ::id ?id
+                ::node-id ?node-id
+                ::attr nil
+                ::contains {::id ?item-id
+                            :as ?contains}} ?env]
               [[?node-id :p/contained-by ?id]
                [?node-id :a/first  ?item-id]
                & (m/cata [?contains {:id ?id & ?env}])]
 
-              [{:tag :join
-                :id ?id
-                :select []} _]
+              [{::tag :join
+                ::id ?id
+                ::select []} _]
               []
 
-              [{:tag :join
-                :id ?id
-                :select [?project]} ?env]
+              [{::tag :join
+                ::id ?id
+                ::select [?project]} ?env]
               [& (m/cata [?project {:id ?id & ?env}])]
 
-              [{:tag :join
-                :id ?id
-                :select [?project & ?rest]} ?env]
+              [{::tag :join
+                ::id ?id
+                ::select [?project & ?rest]} ?env]
               [& (m/cata [?project {:id ?id & ?env}])
-               & (m/cata [{:tag :join
-                           :id ?id
-                           :select [& ?rest]} ?env])]
+               & (m/cata [{::tag :join
+                           ::id ?id
+                           ::select [& ?rest]} ?env])]
 
-              [{:tag :project
-                :attr {:modifier (m/some)
-                       :attr ?attr
-                       :as ?mod}
+              [{::tag :project
+                ::attr {::modifier (m/some)
+                        ::attr ?attr
+                        :as ?mod}
                 & ?project} ?env]
-              (m/cata [{:tag :project
-                        :modifier (m/cata [?mod ?env])
-                        :attr ?attr
+              (m/cata [{::tag :project
+                        ::modifier (m/cata [?mod ?env])
+                        ::attr ?attr
                         & ?project} ?env])
 
-              [{:tag :project
-                :attr ?attr
-                :modifier ?mod
-                :val {:tag :contains :as ?val}}
+              [{::tag :project
+                ::attr ?attr
+                ::modifier ?mod
+                ::val {::tag :contains :as ?val}}
                {:id (m/some ?id) :as ?env}]
               [& (m/cata [?val {:attr ?attr :id ?id & ?env}])]
 
-              [{:tag :project
-                :attr ?attr
-                :modifier ?mod
-                :val {:id (m/some ?join-id) :as ?val}}
+              [{::tag :project
+                ::attr ?attr
+                ::modifier ?mod
+                ::val {::id (m/some ?join-id)
+                       :as ?val}}
                {:id (m/some ?id) :as ?env}]
               [& (m/cata [[?id (m/cata [?attr ?env]) ?join-id ?mod] nil])
                & (m/cata [?val ?env])]
 
-              [{:tag :project
-                :attr ?attr
-                :modifier ?mod
-                :val ?val}
+              [{::tag :project
+                ::attr ?attr
+                ::modifier ?mod
+                ::val ?val}
                {:id (m/some ?id) :as ?env}]
               (m/cata [[?id (m/cata [?attr ?env]) (m/cata [?val ?env]) ?mod] nil])
 
@@ -247,79 +248,79 @@
  (defn ! [x] (prn x) x)
 
  (parse-pattern {} {})
- := {:tag :join
-     :id ?id
-     :select []}
+ := {::tag :join
+     ::id ?id
+     ::select []}
 
  (parse-pattern [{}] {})
- := {:tag :contains
-     :id ?a
-     :node-id ?b
-     :contains {:tag :join
-                :id ?id
-                :select []}}
+ := {::tag :contains
+     ::id ?a
+     ::node-id ?b
+     ::contains {::tag :join
+                 ::id ?id
+                 ::select []}}
 
  (parse-pattern '{:id ?id} {})
- := {:tag :join
-     :id '?id
-     :select []}
+ := {::tag :join
+     ::id '?id
+     ::select []}
 
  (parse-pattern '{:id ?id :attr :val} {})
- := {:tag :join
-     :id '?id
-     :select [{:tag :project
-               :attr {:tag :attribute
-                      :attribute :attr}
-               :val {:tag :value
-                     :value :val}}]}
+ := {::tag :join
+     ::id '?id
+     ::select [{::tag :project
+                ::attr {::tag :attribute
+                        ::attribute :attr}
+                ::val {::tag :value
+                       ::value :val}}]}
 
  (parse-pattern '{:attr1 :val1 :attr2 :val2} {})
- := {:tag :join
-     :id ?id
-     :select [{:tag :project
-               :attr {:tag :attribute
-                      :attribute :attr1}
-               :val {:tag :value
-                     :value :val1}}
-              {:tag :project
-               :attr {:tag :attribute
-                      :attribute :attr2}
-               :val {:tag :value
-                     :value :val2}}]}
+ := {::tag :join
+     ::id ?id
+     ::select [{::tag :project
+                ::attr {::tag :attribute
+                        ::attribute :attr1}
+                ::val {::tag :value
+                       ::value :val1}}
+               {::tag :project
+                ::attr {::tag :attribute
+                        ::attribute :attr2}
+                ::val {::tag :value
+                       ::value :val2}}]}
 
  (parse-pattern '{:id ?id :attr ?val} {})
- := {:tag :join
-     :id '?id
-     :select [{:tag :project
-               :attr {:tag :attribute
-                      :attribute :attr}
-               :val {:tag :logic-variable
-                     :symbol '?val}}]}
+ := {::tag :join
+     ::id '?id
+     ::select [{::tag :project
+                ::attr {::tag :attribute
+                        ::attribute :attr}
+                ::val {::tag :logic-variable
+                       ::symbol '?val}}]}
 
  (parse-pattern '{:attr :val} {})
- := {:tag :join
-     :id ?id
-     :select [{:tag :project
-               :attr {:tag :attribute
-                      :attribute :attr}
-               :val {:tag :value
-                     :value :val}}]}
+ := {::tag :join
+     ::id ?id
+     ::select [{::tag :project
+                ::attr {::tag :attribute
+                        ::attribute :attr}
+                ::val {::tag :value
+                       ::value :val}}]}
 
  (parse-pattern '{:id :id1
                   :attr {:id :id2
                          :attr2 :val}} {})
- := {:tag :join
-     :id :id1
-     :select [{:tag :project
-               :attr {:tag :attribute
-                      :attribute :attr}
-               :val {:tag :join
-                     :id :id2
-                     :select [{:tag :project
-                               :attr {:tag :attribute
-                                      :attribute :attr2}
-                               :val {:tag :value
-                                     :value :val}}]}}]}
+ := {::tag :join
+     ::id :id1
+     ::select [{::tag :project
+                ::attr {::tag :attribute
+                        ::attribute :attr}
+                ::val {::tag :join
+                       ::id :id2
+                       ::select [{::tag :project
+                                  ::attr {::tag :attribute
+                                          ::attribute :attr2}
+                                  ::val {::tag :value
+                                         ::value :val}}]}}]}
 
  (pattern->what '?val)
  :throws #?(:clj java.lang.Exception :cljs js/Error)
