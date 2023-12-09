@@ -1,7 +1,8 @@
 (ns example.ui
   (:require [pondermatic.core :as p]
             [pondermatic.shell :as sh]
-            [pondermatic.flow :as flow]))
+            [pondermatic.flow :as flow]
+            [clojure.pprint :as cpp]))
 
 (def data
   (p/dataset
@@ -33,7 +34,8 @@
                  :layout ::authed
                  :page :none}}]))
 
+(cpp/pprint rules)
 (def engine (p/->engine "layout" :reset-db? true))
 
-(p/|> engine {:+>db rules})
-(p/|> engine {:+>db data})
+(p/|> engine {:->db rules})
+(p/|> engine {:->db data})
