@@ -1,12 +1,11 @@
 #!/bin/sh
 npm version patch
 TP_PONDERMATIC_VERSION=`npm version | grep pondermatic | cut -d\' -f4`
-git tag v$TP_PONDERMATIC_VERSION
 clojure -T:build clean
 clojure -T:build jar :version '"'$TP_PONDERMATIC_VERSION'"'
 clojure -T:build install :version '"'$TP_PONDERMATIC_VERSION'"'
-rm-rf dist
-shadow-cljs release :esm :npm
+rm -rf dist
+shadow-cljs release :npm
 
 cat >dist/cjs/package.json <<!EOF
 {
@@ -14,8 +13,8 @@ cat >dist/cjs/package.json <<!EOF
 }
 !EOF
 
-cat >dist/mjs/package.json <<!EOF
-{
-    "type": "module"
-}
-!EOF
+# cat >dist/mjs/package.json <<!EOF
+# {
+#     "type": "module"
+# }
+# !EOF
