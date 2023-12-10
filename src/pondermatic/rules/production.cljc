@@ -199,50 +199,115 @@
     (sci/eval-string (str expr)
                      {:namespaces {'user vars}})))
 
-(defn unify-pattern [pattern env]
+(defn parse-gen-pattern [pattern]
   (m/rewrite
-   [pattern env]
-
-   (m/and [[$ ?expr] ?env]
-          (m/let [?result (eval-expr ?expr ?env)]))
-   ?result
-
-   [(m/symbol _ (m/re #"^[?].+") :as ?symbol) {?symbol (m/some ?val) & ?env}]
-   ?val
-
-   (m/and [(m/symbol _ (m/re #"^[?].+") :as ?symbol) ?env]
-          (m/let [?e (throw (ex-info "Failed to unify symbol" {:symbol ?symbol :env ?env}))]))
-   ?e
-
-   (m/and [{(m/pred string? ?k-str) (m/some ?v) & ?rest} ?env]
-          (m/let [?k (edn/read-string ?k-str)]))
-   (m/cata [{?k ?v & ?rest} ?env])
-
-   [{(m/symbol "&") ?e & ?rest} {?e ?id entities {?id {& ?entitiy}} :as ?env}]
-   {& [& ?entitiy & (m/cata [{& ?rest} ?env])]}
-
-   [{(m/symbol "&") ?e} {?e ?id entities {?id ?entity}}]
-   ?entity
-
-   [{?k ?v & (m/some ?rest)} ?env]
-   {?k (m/cata [?v ?env])
-    & (m/cata [{& ?rest} ?env])}
-
-   [{?k (m/some ?v)} ?env]
-   {?k (m/cata [?v ?env])}
+   [pattern {}]
 
    (m/and [(m/pred string? (m/re #"^\[\$ .*\]$") ?str) ?env]
           (m/let [?expr (edn/read-string ?str)]))
    (m/cata [?expr ?env])
 
-   [[?first] ?env]
-   [(m/cata [?first ?env])]
+   [[$ ?expr] ?env]
+   {::tag :expr
+    ::expr ?expr}
 
-   [[?first & ?rest] ?env]
-   [(m/cata [?first ?env]) & (m/cata [[& ?rest] ?env])]
+   [(m/symbol _ (m/re #"^[?].+") :as ?symbol) ?env]
+   {::tag :logic-variable
+    ::symbol ?symbol}
+
+   [{:key (m/some ?k) :value ?v} ?env]
+   {::tag :map-entry
+    ::key ?k
+    ::value (m/cata [?v ?env])}
+
+   [{(m/symbol "&") ?e & ?rest} ?env]
+   {::entity ?e
+    & (m/cata [{& ?rest} ?env])}
+
+   [{& (m/seqable [!k !v] ...)} ?env]
+   {::tag :map
+    ::entries [(m/cata [{:key !k :value !v} ?env]) ...]}
+
+   [[!items ...] ?env]
+   {::tag :sequence
+    ::type :vector
+    ::items [(m/cata [!items ?env]) ...]}
+
+   [(!items ...) ?env]
+   {::tag :sequence
+    ::type :list
+    ::items [(m/cata [!items ?env]) ...]}
+
+   [(m/and (m/pred set?) (m/seqable !items ...)) ?env]
+   {::tag :sequence
+    ::type :set
+    ::items [(m/cata [!items ?env]) ...]}
 
    [?expr ?env]
-   ?expr))
+   {::tag :value
+    ::value ?expr}))
+
+(defn unify-gen-pattern [pattern env]
+  (m/rewrite
+   [pattern env]
+
+   (m/and [(merge ?a ?b) ?env]
+          (m/let [?e (merge ?a ?b)]))
+   ?e
+
+   (m/and [(hash-set & ?rest) ?env]
+          (m/let [?e (apply hash-set ?rest)]))
+   ?e
+
+   (m/and [{::tag :expr ::expr ?expr} ?env]
+          (m/let [?result (eval-expr ?expr ?env)]))
+   ?result
+
+   [{::tag :logic-variable ::symbol ?symbol} {?symbol (m/some ?val) & ?env}]
+   ?val
+
+   (m/and [{::tag :logic-variable ::symbol ?symbol} ?env]
+          (m/let [?e (throw (ex-info "Failed to unify symbol" {:symbol ?symbol :env ?env}))]))
+   ?e
+
+   (m/and [{::tag :map-entry ::key (m/pred string? ?k-str) ::value ?v} ?env]
+          (m/let [?k (edn/read-string ?k-str)]))
+   (m/cata [{::tag :map-entry ::key ?k ::value ?v} ?env])
+
+   (m/and [{::tag :map-entry ::key (m/pred keyword? (m/re #"^::") ?k-kw) ::value ?v} ?env]
+          (m/let [[_ ?k-str] (re-matches #"^:(.*)$" (str ?k-kw))
+                  ?k (edn/read-string ?k-str)]))
+   (m/cata [{::tag :map-entry ::key ?k ::value ?v} ?env])
+
+   [{::tag :map-entry ::key ?k ::value ?v} ?env]
+   [?k (m/cata [?v ?env])]
+
+   [{::tag :value ::value ?expr} ?env]
+   ?expr
+
+   [{::entity (m/some ?e) & ?rest} {?e ?id entities {?id ?entity} :as ?env}]
+   (m/cata [(merge ?entity {& (m/cata [{& ?rest} ?env])}) ?env])
+
+   [{::tag :map ::entries [!entries ...]} ?env]
+   {& [(m/cata [!entries ?env]) ...]}
+
+   [{::tag :sequence ::type :vector ::items [!items ...]} ?env]
+   [(m/cata [!items ?env]) ...]
+
+   [{::tag :sequence ::type :list ::items [!items ...]} ?env]
+   ((m/cata [!items ?env]) ...)
+
+   [{::tag :sequence ::type :set ::items [!items ...]} ?env]
+   (m/cata [(hash-set (m/cata [!items ?env]) ...) ?env])
+
+   (m/and [?expr ?env]
+          (m/let [?e (throw (ex-info "Failed to unify expr" {:expr ?expr :env ?env}))]))
+   ?e))
+
+(defn unify-pattern [pattern env]
+  (-> pattern
+      parse-gen-pattern
+      (unify-gen-pattern env)))
 
 (tests
  (defn ! [x] (prn x) x)

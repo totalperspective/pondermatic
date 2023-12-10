@@ -38,14 +38,13 @@ test('production rule data', done => {
         }
       },
       "rule/then": {
-        ":db/ident": "id",
         "data/new-key": "?value"
       }
     }
   ])
   const q = pondermatic.q(
     engine,
-    "[:find ?v . :where [?id :db/ident \"id\"] [?id :data/new-key ?v]]",
+    "[:find ?v . :where [?id :data/new-key ?v]]",
     [],
     r => {
       if (!r) {

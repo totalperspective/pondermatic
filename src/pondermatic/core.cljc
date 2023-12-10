@@ -46,7 +46,9 @@
                  (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
                    (let [[attr val] node]
                      (if (= attr id-attr)
-                       [:db/ident val]
+                       [:db/ident (if (string? val)
+                                    (edn/read-string (str ":" val))
+                                    val)]
                        [attr val]))
                    node))
                data)))
@@ -110,7 +112,9 @@
 
 (defn parse-patterns [ruleset]
   (mapv (fn [rule]
-          (update rule :rule/when #(prod/parse-pattern % {})))
+          (-> rule
+              (update :rule/when #(prod/parse-pattern % {}))
+              (update :rule/then #(prod/parse-gen-pattern %))))
         ruleset))
 
 (defn ruleset [rules]

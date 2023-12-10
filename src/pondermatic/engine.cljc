@@ -135,7 +135,7 @@
                                                  {}
                                                  ids)
                                 production (map (fn [b]
-                                                  (prp/unify-pattern then (assoc b 'entities entities)))
+                                                  (prp/unify-gen-pattern then (assoc b 'entities entities)))
                                                 bindings)]
                             (tap> {:rule ?id
                                    :type (if (:local/id then)
