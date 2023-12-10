@@ -1,6 +1,6 @@
 #!/bin/sh
 npm version patch
-TP_PONDERMATIC_VERSION=`npm version | grep pondermatic | cut -d\' -f2`
+TP_PONDERMATIC_VERSION=`npm version | grep pondermatic | cut -d\' -f4`
 git tag v$TP_PONDERMATIC_VERSION
 clojure -T:build clean
 clojure -T:build jar :version '"'$TP_PONDERMATIC_VERSION'"'
