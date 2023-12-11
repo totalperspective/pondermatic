@@ -3,7 +3,7 @@
             [pondermatic.shell :as sh :refer [|> |< |<=]]
             [pondermatic.flow :as f]
             [hyperfiddle.rcf :as rcf :refer [tests %]]
-            [pondermatic.portal :as p]))
+            [pondermatic.portal.utils :as p]))
 
 (defn cmd-type
   [[cmd] _]

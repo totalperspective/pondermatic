@@ -2,7 +2,7 @@
   (:require [pondermatic.shell :as sh]
             [pondermatic.flow :as flow]
             [pondermatic.rules :as rules]
-            [pondermatic.portal :as p]
+            [pondermatic.portal.utils :as p]
             [pondermatic.db :as db]
             [pondermatic.rules.production :as prp]
             [odoyle.rules :as o]
