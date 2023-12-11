@@ -136,13 +136,16 @@
                                                  ids)
                                 production (map (fn [b]
                                                   (prp/unify-gen-pattern then (assoc b 'entities entities)))
-                                                bindings)]
+                                                bindings)
+                                local? (-> production
+                                           first
+                                           :local/id)]
                             (tap> {:rule ?id
-                                   :type (if (:local/id then)
+                                   :type (if local?
                                            ::local
                                            ::db)
                                    :production production})
-                            (if (:local/id then)
+                            (if local?
                               (sh/|> rules (rules/insert* (map (juxt :local/id identity)
                                                                production)))
                               (sh/|> conn {:tx-data production}))))})]
