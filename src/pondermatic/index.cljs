@@ -3,14 +3,14 @@
             [pondermatic.rules :as r]
             [pondermatic.flow :as flow]
             [missionary.core :as m]
-            [pondermatic.portal :as portal]
+            [pondermatic.portal.utils :as portal]
             [clojure.edn :as edn]))
 
-(defn portal
-  ([]
-   (portal nil))
-  ([launcher]
-   (portal/start (keyword launcher))))
+;; (defn portal
+;;   ([]
+;;    (portal nil))
+;;   ([launcher]
+;;    (portal/start (keyword launcher))))
 
 (defn create-engine
   ([name]
@@ -60,5 +60,5 @@
        :sh sh
        :addRulesMsg add-rules-msg
        :q q
-       :portal portal
+      ;;  :portal portal
        :dispose dispose!})

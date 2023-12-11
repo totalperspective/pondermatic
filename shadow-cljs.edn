@@ -31,6 +31,4 @@
   :esm
   {:target :esm
    :output-dir "dist/mjs"
-   :runtime :node
-   :js-options {:js-provider :import}
    :modules {:index {:exports {default pondermatic.index/exports}}}}}}
