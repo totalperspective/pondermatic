@@ -6,8 +6,11 @@
             [pondermatic.portal :as portal]
             [clojure.edn :as edn]))
 
-(defn portal [launcher]
-  (portal/start (keyword launcher)))
+(defn portal
+  ([]
+   (portal nil))
+  ([launcher]
+   (portal/start (keyword launcher))))
 
 (defn create-engine
   ([name]

@@ -13,14 +13,15 @@
         org.babashka/sci {:mvn/version "0.8.40"}
         town.lilac/pyramid {:mvn/version "3.4.0"}
         io.replikativ/hasch {:mvn/version "0.3.94"}
-        djblue/portal {:mvn/version "0.49.0"}}
+        http-kit/http-kit {:mvn/version "2.7.0"}
+        djblue/portal {:mvn/version "0.50.0"}}
  :aliases
  {:dev
   {:extra-paths ["dev"]
    :main user/-main}
   :cljs
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.60"}
-                thheller/shadow-cljs {:mvn/version "2.26.0"}
+                thheller/shadow-cljs {:mvn/version "2.26.2"}
                 com.google.javascript/closure-compiler-unshaded {:mvn/version "v20230802"}}}
   :test
   {:jvm-opts    ["-XX:-OmitStackTraceInFastThrow"
