@@ -1,7 +1,7 @@
 (ns example.index
   (:require [pondermatic.index :as i]))
 
-(defonce p (i/portal "vs-code"))
+;; (defonce p (i/portal "vs-code"))
 
 (def engine (i/create-engine "test" true))
 
