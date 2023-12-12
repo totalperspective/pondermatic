@@ -1,7 +1,7 @@
-name: CLJS Browser
+name: CLJS NodeJS
 on: [push, pull_request]
 jobs:
-  browser:
+  node:
     runs-on: [ubuntu-latest]
     steps:
       - name: Checkout
@@ -23,8 +23,8 @@ jobs:
           node-version: 17.8.0
 
       - name: Install Shadow
-        run: npm install --also dev
+        run: npm install shadow-cljs
 
       - name: Run Tests
-        run: ./ci/run_tests_browser.sh
+        run: ./ci/run_tests_js.sh
 
