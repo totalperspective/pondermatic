@@ -23,8 +23,7 @@ jobs:
           node-version: 17.8.0
 
       - name: Install Shadow
-        run: npm install shadow-cljs
+        run: npm ci
 
       - name: Run Tests
         run: ./ci/run_tests_js.sh
-
