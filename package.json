@@ -46,8 +46,6 @@
       "**/*.mjs",
       "**/*.js"
     ],
-    "transform": {
-      "\\.mjs$": "babel-jest"
-    }
+    "transform": {}
   }
 }

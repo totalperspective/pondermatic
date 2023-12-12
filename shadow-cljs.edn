@@ -11,24 +11,29 @@
   :test
   {:target    :node-test
    :output-to "out/node-tests.js"
+   :compiler-options {:reader-features #{:node}}
    :ns-regexp "^(pondermatic.*|example.*)"}
 
   :browser-test
   {:target    :karma
    :output-to "out/karma-tests.js"
+   :compiler-options {:reader-features #{:browser}}
    :ns-regexp "^(pondermatic.*|example.*)"}
 
   :npm
   {:target :node-library
    :output-to "dist/cjs/index.js"
+   :compiler-options {:reader-features #{:node}}
    :exports-var pondermatic.index/exports}
   
   :node
   {:target :npm-module
    :output-dir "dist/module"
+   :compiler-options {:reader-features #{:node}}
    :entries [pondermatic.index]}
 
   :esm
   {:target :esm
    :output-dir "dist/mjs"
+   :compiler-options {:reader-features #{:node}}
    :modules {:index {:exports {default pondermatic.index/exports}}}}}}
