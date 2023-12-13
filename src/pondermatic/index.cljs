@@ -4,6 +4,7 @@
             [pondermatic.flow :as flow]
             [missionary.core :as m]
             [pondermatic.portal.utils :as portal]
+            [clojure.walk :as w]
             [clojure.edn :as edn]))
 
 ;; (defn portal
@@ -18,9 +19,31 @@
   ([name reset-db?]
    (p/->engine name :reset-db? reset-db?)))
 
+(defn ->edn [form]
+  (->> form
+       str
+       edn/read-string
+       (w/postwalk (fn [node]
+                     #_{:clj-kondo/ignore [:unresolved-symbol]}
+                     (if (instance? cljs.core.MapEntry  node)
+                       (let [[attr val] node]
+                         (if (symbol? attr)
+                           [(keyword (str attr)) val]
+                           [attr val]))
+                       node)))))
+
+(defn parse-rule [rule]
+  (-> rule
+      (update :rule/when ->edn)
+      (update :rule/then ->edn)))
+
+(defn parse-rules [rules]
+  (mapv parse-rule rules))
+
 (defn ruleset [ruleset]
   (-> ruleset
       (js->clj :keywordize-keys true)
+      parse-rules
       (portal/trace 'ruleset)
       p/ruleset))
 

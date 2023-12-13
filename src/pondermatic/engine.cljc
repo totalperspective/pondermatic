@@ -131,6 +131,7 @@
                                 (zipmap pred-l-vars)
                                 (prp/unify-pattern preds)
                                 (map str)
+                                p/trace
                                 (map sci/eval-string)
                                 (every? identity)))
                  rule-spec {:what what
@@ -178,7 +179,7 @@
             ruleset)))
 
 (defn ->engine [conn rules]
-  (add-base-rules conn rules {})
+  (add-base-rules conn rules '{!= not=})
   (let [dispose:db=>rules (db=>rules conn rules)]
     (->> (hash-map ::conn conn
                    ::rules rules

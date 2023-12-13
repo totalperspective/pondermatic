@@ -248,16 +248,15 @@
               nil
 
               [{::tag :predicate
-                ::predicate (m/pred symbol? ?symbol)
-                ::args [!args ...]}
-               ?env]
-              [(?symbol & [(m/cata [!args ?env]) ...])]
-
-              [{::tag :predicate
-                ::predicate (m/pred string? ?pred)
+                ::predicate (m/some ?pred)
                 ::args [!args ...]}
                {scope {?pred (m/some ?fn)} :as ?env}]
               [(?fn & [(m/cata [!args ?env]) ...])]
+
+              [{::tag :predicate
+                ::predicate (m/pred symbol? ?symbol)
+                ::args [!args ...]} ?env]
+              [(?symbol & [(m/cata [!args ?env]) ...])]
 
               (m/and [?expr ?env]
                      (m/let [?e (throw (ex-info "Failed to compile expression" {:expr ?expr :env ?env}))]))
