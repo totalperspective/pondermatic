@@ -13,6 +13,11 @@
         parsed (m/rewrite
                 [pattern env]
 
+
+                [(m/pred set? (m/seqable !clauses ...)) ?env]
+                {::tag :conjunction
+                 ::clauses [(m/cata [!clauses ?env]) ...]}
+
                 (m/and [[?contains] ?env]
                        (m/let [?item-id (gensym "?production-id-")
                                ?node-id (gensym "?production-id-")]))
@@ -87,6 +92,20 @@
 
               [[?e ?a ?v (m/pred map? ?mod)] nil]
               [[?e ?a ?v ?mod]]
+
+              [{::tag :conjunction
+                ::clauses []} _]
+              []
+
+              [{::tag :conjunction
+                ::clauses [?first]} ?env]
+              [& (m/cata [?first ?env])]
+
+              [{::tag :conjunction
+                ::clauses [?first & ?rest]} ?env]
+              [& (m/cata [?first ?env])
+               & (m/cata [{::tag :conjunction
+                           ::clauses [& ?rest]} ?env])]
 
               [{::tag :value ::value ?value} _]
               ?value
@@ -325,6 +344,12 @@
                  ::id ?id
                  ::select []}}
 
+ (parse-pattern #{{}} {})
+ := {::tag :conjunction
+     ::clauses [{::tag :join
+                 ::id ?id
+                 ::select []}]}
+
  (parse-pattern '{:id ?id} {})
  := {::tag :join
      ::id '?id
@@ -414,6 +439,17 @@
 
  (pattern->what '{:attr ?val})
  := [[_ :attr '?val]]
+
+ (pattern->what '#{})
+ := []
+
+ (pattern->what '#{{:attr ?val}})
+ := [[?id1 :attr '?val]]
+
+ (pattern->what '#{{:attr ?val}
+                   {:attr2 ?val}})
+ := [[?id2 :attr2 '?val]
+     [?id1 :attr '?val]]
 
  (pattern->what '[{:attr ?val :id :id}])
  := [[?a :p/contained-by ?id]
