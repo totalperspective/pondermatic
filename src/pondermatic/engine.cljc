@@ -10,7 +10,9 @@
             [missionary.core :as m]
             [asami.core :as d]
             [pondermatic.flow :as f]
-            [clojure.walk :as w]))
+            [clojure.walk :as w]
+            [sci.core :as sci]
+            [pondermatic.portal.utils :as portal]))
 
 (def type-name ::type)
 (def rule-type ::rule)
@@ -67,7 +69,7 @@
             (when (seq assertions)
               (sh/|> rule-session (rules/insert* assertions)))))))))
 
-(defn add-base-rules [conn rules]
+(defn add-base-rules [conn rules env]
   (let [ruleset
         (o/ruleset
          {::collection-head
@@ -110,46 +112,63 @@
            (let [db (db/db! conn)
                  {:keys [:rule/when :rule/then]} (db/lookup-entity db [:db/ident ?id] :nested? true)
                  what (prp/compile-what when)
-                 entitiy-lvars (->> what
-                                    (map first)
-                                    (filter symbol?)
-                                    distinct)
-                 rule (o/->rule
-                       ?id
-                       {:what what
-                        :then-finally
-                        (fn then-finally [session]
-                          (let [matches (o/query-all session ?id)
-                                bindings (map (partial reduce-kv (fn [m k v]
-                                                                   (assoc m (symbol k) v))
-                                                       {})
-                                              matches)
-                                ids (->> bindings
-                                         (mapcat (fn [match]
-                                                   (map (partial get match) entitiy-lvars)))
-                                         (remove nil?)
-                                         distinct)
-                                db (db/db! conn)
-                                entities (reduce (fn [m id]
-                                                   (assoc m id (d/entity db id)))
-                                                 {}
-                                                 ids)
-                                production (map (fn [b]
-                                                  (prp/unify-gen-pattern then (assoc b 'entities entities)))
-                                                bindings)
-                                local? (-> production
-                                           first
-                                           :local/id)]
-                            (tap> {:rule ?id
-                                   :type (if local?
-                                           ::local
-                                           ::db)
-                                   :production production})
-                            (if local?
-                              (sh/|> rules (rules/insert* (map (juxt :local/id identity)
-                                                               production)))
-                              (sh/|> conn {:tx-data production}))))})]
-             (tap> {::add-rule (p/table what)})
+                 entity-lvars (->> what
+                                   (map first)
+                                   (filter symbol?)
+                                   distinct)
+                 preds (prp/compile-when when {'scope env})
+                 pred-l-vars (->> preds
+                                  (map flatten)
+                                  flatten
+                                  (filter symbol?)
+                                  distinct
+                                  (filter (fn [sym]
+                                            (= \? (-> sym str first)))))
+                 when-fn (fn [session match]
+                           (->> pred-l-vars
+                                (map keyword)
+                                (map match)
+                                (zipmap pred-l-vars)
+                                (prp/unify-pattern preds)
+                                (map str)
+                                (map sci/eval-string)
+                                (every? identity)))
+                 rule-spec {:what what
+                            :when when-fn
+                            :then-finally
+                            (fn then-finally [session]
+                              (let [matches (o/query-all session ?id)
+                                    bindings (map (partial reduce-kv (fn [m k v]
+                                                                       (assoc m (symbol k) v))
+                                                           {})
+                                                  matches)
+                                    ids (->> bindings
+                                             (mapcat (fn [match]
+                                                       (map (partial get match) entity-lvars)))
+                                             (remove nil?)
+                                             distinct)
+                                    db (db/db! conn)
+                                    entities (reduce (fn [m id]
+                                                       (assoc m id (d/entity db id)))
+                                                     {}
+                                                     ids)
+                                    production (map (fn [b]
+                                                      (prp/unify-gen-pattern then (assoc b 'entities entities)))
+                                                    bindings)
+                                    local? (-> production
+                                               first
+                                               :local/id)]
+                                (tap> {:rule ?id
+                                       :type (if local?
+                                               ::local
+                                               ::db)
+                                       :production production})
+                                (if local?
+                                  (sh/|> rules (rules/insert* (map (juxt :local/id identity)
+                                                                   production)))
+                                  (sh/|> conn {:tx-data production}))))}
+                 rule (o/->rule ?id rule-spec)]
+             (tap> {::add-rule rule-spec})
              (sh/|> rules (rules/add-rule rule))
              rule)]})
         rules< (flow/split (sh/|< rules (rules/query ::rules)))]
@@ -159,7 +178,7 @@
             ruleset)))
 
 (defn ->engine [conn rules]
-  (add-base-rules conn rules)
+  (add-base-rules conn rules {})
   (let [dispose:db=>rules (db=>rules conn rules)]
     (->> (hash-map ::conn conn
                    ::rules rules

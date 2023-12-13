@@ -8,11 +8,10 @@
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
 
 (defn parse-pattern [pattern opts]
-  (let [defaults {:identity :id}
+  (let [defaults {:identity :id :part :clause}
         env (merge defaults opts)
         parsed (m/rewrite
                 [pattern env]
-
 
                 [(m/pred set? (m/seqable !clauses ...)) ?env]
                 {::tag :conjunction
@@ -75,6 +74,12 @@
                 [?value {:part :sub-clause}]
                 {::tag :value
                  ::value ?value}
+
+
+                [(!pred ..1 !args ...) {:part :clause & ?env}]
+                {::tag :predicate
+                 ::predicate !pred
+                 ::args [(m/cata [!args {:part :sub-clause & ?env}]) ...]}
 
                 (m/and [?expr ?env]
                        (m/let [?e (throw (ex-info "Failed to parse expression" {:expr ?expr :env ?env}))]))
@@ -196,6 +201,64 @@
                {:id (m/some ?id) :as ?env}]
               (m/cata [[?id (m/cata [?attr ?env]) (m/cata [?val ?env]) ?mod] nil])
 
+              [{::tag :predicate} _]
+              nil
+
+              (m/and [?expr ?env]
+                     (m/let [?e (throw (ex-info "Failed to compile expression" {:expr ?expr :env ?env}))]))
+              ?e)]
+    (if (throwable? what)
+      (throw what)
+      what)))
+
+(defn compile-when [pattern-ast env]
+  (let [what (m/rewrite
+              [pattern-ast env]
+
+              [{::tag :conjunction
+                ::clauses []} _]
+              []
+
+              [{::tag :conjunction
+                ::clauses [?first]} ?env]
+              [& (m/cata [?first ?env])]
+
+              [{::tag :conjunction
+                ::clauses [?first & ?rest]} ?env]
+              [& (m/cata [?first ?env])
+               & (m/cata [{::tag :conjunction
+                           ::clauses [& ?rest]} ?env])]
+
+              [{::tag :value ::value ?value} _]
+              ?value
+
+              [{::tag :attribute ::attribute ?attr} _]
+              nil
+
+              [{::tag :logic-variable ::symbol ?symbol} _]
+              ?symbol
+
+              [{::tag :contains} _]
+              nil
+
+              [{::tag :join} _]
+              nil
+
+              [{::tag :project} ?env]
+              nil
+
+              [{::tag :predicate
+                ::predicate (m/pred symbol? ?symbol)
+                ::args [!args ...]}
+               ?env]
+              [(?symbol & [(m/cata [!args ?env]) ...])]
+
+              [{::tag :predicate
+                ::predicate (m/pred string? ?pred)
+                ::args [!args ...]}
+               {scope {?pred (m/some ?fn)} :as ?env}]
+              [(?fn & [(m/cata [!args ?env]) ...])]
+
               (m/and [?expr ?env]
                      (m/let [?e (throw (ex-info "Failed to compile expression" {:expr ?expr :env ?env}))]))
               ?e)]
@@ -210,6 +273,14 @@
    (-> pattern
        (parse-pattern opts)
        compile-what)))
+
+(defn pattern->when
+  ([pattern]
+   (pattern->when pattern {}))
+  ([pattern opts]
+   (-> pattern
+       (parse-pattern opts)
+       (compile-when opts))))
 
 (defn eval-expr [expr env]
   (let [vars (reduce-kv (fn [m k v]
@@ -396,6 +467,14 @@
                 ::val {::tag :value
                        ::value :val}}]}
 
+ (parse-pattern '(pred ?lhs 1) {})
+ := '{::tag :predicate
+      ::predicate pred
+      ::args [{::tag :logic-variable
+               ::symbol ?lhs}
+              {::tag :value
+               ::value 1}]}
+
  (parse-pattern '{:id :id1
                   :attr {:id :id2
                          :attr2 :val}} {})
@@ -444,12 +523,12 @@
  := []
 
  (pattern->what '#{{:attr ?val}})
- := [[?id1 :attr '?val]]
+ := [[?a :attr '?val]]
 
  (pattern->what '#{{:attr ?val}
                    {:attr2 ?val}})
- := [[?id2 :attr2 '?val]
-     [?id1 :attr '?val]]
+ := [[?a :attr2 '?val]
+     [?b :attr '?val]]
 
  (pattern->what '[{:attr ?val :id :id}])
  := [[?a :p/contained-by ?id]
@@ -496,6 +575,24 @@
  (pattern->what '{:id ?id
                   "(not= :a)" ?a})
  := [['?id :a '?a {:then not=}]]
+
+ (pattern->what '(pred ?lhs ?rhs))
+ := nil
+
+ (pattern->what '#{(pred ?lhs ?rhs)})
+ := []
+
+ (pattern->when '{})
+ := nil
+
+ (pattern->when '[{}])
+ := nil
+
+ (pattern->when '#{(and ?lhs ?rhs)})
+ := '[(and ?lhs ?rhs)]
+
+ (pattern->when '#{(">" ?lhs 1)} '{scope {">" `>}})
+ := '[(`> ?lhs 1)]
 
  (unify-pattern '?x '{?x 1}) := 1
 

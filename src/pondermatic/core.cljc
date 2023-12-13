@@ -69,6 +69,13 @@
     (m/rewrite
      [data {:ident :item}]
 
+     (m/and [(hash-set & ?elements) ?env]
+            (m/let [?set (apply hash-set ?elements)]))
+     ?set
+
+     [(m/pred set? (m/seqable !elements ...)) ?env]
+     (m/cata [(hash-set (m/cata [!elements ?env]) ...) ?env])
+
      (m/and [{::attr (m/some ?attr) ::value (m/some ?value)} {:ident ?id & ?env}]
             (m/let [?ident (kw-fn ?id ?attr)]))
      [?attr (m/cata [?value {:ident ?ident & ?env}])]
