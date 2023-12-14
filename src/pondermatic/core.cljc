@@ -29,10 +29,10 @@
                    node))
                data)))
 
-(defn l-vars [data]
+(defn parse-strings [data]
   (w/postwalk (fn [node]
                 #_{:clj-kondo/ignore [:unresolved-symbol]}
-                (if (and (string? node) (re-matches #"^[?].*$" node))
+                (if (and (string? node) (re-matches #"^[?:+].*$" node))
                   (edn/read-string node)
                   node))
               data))
@@ -43,13 +43,31 @@
   ([data id-attr]
    (w/postwalk (fn [node]
                  #_{:clj-kondo/ignore [:unresolved-symbol]}
-                 (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
+                 (cond
+                   (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
                    (let [[attr val] node]
                      (if (= attr id-attr)
-                       [:db/ident (if (string? val)
+                       [:db/ident (cond
+                                    (and (string? val)
+                                         (= \: (first  val)))
+                                    (edn/read-string val)
+
+                                    (string? val)
                                     (edn/read-string (str ":" val))
+
+                                    (and (symbol? val)
+                                         (not (#{\+ \?} (first (str val)))))
+                                    (edn/read-string (str ":" val))
+
+                                    :else
                                     val)]
                        [attr val]))
+                   (and (vector? node)
+                        (= (count node) 2)
+                        (= (str (first node)) "id"))
+                   (edn/read-string (str ":" (second node)))
+
+                   :else
                    node))
                data)))
 
@@ -128,13 +146,14 @@
   (-> (map #(assoc % type-name rule-type) rules)
       id->ident
       kw->qkw
-      l-vars
+      parse-strings
       parse-patterns
       component->entity))
 
 (defn dataset [data & {:keys [id-attr ns] :or {id-attr :id ns "data"}}]
   (-> data
       (id->ident id-attr)
+      parse-strings
       (kw->qkw ns)
       component->entity))
 

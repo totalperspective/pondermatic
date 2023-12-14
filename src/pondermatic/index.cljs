@@ -44,14 +44,14 @@
   (-> ruleset
       (js->clj :keywordize-keys true)
       parse-rules
-      (portal/trace 'ruleset)
-      p/ruleset))
+      p/ruleset
+      (portal/trace 'ruleset)))
 
 (defn dataset [dataset]
   (-> dataset
       (js->clj :keywordize-keys true)
-      (portal/trace 'dataset)
-      p/dataset))
+      p/dataset
+      (portal/trace 'dataset)))
 
 (defn sh [engine msg]
   (p/|> engine (-> msg
@@ -71,6 +71,8 @@
     (flow/drain
      (m/ap (let [q< (m/? q<>)
                  result (m/?< q<)]
+             (tap> {:query q
+                    :result (portal/table result)})
              (cb (clj->js result)))))))
 
 (defn dispose! [task]

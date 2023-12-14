@@ -5,40 +5,83 @@
 
 (defonce _ (pp/start :vs-code))
 
+(tap> ::starting)
+
+(def engine (i/create-engine "test" true))
+
+(def q (i/q engine
+            (str '[:find ?id ?key ?value
+                   :where
+                   [?id :data/type +task]
+                   [?id ?k ?v]
+                   [(str ?k) ?key]
+                   [(str ?v) ?value]])
+            []
+            #(.log js/console %)))
+
 (def rules
   (-> [{"id" "terminate/activate"
         "rule/when" (str '#{{terminate/reason ?reason}})
         "rule/then" (str '{id terminate/task
+                           type +task
                            task/active? true
                            task/priority 100})}
-       {"id" "other/task"
+       {"id" "other/activate"
         "rule/when" (str '#{{some/var ?val}
                             (> ?val 0)})
-        "rule/then" (str '{id terminate/task
+        "rule/then" (str '{id other/task
+                           type +task
                            task/active? true
                            task/priority 100})}
-       {"id" "before-all/rule"
+       {"id" "axiom/before-all"
         "rule/when" (str '#{{id ?task
+                             type +task
                              task/active? true
                              task/priority ?priority
-                             before *}
+                             task/before _}
                             {id ?other-task
+                             type +task
+                             task/priority ?other-priority
                              task/active? true}
-                            (!= ?task ?other-task)})
-        "rule/then" (str '{id ?other-task
-                           task/priority "[$ (dec ?priority)]"})}]
+                            (!= ?task ?other-task)
+                            (>= ?priority ?other-priority)})
+        ;; "rule/reduce" '{?task {?new-priority (min ?other-priority)}}
+        "rule/then" (str '{id ?task
+                           task/priority' [$ (dec ?other-priority)]})}
+       {"id" "axiom/before-task"
+        "rule/when" (str '#{{id ?task
+                             type +task
+                             task/active? true
+                             task/priority ?priority
+                             task/before ?other-task}
+                            {id ?other-task
+                             type +task
+                             task/priority ?other-priority
+                             task/active? true}
+                            (!= ?task ?other-task)
+                            (>= ?priority ?other-priority)})
+        "rule/then" (str '{id ?task
+                           task/priority' [$ (dec ?other-priority)]})}]
       clj->js
-      (ppu/trace :rule/js)
       i/ruleset))
 
 (def data
-  (-> '[{some/var 10}
-        {terminate/reason "Done"}]
+  (-> '[{id my/task
+         type +task}
+        {id other/task
+         type +task
+        ;;  task/before [id my/task]
+         }
+        {id terminate/task
+         type +task
+         task/before _}
+        {some/var 10}
+        {type +event
+         terminate/reason Done}]
       clj->js
-      (ppu/trace :data/js)
       i/dataset))
-
-(def engine (i/create-engine "test" true))
 
 (i/sh engine #js {"->db" rules})
 (i/sh engine #js {"->db" data})
+
+(q)

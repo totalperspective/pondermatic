@@ -282,6 +282,8 @@
        (compile-when opts))))
 
 (defn eval-expr [expr env]
+  (tap> {:eval/expr expr
+         :eval/env env})
   (let [vars (reduce-kv (fn [m k v]
                           (assoc m k (sci/new-var k v)))
                         {} env)]
@@ -296,9 +298,10 @@
           (m/let [?expr (edn/read-string ?str)]))
    (m/cata [?expr ?env])
 
-   [[$ ?expr] ?env]
+   (m/and [[$ ?expr] ?env]
+          (m/let [?expr-str (str ?expr)]))
    {::tag :expr
-    ::expr ?expr}
+    ::expr ?expr-str}
 
    [(m/symbol _ (m/re #"^[?].+") :as ?symbol) ?env]
    {::tag :logic-variable
