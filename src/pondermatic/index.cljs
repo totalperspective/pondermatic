@@ -5,13 +5,20 @@
             [missionary.core :as m]
             [pondermatic.portal.utils :as portal]
             [clojure.walk :as w]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn]
+            [hasch.core :as h]))
 
 ;; (defn portal
 ;;   ([]
 ;;    (portal nil))
 ;;   ([launcher]
 ;;    (portal/start (keyword launcher))))
+
+(defn hash-id [js-obj]
+  (-> js-obj
+      (js->clj :keywordize-keys true)
+      h/edn-hash
+      h/uuid5))
 
 (defn create-engine
   ([name]
@@ -78,6 +85,11 @@
 (defn dispose! [task]
   (task))
 
+(defn error-info [e]
+  (-> e
+      ex-data
+      clj->js))
+
 (def exports
   #js {:createEngine create-engine
        :ruleset ruleset
@@ -85,5 +97,7 @@
        :sh sh
        :addRulesMsg add-rules-msg
        :q q
+       :hashId hash-id
+       :errorInfo error-info
       ;;  :portal portal
        :dispose dispose!})
