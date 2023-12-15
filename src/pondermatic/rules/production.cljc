@@ -2,7 +2,8 @@
   (:require [hyperfiddle.rcf :refer [tests]]
             [meander.epsilon :as m]
             [clojure.edn :as edn]
-            [sci.core :as sci]))
+            [sci.core :as sci]
+            [hasch.core :as h]))
 
 (defn throwable? [e]
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
@@ -298,6 +299,11 @@
           (m/let [?expr (edn/read-string ?str)]))
    (m/cata [?expr ?env])
 
+   [[$ ?expr ?merge] ?env]
+   {::tag :aggregate
+    ::merge ?merge
+    ::expr (m/cata [[$ ?expr] ?env])}
+
    (m/and [[$ ?expr] ?env]
           (m/let [?expr-str (str ?expr)]))
    {::tag :expr
@@ -391,6 +397,17 @@
 
    [{::tag :sequence ::type :set ::items [!items ...]} ?env]
    (m/cata [(hash-set (m/cata [!items ?env]) ...) ?env])
+
+   (m/and [{::tag :aggregate ::merge ?merge ::expr ?expr :as ?agg} ?env]
+          (m/let [?id (h/uuid5 (h/edn-hash ?agg))
+                  ?val (unify-gen-pattern ?expr ?env)
+                  ?agg-fn (fn agg-fn
+                            ([] ?id)
+                            ([other] (if (nil? other)
+                                       ?val
+                                       (agg-fn other ?val)))
+                            ([x y] (sci/eval-string (str (list ?merge x y)))))]))
+   ?agg-fn
 
    (m/and [?expr ?env]
           (m/let [?e (throw (ex-info "Failed to unify expr" {:expr ?expr :env ?env}))]))

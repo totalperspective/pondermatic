@@ -12,7 +12,8 @@
             [pondermatic.flow :as f]
             [clojure.walk :as w]
             [sci.core :as sci]
-            [pondermatic.portal.utils :as portal]))
+            [pondermatic.portal.utils :as portal]
+            [pondermatic.portal.utils :as ppu]))
 
 (def type-name ::type)
 (def rule-type ::rule)
@@ -153,9 +154,42 @@
                                                        (assoc m id (d/entity db id)))
                                                      {}
                                                      ids)
-                                    production (map (fn [b]
-                                                      (prp/unify-gen-pattern then (assoc b 'entities entities)))
-                                                    bindings)
+                                    production (->> bindings
+                                                    (map (fn [b]
+                                                           (prp/unify-gen-pattern then (assoc b 'entities entities))))
+                                                    (reduce  (fn [m p]
+                                                               (let [p' (w/postwalk (fn [node]
+                                                                                      (if (fn? node)
+                                                                                        (node)
+                                                                                        node))
+                                                                                    p)
+                                                                     id (h/uuid5 (h/edn-hash p'))]
+                                                                 (merge-with
+                                                                  (fn merge-fn [x y]
+                                                                    (cond
+                                                                      (map? x) (merge-with merge-fn x y)
+
+                                                                      (and (fn? x) (fn? y)) (comp y x)
+
+                                                                      (fn? y) y
+
+                                                                      (= x y) x
+
+                                                                      (nil? x) y
+
+                                                                      :else (throw (ex-info "Couldn't perfoprm merge"
+                                                                                            {:rule ?id :args [x y]}))))
+                                                                  m
+
+                                                                  {id p})))
+                                                             {})
+                                                    vals
+                                                    (map (fn [p]
+                                                           (w/postwalk (fn [node]
+                                                                         (if (fn? node)
+                                                                           (node nil)
+                                                                           node))
+                                                                       p))))
                                     local? (-> production
                                                first
                                                :local/id)]
@@ -169,7 +203,7 @@
                                                                    production)))
                                   (sh/|> conn {:tx-data production}))))}
                  rule (o/->rule ?id rule-spec)]
-             (tap> {::add-rule rule-spec})
+             (tap> {::add-rule (update rule-spec :what ppu/table)})
              (sh/|> rules (rules/add-rule rule))
              rule)]})
         rules< (flow/split (sh/|< rules (rules/query ::rules)))]

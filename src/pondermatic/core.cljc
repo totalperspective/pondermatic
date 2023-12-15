@@ -32,9 +32,21 @@
 (defn parse-strings [data]
   (w/postwalk (fn [node]
                 #_{:clj-kondo/ignore [:unresolved-symbol]}
-                (if (and (string? node) (re-matches #"^[?:+].*$" node))
+                (cond
+                  (and (string? node) (re-matches #"^[+].*$" node))
+                  (edn/read-string (apply str (rest node)))
+
+                  (and (string? node) (re-matches #"^[?:].*$" node))
                   (edn/read-string node)
-                  node))
+
+                  (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
+                  (let [[key val] node]
+                    (if (list? key)
+                      (let [[mod key] key]
+                        [(list mod (keyword (str key))) val])
+                      node))
+
+                  :else node))
               data))
 
 (defn id->ident

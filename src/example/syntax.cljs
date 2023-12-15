@@ -12,7 +12,7 @@
 (def q (i/q engine
             (str '[:find ?id ?key ?value
                    :where
-                   [?id :data/type +task]
+                   [?id :data/type :task]
                    [?id ?k ?v]
                    [(str ?k) ?key]
                    [(str ?v) ?value]])
@@ -23,60 +23,58 @@
   (-> [{"id" "terminate/activate"
         "rule/when" (str '#{{terminate/reason ?reason}})
         "rule/then" (str '{id terminate/task
-                           type +task
+                           type :task
                            task/active? true
                            task/priority 100})}
        {"id" "other/activate"
         "rule/when" (str '#{{some/var ?val}
                             (> ?val 0)})
         "rule/then" (str '{id other/task
-                           type +task
+                           type :task
                            task/active? true
                            task/priority 100})}
        {"id" "axiom/before-all"
         "rule/when" (str '#{{id ?task
-                             type +task
+                             type :task
                              task/active? true
-                             task/priority ?priority
-                             task/before _}
+                             (:skip task/priority) ?priority
+                             task/before :all}
                             {id ?other-task
-                             type +task
+                             type :task
                              task/priority ?other-priority
                              task/active? true}
                             (!= ?task ?other-task)
                             (>= ?priority ?other-priority)})
-        ;; "rule/reduce" '{?task {?new-priority (min ?other-priority)}}
         "rule/then" (str '{id ?task
-                           task/priority' [$ (dec ?other-priority)]})}
+                           task/priority' [$ (dec ?other-priority) min]})}
        {"id" "axiom/before-task"
         "rule/when" (str '#{{id ?task
-                             type +task
+                             type :task
                              task/active? true
-                             task/priority ?priority
+                             (:skip task/priority) ?priority
                              task/before ?other-task}
                             {id ?other-task
-                             type +task
+                             type :task
                              task/priority ?other-priority
                              task/active? true}
                             (!= ?task ?other-task)
                             (>= ?priority ?other-priority)})
         "rule/then" (str '{id ?task
-                           task/priority' [$ (dec ?other-priority)]})}]
+                           task/priority' [$ (dec ?other-priority) min]})}]
       clj->js
       i/ruleset))
 
 (def data
   (-> '[{id my/task
-         type +task}
+         type +:task}
         {id other/task
-         type +task
-        ;;  task/before [id my/task]
-         }
+         type +:task
+         task/before [id my/task]}
         {id terminate/task
-         type +task
-         task/before _}
+         type +:task
+         task/before +:all}
         {some/var 10}
-        {type +event
+        {type +:event
          terminate/reason Done}]
       clj->js
       i/dataset))
