@@ -14,55 +14,60 @@
         parsed (m/rewrite
                 [pattern env]
 
-                [(m/pred set? (m/seqable !clauses ...)) ?env]
+                [(m/pred set? ?context (m/seqable !clauses ...)) ?env]
                 {::tag :conjunction
-                 ::clauses [(m/cata [!clauses ?env]) ...]}
+                 ::clauses [(m/cata [!clauses {:context ?context & ?env}]) ...]}
 
-                (m/and [[?contains] ?env]
+                (m/and [[?contains :as ?context] ?env]
                        (m/let [?item-id (gensym "?production-id-")
                                ?node-id (gensym "?production-id-")]))
                 {::tag :contains
                  ::id ?item-id
                  ::node-id ?node-id
-                 ::contains (m/cata [?contains ?env])}
+                 ::contains (m/cata [?contains {:context ?context & ?env}])}
 
-                [{(m/symbol "&") ?id & ?rest}
+                [{(m/symbol "&") ?id & ?rest :as ?context}
                  {:identity ?identier :as ?env}]
-                (m/cata [{?identier ?id & ?rest} ?env])
+                (m/cata [{?identier ?id & ?rest} {:context ?context & ?env}])
 
-                [{?identier [?ident ?id] & ?rest}
+                [{?identier [?ident ?id] & ?rest :as ?context}
                  {:identity ?identier :as ?env}]
-                (m/cata [{?ident ?id & ?rest} ?env])
+                (m/cata [{?ident ?id & ?rest} {:context ?context & ?env}])
 
-                [{?identier (m/some ?id) & ?rest}
+                [{?identier (m/some ?id) & ?rest :as ?context}
                  {:identity ?identier :as ?env}]
                 {::tag :join
                  ::id ?id
                  ::select (m/cata [{& ?rest}
-                                   {:part :sub-clause :type :select & ?env}])}
+                                   {:part :sub-clause
+                                    :type :select
+                                    :context ?context
+                                    & ?env}])}
 
-                [{& (m/seqable [!attr !val] ...)}
+                [{& (m/seqable [!attr !val] ...) :as ?context}
                  {:part :sub-clause :type :select & ?env}]
                 [{::tag :project
-                  ::attr (m/cata [!attr {:part :sub-clause :type :attr & ?env}])
-                  ::val (m/cata [!val {:part :sub-clause :type :val & ?env}])} ...]
+                  ::attr (m/cata [!attr {:part :sub-clause :type :attr :context ?context & ?env}])
+                  ::val (m/cata [!val {:part :sub-clause :type :val :context ?context & ?env}])} ...]
 
-                (m/and [(m/pred map? ?m) {:identity ?identier :as ?env}]
+                (m/and ?context
+                       [(m/pred map? ?m) {:identity ?identier :as ?env}]
                        (m/let [?id (gensym "?production-id-")]))
-                (m/cata [{?identier ?id & ?m} ?env])
+                (m/cata [{?identier ?id & ?m} {:context ?context & ?env}])
 
                 [(m/symbol _ (m/re #"^[?].+") :as ?symbol) {:part :sub-clause}]
                 {::tag :logic-variable
                  ::symbol ?symbol}
 
-                (m/and [(m/pred string? ?attr-str) {:part :sub-clause :type :attr :as ?env}]
+                (m/and ?context
+                       [(m/pred string? ?attr-str) {:part :sub-clause :type :attr :as ?env}]
                        (m/let [?attr (edn/read-string ?attr-str)]))
-                (m/cata [?attr ?env])
+                (m/cata [?attr {:context ?context & ?env}])
 
-                [(?mod ?attr) {:part :sub-clause :type :attr :as ?env}]
+                [(?mod ?attr :as ?context) {:part :sub-clause :type :attr :as ?env}]
                 {::tag :modifier
                  ::modifier ?mod
-                 ::attr (m/cata [?attr ?env])}
+                 ::attr (m/cata [?attr {:context ?context & ?env}])}
 
                 [?attr {:part :sub-clause :type :attr}]
                 {::tag :attribute
@@ -77,13 +82,13 @@
                  ::value ?value}
 
 
-                [(!pred ..1 !args ...) {:part :clause & ?env}]
+                [(!pred ..1 !args ... :as ?context) {:part :clause & ?env}]
                 {::tag :predicate
                  ::predicate !pred
-                 ::args [(m/cata [!args {:part :sub-clause & ?env}]) ...]}
+                 ::args [(m/cata [!args {:part :sub-clause :context ?context & ?env}]) ...]}
 
                 (m/and [?expr ?env]
-                       (m/let [?e (throw (ex-info "Failed to parse expression" {:expr ?expr :env ?env}))]))
+                       (m/let [?e (throw (ex-info "Failed to parse pattern" {:expr ?expr :env ?env}))]))
                 ?e)]
     (if (throwable? parsed)
       (throw parsed)
