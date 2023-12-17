@@ -155,6 +155,7 @@
         ruleset))
 
 (defn ruleset [rules]
+  (tap> {'ruleset rules})
   (-> (map #(assoc % type-name rule-type) rules)
       id->ident
       kw->qkw
