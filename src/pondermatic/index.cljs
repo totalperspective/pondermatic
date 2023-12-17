@@ -6,7 +6,8 @@
             [pondermatic.portal.utils :as portal]
             [clojure.walk :as w]
             [clojure.edn :as edn]
-            [hasch.core :as h]))
+            [hasch.core :as h]
+            [cljs.pprint :as pp]))
 
 ;; (defn portal
 ;;   ([]
@@ -102,5 +103,5 @@
       ;;  :portal portal
        :dispose dispose!
        :addTap (fn
-                 ([] (add-tap prn))
-                 ([tap] (add-tap tap)))})
+                 ([] (add-tap pp/pprint))
+                 ([tap] (add-tap (-> tap))))})
