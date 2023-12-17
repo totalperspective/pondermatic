@@ -101,4 +101,6 @@
        :errorInfo error-info
       ;;  :portal portal
        :dispose dispose!
-       :addTap add-tap})
+       :addTap (fn
+                 ([] (add-tap prn))
+                 ([tap] (add-tap tap)))})
