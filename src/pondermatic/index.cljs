@@ -100,4 +100,5 @@
        :hashId hash-id
        :errorInfo error-info
       ;;  :portal portal
-       :dispose dispose!})
+       :dispose dispose!
+       :addTap add-tap})
