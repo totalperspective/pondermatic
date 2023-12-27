@@ -86,57 +86,58 @@
 
 (defn component->entity
   [data]
-  (let [inc-fn (fnil inc -1)
-        kw-fn (fn [ident attr]
-                (let [ns (-> ident
-                             str
-                             (str/replace "/" ".")
-                             (str/replace #"^:" ""))
-                      n (-> attr
-                            str
-                            (str/replace "/" ".")
-                            (str/replace #"^:" ""))]
-                  (keyword ns n)))]
-    (m/rewrite
-     [data {:ident :item}]
+  (when data
+    (let [inc-fn (fnil inc -1)
+          kw-fn (fn [ident attr]
+                  (let [ns (-> ident
+                               str
+                               (str/replace "/" ".")
+                               (str/replace #"^:" ""))
+                        n (-> attr
+                              str
+                              (str/replace "/" ".")
+                              (str/replace #"^:" ""))]
+                    (keyword ns n)))]
+      (m/rewrite
+       [data {:ident :item}]
 
-     (m/and [(hash-set & ?elements) ?env]
-            (m/let [?set (apply hash-set ?elements)]))
-     ?set
+       (m/and [(hash-set & ?elements) ?env]
+              (m/let [?set (apply hash-set ?elements)]))
+       ?set
 
-     [(m/pred set? (m/seqable !elements ...)) ?env]
-     (m/cata [(hash-set (m/cata [!elements ?env]) ...) ?env])
+       [(m/pred set? (m/seqable !elements ...)) ?env]
+       (m/cata [(hash-set (m/cata [!elements ?env]) ...) ?env])
 
-     (m/and [{::attr (m/some ?attr) ::value (m/some ?value)} {:ident ?id & ?env}]
-            (m/let [?ident (kw-fn ?id ?attr)]))
-     [?attr (m/cata [?value {:ident ?ident & ?env}])]
+       (m/and [{::attr (m/some ?attr) ::value (m/some ?value)} {:ident ?id & ?env}]
+              (m/let [?ident (kw-fn ?id ?attr)]))
+       [?attr (m/cata [?value {:ident ?ident & ?env}])]
 
-     (m/and [[?item] {:ident ?id}]
-            (m/let [?m-idx (inc-fn nil)
-                    ?ident (kw-fn ?id ?m-idx)]))
-     [(m/cata [?item {:ident ?ident :idx ?m-idx}])]
+       (m/and [[?item] {:ident ?id}]
+              (m/let [?m-idx (inc-fn nil)
+                      ?ident (kw-fn ?id ?m-idx)]))
+       [(m/cata [?item {:ident ?ident :idx ?m-idx}])]
 
-     (m/and [[?item & ?rest] {:ident ?id :idx ?idx & ?env}]
-            (m/let [?m-idx (inc-fn ?idx)
-                    ?ident (kw-fn ?id ?m-idx)]))
-     [(m/cata [?item {:ident ?ident :idx ?m-idx & ?env}])
-      & (m/cata [[& ?rest] {:ident ?ident :idx ?m-idx & ?env}])]
+       (m/and [[?item & ?rest] {:ident ?id :idx ?idx & ?env}]
+              (m/let [?m-idx (inc-fn ?idx)
+                      ?ident (kw-fn ?id ?m-idx)]))
+       [(m/cata [?item {:ident ?ident :idx ?m-idx & ?env}])
+        & (m/cata [[& ?rest] {:ident ?ident :idx ?m-idx & ?env}])]
 
-     [{:db/ident (m/some ?ident) & ?rest} {:ident _ & ?env}]
-     {:db/ident ?ident
-      & (m/cata [{& ?rest} {:type :entity :ident ?ident & ?env}])}
+       [{:db/ident (m/some ?ident) & ?rest} {:ident _ & ?env}]
+       {:db/ident ?ident
+        & (m/cata [{& ?rest} {:type :entity :ident ?ident & ?env}])}
 
-     [{& (m/seqable [!k !v] ...)} {:type :entity & ?env}]
-     {& [(m/cata [{::attr !k ::value !v} ?env]) ...]}
+       [{& (m/seqable [!k !v] ...)} {:type :entity & ?env}]
+       {& [(m/cata [{::attr !k ::value !v} ?env]) ...]}
 
-     [{& (m/some ?rest)} {:ident ?ident & ?env}]
-     (m/cata [{:db/ident ?ident & ?rest} {:type :entity :ident ?ident & ?env}])
+       [{& (m/some ?rest)} {:ident ?ident & ?env}]
+       (m/cata [{:db/ident ?ident & ?rest} {:type :entity :ident ?ident & ?env}])
 
-     [{} ?env]
-     {}
+       [{} ?env]
+       {}
 
-     [?expr ?env]
-     ?expr)))
+       [?expr ?env]
+       ?expr))))
 
 (def |> sh/|>)
 
