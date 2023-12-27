@@ -1,11 +1,12 @@
 (ns example.syntax
   (:require [pondermatic.index :as i]
             [pondermatic.portal :as pp]
-            [pondermatic.portal.utils :as ppu]))
+            [pondermatic.portal.utils :as ppu]
+            [portal.console :as log]))
 
 (defonce _ (pp/start :vs-code))
 
-(tap> ::starting)
+(log/info ::starting)
 
 (def engine (i/create-engine "test" true))
 

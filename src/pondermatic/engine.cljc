@@ -13,7 +13,8 @@
             [clojure.walk :as w]
             [sci.core :as sci]
             [pondermatic.portal.utils :as portal]
-            [pondermatic.portal.utils :as ppu]))
+            [pondermatic.portal.utils :as ppu]
+            [portal.console :as log]))
 
 (def type-name ::type)
 (def rule-type ::rule)
@@ -33,7 +34,7 @@
 (defmulti dispatch msg-type)
 
 (defn engine [{:keys [::conn ::rules ::dispose:db=>rules] :as env} msg]
-  (tap> msg)
+  (log/debug msg)
   (if (= msg sh/done)
     (do
       (sh/|> conn sh/done)
@@ -63,8 +64,8 @@
                 retractions (remove (fn [[e a _]]
                                       (assert-attrs [e a]))
                                     (sort-by first (datums false)))]
-            (tap> {:assertions (p/table assertions)
-                   :retractions (p/table retractions)})
+            (log/debug {:assertions (p/table assertions)
+                        :retractions (p/table retractions)})
             (when (seq retractions)
               (sh/|> rule-session (rules/retract* retractions)))
             (when (seq assertions)
@@ -193,17 +194,17 @@
                                     local? (-> production
                                                first
                                                :local/id)]
-                                (tap> {:rule ?id
-                                       :type (if local?
-                                               ::local
-                                               ::db)
-                                       :production production})
+                                (log/debug {:rule ?id
+                                            :type (if local?
+                                                    ::local
+                                                    ::db)
+                                            :production production})
                                 (if local?
                                   (sh/|> rules (rules/insert* (map (juxt :local/id identity)
                                                                    production)))
                                   (sh/|> conn {:tx-data production}))))}
                  rule (o/->rule ?id rule-spec)]
-             (tap> {::add-rule (update rule-spec :what ppu/table)})
+             (log/debug {::add-rule (update rule-spec :what ppu/table)})
              (sh/|> rules (rules/add-rule rule))
              rule)]})
         rules< (flow/split (sh/|< rules (rules/query ::rules)))]

@@ -30,7 +30,7 @@
 
 (defn transactor
   [{:keys [::db-uri]} tx]
-  (tap> tx)
+  (log/debug tx)
   (when-not (= tx sh/done)
     (let [idents (->> tx
                       :tx-data
@@ -42,7 +42,7 @@
                             (d/transact {:tx-data idents})
                             deref
                             :tx-data)]
-      ;; (tap> (p.p/table idents))
+      (log/trace (p.p/table idents))
       (-> db-uri
           d/connect
           (d/transact tx)

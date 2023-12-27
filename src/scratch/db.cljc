@@ -6,7 +6,8 @@
             [asami.datom]
             [missionary.core :as m]
             [clojure.core.protocols :as ccp]
-            [clojure.datafy :refer [datafy]]))
+            [clojure.datafy :refer [datafy]]
+            [portal.console :as log]))
 
 (extend-protocol ccp/Datafiable
   asami.datom.Datom
@@ -71,17 +72,17 @@
        (if (identical? tx take-tx)
          tx-report
          (let [tx-report (m/? (transact conn tx))]
-           (tap> {:task :transact
-                  :tx tx
-                  :tx-report tx-report})
+           (log/trace {:task :transact
+                       :tx tx
+                       :tx-report tx-report})
            (recur tx-report)))))))
 
 (defn <each [give xs]
   (m/sp
    (loop [xs (seq xs)]
      (if-some [[x & xs] xs]
-       (do (tap> {:task :each
-                  :x x})
+       (do (log/trace {:task :each
+                       :x x})
            (m/? (give x))
            (recur xs))
        (m/? (give give))))))

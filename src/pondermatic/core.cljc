@@ -7,7 +7,8 @@
             [clojure.string :as str]
             [clojure.edn :as edn]
             [pondermatic.rules.production :as prod]
-            [meander.epsilon :as m]))
+            [meander.epsilon :as m]
+            [portal.console :as log]))
 
 (defn ->engine [name & {:keys [:reset-db?] :or {reset-db? false}}]
   (let [db-uri (db/name->mem-uri name)
@@ -155,7 +156,7 @@
         ruleset))
 
 (defn ruleset [rules]
-  (tap> {'ruleset rules})
+  (log/debug rules)
   (-> (map #(assoc % type-name rule-type) rules)
       id->ident
       kw->qkw

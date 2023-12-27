@@ -3,14 +3,15 @@
             [meander.epsilon :as m]
             [clojure.edn :as edn]
             [sci.core :as sci]
-            [hasch.core :as h]))
+            [hasch.core :as h]
+            [portal.console :as log]))
 
 (defn throwable? [e]
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
 
 (defn parse-pattern [pattern opts]
   (when pattern
-    (tap> {:parse/pattern pattern
+    (log/trace {:parse/pattern pattern
            :parse/opts opts})
     (let [defaults {:identity :id :part :clause}
           env (merge defaults opts)
@@ -291,7 +292,7 @@
        (compile-when opts))))
 
 (defn eval-expr [expr env]
-  (tap> {:eval/expr expr
+  (log/trace {:eval/expr expr
          :eval/env env})
   (let [vars (reduce-kv (fn [m k v]
                           (assoc m k (sci/new-var k v)))

@@ -7,7 +7,8 @@
             [clojure.walk :as w]
             [clojure.edn :as edn]
             [hasch.core :as h]
-            [cljs.pprint :as pp]))
+            [cljs.pprint :as pp]
+            [portal.console :as log]))
 
 ;; (defn portal
 ;;   ([]
@@ -79,8 +80,8 @@
     (flow/drain
      (m/ap (let [q< (m/? q<>)
                  result (m/?< q<)]
-             (tap> {:query q
-                    :result (portal/table result)})
+             (log/debug {:query q
+                         :result (portal/table result)})
              (cb (clj->js result)))))))
 
 (defn dispose! [task]

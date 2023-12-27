@@ -19,21 +19,23 @@
    :output-to "out/karma-tests.js"
    :compiler-options {:reader-features #{:browser}}
    :ns-regexp "^(pondermatic.*|example.*)"}
-
-  :npm
-  {:target :node-library
-   :output-to "dist/cjs/index.js"
-   :compiler-options {:reader-features #{:node}}
-   :exports-var pondermatic.index/exports}
   
   :node
   {:target :npm-module
    :output-dir "dist/module"
    :compiler-options {:reader-features #{:node}}
-   :entries [pondermatic.index]}
+   :entries [pondermatic.index]} 
+  
+  :npm
+  {:target :node-library
+   :output-to "dist/cjs/index.js"
+   :compiler-options {:source-map true
+                      :reader-features #{:node}}
+   :exports-var pondermatic.index/exports}
 
   :esm
   {:target :esm
    :output-dir "dist/mjs"
-   :compiler-options {:reader-features #{:node}}
+   :compiler-options {:source-map true
+                      :reader-features #{:node}}
    :modules {:index {:exports {default pondermatic.index/exports}}}}}}
