@@ -4,3 +4,5 @@ src/
 /target
 /out
 /*.asc
+ci/
+dev/
