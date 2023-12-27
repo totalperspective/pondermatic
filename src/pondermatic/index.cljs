@@ -103,7 +103,7 @@
        :errorInfo error-info
       ;;  :portal portal
        :dispose dispose!
-       :pprint pp/pprint
+       :pprint #(-> % js->clj pp/pprint)
        :addTap (fn
                  ([] (add-tap pp/pprint))
                  ([tap] (add-tap (-> tap))))})
