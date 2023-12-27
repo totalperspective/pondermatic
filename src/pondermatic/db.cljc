@@ -10,7 +10,8 @@
             [missionary.core :as m]
             [clojure.edn :as edn]
             [clojure.walk :as w]
-            [pondermatic.portal.utils :as p.p]))
+            [pondermatic.portal.utils :as p.p]
+            [portal.console :as log]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
