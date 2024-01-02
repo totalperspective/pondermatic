@@ -11,31 +11,37 @@
   :test
   {:target    :node-test
    :output-to "out/node-tests.js"
-   :compiler-options {:reader-features #{:node}}
+   :compiler-options {}
    :ns-regexp "^(pondermatic.*|example.*)"}
 
   :browser-test
   {:target    :karma
    :output-to "out/karma-tests.js"
-   :compiler-options {:reader-features #{:browser}}
+   :compiler-options {}
    :ns-regexp "^(pondermatic.*|example.*)"}
-  
+
   :node
   {:target :npm-module
    :output-dir "dist/module"
-   :compiler-options {:reader-features #{:node}}
-   :entries [pondermatic.index]} 
+   :compiler-options {}
+   :entries [pondermatic.index]}
+
+  :portal
+  {:target :node-script
+   :main pondermatic.portal.server/-main
+   :output-to "dist/portal.js"
+   :devtools {:repl-init-ns user
+              :repl-pprint true}}
   
   :npm
   {:target :node-library
    :output-to "dist/cjs/index.js"
-   :compiler-options {:source-map true
-                      :reader-features #{:node}}
+   :compiler-options {:source-map true}
    :exports-var pondermatic.index/exports}
 
   :esm
   {:target :esm
    :output-dir "dist/mjs"
-   :compiler-options {:source-map true
-                      :reader-features #{:node}}
+   :js-options {:entry-keys ["module" "browser" "main"]}
+   :compiler-options {:source-map true}
    :modules {:index {:exports {default pondermatic.index/exports}}}}}}

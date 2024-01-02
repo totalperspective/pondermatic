@@ -3,18 +3,20 @@
             [pondermatic.rules :as r]
             [pondermatic.flow :as flow]
             [missionary.core :as m]
-            [pondermatic.portal.utils :as portal]
+            [pondermatic.portal.utils :as p.util]
             [clojure.walk :as w]
             [clojure.edn :as edn]
             [hasch.core :as h]
             [cljs.pprint :as pp]
+            [pondermatic.portal.client :as portal]
             [portal.console :as log]))
 
-;; (defn portal
-;;   ([]
-;;    (portal nil))
-;;   ([launcher]
-;;    (portal/start (keyword launcher))))
+(defn portal
+  ([]
+   (portal nil))
+  ([launcher]
+   (portal/start (when launcher
+                   (keyword launcher)))))
 
 (defn hash-id [js-obj]
   (-> js-obj
@@ -54,34 +56,34 @@
       (js->clj :keywordize-keys true)
       parse-rules
       p/ruleset
-      (portal/trace 'ruleset)))
+      (p.util/trace 'ruleset)))
 
 (defn dataset [dataset]
   (-> dataset
       (js->clj :keywordize-keys true)
       p/dataset
-      (portal/trace 'dataset)))
+      (p.util/trace 'dataset)))
 
 (defn sh [engine msg]
   (p/|> engine (-> msg
                    (js->clj :keywordize-keys true)
-                   (portal/trace 'sh))))
+                   (p.util/trace 'sh))))
 
 (defn add-rules-msg [rules]
   (r/add-rules (-> rules
                    (js->clj :keywordize-keys true)
-                   (portal/trace 'add-rules-msg))))
+                   (p.util/trace 'add-rules-msg))))
 
 (defn q [engine q args cb]
   (let [q (-> q
               edn/read-string
-              (portal/trace 'q))
+              (p.util/trace 'q))
         q<> (apply p/q<> engine q args)]
     (flow/drain
      (m/ap (let [q< (m/? q<>)
                  result (m/?< q<)]
              (log/debug {:query q
-                         :result (portal/table result)})
+                         :result (p.util/table result)})
              (cb (clj->js result)))))))
 
 (defn dispose! [task]
@@ -101,7 +103,7 @@
        :q q
        :hashId hash-id
        :errorInfo error-info
-      ;;  :portal portal
+       :portal portal
        :dispose dispose!
        :pprint #(-> % js->clj pp/pprint)
        :addTap (fn

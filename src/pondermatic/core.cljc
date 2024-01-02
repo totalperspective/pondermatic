@@ -91,11 +91,11 @@
           kw-fn (fn [ident attr]
                   (let [ns (-> ident
                                str
-                               (str/replace "/" ".")
+                               (str/replace "/" "_")
                                (str/replace #"^:" ""))
                         n (-> attr
                               str
-                              (str/replace "/" ".")
+                              (str/replace "/" "_")
                               (str/replace #"^:" ""))]
                     (keyword ns n)))]
       (m/rewrite
@@ -114,12 +114,12 @@
 
        (m/and [[?item] {:ident ?id}]
               (m/let [?m-idx (inc-fn nil)
-                      ?ident (kw-fn ?id ?m-idx)]))
+                      ?ident (kw-fn ?id (str "item-" ?m-idx))]))
        [(m/cata [?item {:ident ?ident :idx ?m-idx}])]
 
        (m/and [[?item & ?rest] {:ident ?id :idx ?idx & ?env}]
               (m/let [?m-idx (inc-fn ?idx)
-                      ?ident (kw-fn ?id ?m-idx)]))
+                      ?ident (kw-fn ?id (str "item-" ?m-idx))]))
        [(m/cata [?item {:ident ?ident :idx ?m-idx & ?env}])
         & (m/cata [[& ?rest] {:ident ?ident :idx ?m-idx & ?env}])]
 

@@ -1,10 +1,18 @@
 import pondermatic from '../dist/mjs/index'
 
 // pondermatic.portal("vs-code")
+// pondermatic.addTap()
 
 let engine
 beforeEach(() => {
   engine = pondermatic.createEngine('tests', true)
+});
+
+// afterEach(done => {
+//   setTimeout(done, 1000);
+// });
+
+afterAll(() => {
 });
 
 test('adding data', done => {

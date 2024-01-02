@@ -17,6 +17,9 @@
     "test": "jest",
     "dev": "[ -f ./out/dev.js ] || shadow-cljs compile :dev; node out/dev.js"
   },
+  "bin": {
+    "pportal": "./dist/portal.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/totalperspective/pondermatic.git"

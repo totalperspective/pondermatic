@@ -1,6 +1,6 @@
 (ns example.syntax
   (:require [pondermatic.index :as i]
-            [pondermatic.portal :as pp]
+            [pondermatic.portal.api :as pp]
             [pondermatic.portal.utils :as ppu]
             [portal.console :as log]))
 
