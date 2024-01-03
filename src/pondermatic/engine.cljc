@@ -115,107 +115,106 @@
            [?id ::type ::rule-info]
            [?id ::hash ?hash {:then not=}]
            :then
-           (let [db (db/db! conn)
-                 {:keys [:rule/when :rule/then]} (db/lookup-entity db [:db/ident ?id] :nested? true)
-                 what (prp/compile-what when)
-                 entity-lvars (->> what
-                                   (map first)
-                                   (filter symbol?)
-                                   distinct)
-                 preds (prp/compile-when when {'scope env})
-                 pred-l-vars (->> preds
-                                  (map flatten)
-                                  flatten
-                                  (filter symbol?)
-                                  distinct
-                                  (filter (fn [sym]
-                                            (= \? (-> sym str first)))))
-                 when-fn (fn [session match]
-                           (->> pred-l-vars
-                                (map keyword)
-                                (map match)
-                                (zipmap pred-l-vars)
-                                (prp/unify-pattern preds)
-                                (map str)
-                                p/trace
-                                (map sci/eval-string)
-                                (every? identity)))
-                 rule-spec {:what what
-                            :when when-fn
-                            :then-finally
-                            (fn then-finally [session]
-                              (let [matches (o/query-all session ?id)
-                                    bindings (map (partial reduce-kv (fn [m k v]
-                                                                       (assoc m (symbol k) v))
-                                                           {})
-                                                  matches)
-                                    ids (->> bindings
-                                             (mapcat (fn [match]
-                                                       (map (partial get match) entity-lvars)))
-                                             (remove nil?)
-                                             distinct)
-                                    db (db/db! conn)
-                                    entities (reduce (fn [m id]
-                                                       (assoc m id (d/entity db id)))
-                                                     {}
-                                                     ids)
-                                    production (->> bindings
-                                                    (map (fn [b]
-                                                           (prp/unify-gen-pattern then (assoc b 'entities entities))))
-                                                    (reduce  (fn [m p]
-                                                               (let [p' (w/postwalk (fn [node]
-                                                                                      (if (fn? node)
-                                                                                        (node)
-                                                                                        node))
-                                                                                    p)
-                                                                     id (h/uuid5 (h/edn-hash p'))]
-                                                                 (merge-with
-                                                                  (fn merge-fn [x y]
-                                                                    (cond
-                                                                      (map? x) (merge-with merge-fn x y)
-
-                                                                      (and (fn? x) (fn? y)) (comp y x)
-
-                                                                      (fn? y) y
-
-                                                                      (= x y) x
-
-                                                                      (nil? x) y
-
-                                                                      :else (throw (ex-info "Couldn't perfoprm merge"
-                                                                                            {:rule ?id :args [x y]}))))
-                                                                  m
-
-                                                                  {id p})))
+           (try
+             (log/info {:upsert/rule ?id})
+             (let [db (db/db! conn)
+                   {:keys [:rule/when :rule/then]} (db/lookup-entity db [:db/ident ?id] :nested? true)
+                   what (prp/compile-what when)
+                   entity-lvars (->> what
+                                     (map first)
+                                     (filter symbol?)
+                                     distinct)
+                   preds (prp/compile-when when {'scope env})
+                   pred-l-vars (->> preds
+                                    (map flatten)
+                                    flatten
+                                    (filter symbol?)
+                                    distinct
+                                    (filter (fn [sym]
+                                              (= \? (-> sym str first)))))
+                   when-fn (fn [session match]
+                             (->> pred-l-vars
+                                  (map keyword)
+                                  (map match)
+                                  (zipmap pred-l-vars)
+                                  (prp/unify-pattern preds)
+                                  (map str)
+                                  (map sci/eval-string)
+                                  (every? identity)))
+                   rule-spec {:what what
+                              :when when-fn
+                              :then-finally
+                              (fn then-finally [session]
+                                (let [matches (o/query-all session ?id)
+                                      bindings (map (partial reduce-kv (fn [m k v]
+                                                                         (assoc m (symbol k) v))
                                                              {})
-                                                    vals
-                                                    (map (fn [p]
-                                                           (w/postwalk (fn [node]
-                                                                         (if (fn? node)
-                                                                           (node nil)
-                                                                           node))
-                                                                       p))))
-                                    local? (-> production
-                                               first
-                                               :local/id)]
-                                (log/debug {:rule ?id
-                                            :type (if local?
-                                                    ::local
-                                                    ::db)
-                                            :production production})
-                                (if local?
-                                  (sh/|> rules (rules/insert* (map (juxt :local/id identity)
-                                                                   production)))
-                                  (sh/|> conn {:tx-data production}))))}
-                 rule (o/->rule ?id rule-spec)]
-             (log/debug {::add-rule (update rule-spec :what ppu/table)})
-             (sh/|> rules (rules/add-rule rule))
-             rule)]})
-        rules< (flow/split (sh/|< rules (rules/query ::rules)))]
-    (reduce (fn [rules rule]
-              (sh/|> rules (rules/add-rule rule)))
-            rules
-            ruleset)))
+                                                    matches)
+                                      ids (->> bindings
+                                               (mapcat (fn [match]
+                                                         (map (partial get match) entity-lvars)))
+                                               (remove nil?)
+                                               distinct)
+                                      db (db/db! conn)
+                                      entities (reduce (fn [m id]
+                                                         (assoc m id (d/entity db id)))
+                                                       {}
+                                                       ids)
+                                      production (->> bindings
+                                                      (map (fn [b]
+                                                             (prp/unify-gen-pattern then (assoc b 'entities entities))))
+                                                      (reduce  (fn [m p]
+                                                                 (let [p' (w/postwalk (fn [node]
+                                                                                        (if (fn? node)
+                                                                                          (node)
+                                                                                          node))
+                                                                                      p)
+                                                                       id (h/uuid5 (h/edn-hash p'))]
+                                                                   (merge-with
+                                                                    (fn merge-fn [x y]
+                                                                      (cond
+                                                                        (map? x) (merge-with merge-fn x y)
+
+                                                                        (and (fn? x) (fn? y)) (comp y x)
+
+                                                                        (fn? y) y
+
+                                                                        (= x y) x
+
+                                                                        (nil? x) y
+
+                                                                        :else (throw (ex-info "Couldn't perfoprm merge"
+                                                                                              {:rule ?id :args [x y]}))))
+                                                                    m
+
+                                                                    {id p})))
+                                                               {})
+                                                      vals
+                                                      (map (fn [p]
+                                                             (w/postwalk (fn [node]
+                                                                           (if (fn? node)
+                                                                             (node nil)
+                                                                             node))
+                                                                         p))))
+                                      local? (-> production
+                                                 first
+                                                 :local/id)]
+                                  (log/debug {:rule ?id
+                                              :type (if local?
+                                                      ::local
+                                                      ::db)
+                                              :production production})
+                                  (if local?
+                                    (sh/|> rules (rules/insert* (map (juxt :local/id identity)
+                                                                     production)))
+                                    (sh/|> conn {:tx-data production}))))}
+                   rule (o/->rule ?id rule-spec)]
+               (log/debug {?id (update rule-spec :what ppu/table)})
+               (sh/|> rules (rules/add-rule rule))
+               rule)
+             (catch #?(:clj Exception :cljs js/Error) e
+               (log/error e)))]})]
+    (sh/|> rules (rules/add-rules ruleset))))
 
 (defn ->engine [conn rules]
   (add-base-rules conn rules '{!= not=})

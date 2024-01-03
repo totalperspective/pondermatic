@@ -2,7 +2,7 @@
   #_{:clj-kondo/ignore [:unused-namespace]}
   (:require [pondermatic.rules :as rules]
             [pondermatic.db :as db]
-            [pondermatic.portal.portal :as portal]
+            [pondermatic.portal.api :as portal]
             [pondermatic.rules.production :as prod]
             [hyperfiddle.rcf :refer [tests]]))
 

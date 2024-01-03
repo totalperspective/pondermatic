@@ -3,8 +3,8 @@
             [pondermatic.shell :as sh :refer [|> |< |<=]]
             [pondermatic.flow :as f]
             [hyperfiddle.rcf :as rcf :refer [tests %]]
-            [pondermatic.portal.utils :as p]
-            [portal.console :as log]))
+            [portal.console :as log]
+            [pondermatic.portal.utils :as p.util]))
 
 (defn cmd-type
   [[cmd] _]
@@ -80,9 +80,7 @@
 (defn process
   [session cmd]
   (when-not (= cmd sh/done)
-    (log/debug {:in ::process
-                :cmd (with-meta cmd
-                       {:portal.viewer/default :portal.viewer/pr-str})})
+    (log/debug (p.util/pprint {::cmd cmd}))
     (->> session
          (exec cmd)
          o/fire-rules)))

@@ -10,7 +10,7 @@
             [missionary.core :as m]
             [clojure.edn :as edn]
             [clojure.walk :as w]
-            [pondermatic.portal.utils :as p.p]
+            [pondermatic.portal.utils :as utils]
             [portal.console :as log]))
 
 (defn name->mem-uri [db-name]
@@ -31,7 +31,7 @@
 
 (defn transactor
   [{:keys [::db-uri]} tx]
-  (log/debug tx)
+  (log/debug (utils/pprint tx))
   (when-not (= tx sh/done)
     (let [idents (->> tx
                       :tx-data
@@ -43,7 +43,7 @@
                             (d/transact {:tx-data idents})
                             deref
                             :tx-data)]
-      (log/trace (p.p/table idents))
+      ;; (log/trace (p.p/table idents))
       (-> db-uri
           d/connect
           (d/transact tx)

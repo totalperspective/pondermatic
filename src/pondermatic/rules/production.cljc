@@ -12,7 +12,7 @@
 (defn parse-pattern [pattern opts]
   (when pattern
     (log/trace {:parse/pattern pattern
-           :parse/opts opts})
+                :parse/opts opts})
     (let [defaults {:identity :id :part :clause}
           env (merge defaults opts)
           parsed (m/rewrite
@@ -293,7 +293,7 @@
 
 (defn eval-expr [expr env]
   (log/trace {:eval/expr expr
-         :eval/env env})
+              :eval/env env})
   (let [vars (reduce-kv (fn [m k v]
                           (assoc m k (sci/new-var k v)))
                         {} env)]
