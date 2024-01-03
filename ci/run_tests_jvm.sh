@@ -1,4 +1,4 @@
 #!/bin/sh
 
 echo "Running JVM tests"
-clojure -X:test :dirs "[\"example\" \"src\"]" :patterns "[\"example.*\" \"pondermatic.*\"]"
+clojure -X:test :dirs "[\"src/example\" \"test\"]" :patterns "[\"example.*\" \"pondermatic.*\"]"

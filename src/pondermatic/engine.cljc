@@ -100,12 +100,16 @@
           [:what
            [?id ::type ::rule]
            [?id :db/ident ?ident]
-           [?id :rule/when ?when-id]
-           [?id :rule/then ?then-id]
-           :then
-           (let [rule {::type ::rule-info
-                       ::hash (h/uuid5 (h/edn-hash [?ident ?when-id ?then-id]))}]
-             (sh/|> rules (rules/insert ?ident rule)))]
+           [?id :rule/when ?when-id {:then not=}]
+           [?id :rule/then ?then-id {:then not=}]
+           :then-finally
+           (let [matches (o/query-all session ::update-rule)
+                 rule-hashes (mapv (fn [{:keys [?ident ?when-id ?then-id]}]
+                                     [?ident
+                                      {::type ::rule-info
+                                       ::hash (h/uuid5 (h/edn-hash [?ident ?when-id ?then-id]))}])
+                                   matches)]
+             (sh/|> rules (rules/insert* rule-hashes)))]
           ::rules
           [:what
            [?id ::type ::rule-info]
