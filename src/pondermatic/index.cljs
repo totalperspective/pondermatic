@@ -98,7 +98,9 @@
   ([expr]
    (log nil expr))
   ([level expr]
-   (let [expr (js->clj expr :keywordize-keys true)]
+   (let [expr (if (instance? js/Error expr)
+                expr
+                (js->clj expr :keywordize-keys true))]
      (condp = (keyword level)
        :debug (log/debug expr)
        :trace (log/trace expr)
@@ -106,7 +108,9 @@
        :warn (log/warn expr)
        :error (log/error expr)
        :fatal (log/fatal expr)
-       (log/log expr)))))
+       (if (instance? js/Error expr)
+         (log/error expr)
+         (log/log expr))))))
 
 (def exports
   #js {:createEngine create-engine
