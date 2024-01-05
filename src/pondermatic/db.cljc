@@ -7,7 +7,6 @@
             [pyramid.core :as p]
             [asami.memory]
             [hyperfiddle.rcf :refer [tests]]
-            [missionary.core :as m]
             [clojure.edn :as edn]
             [clojure.walk :as w]
             [pondermatic.portal.utils :as utils]

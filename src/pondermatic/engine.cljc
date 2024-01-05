@@ -262,3 +262,8 @@
   (m/sp (let [conn (m/? (conn> engine))
               q< (apply db/q q args)]
           (sh/|< conn q<))))
+
+(defn entity<> [engine ident nested?]
+  (m/sp (let [conn (m/? (conn> engine))
+              entity< (db/entity ident :nested? nested?)]
+          (sh/|< conn entity<))))

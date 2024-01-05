@@ -180,3 +180,5 @@
   (sh/|<= (map ::rules)))
 
 (def q<> engine/q<>)
+
+(def entity<> engine/entity<>)

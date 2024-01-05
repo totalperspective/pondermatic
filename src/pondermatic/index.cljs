@@ -9,7 +9,8 @@
             [hasch.core :as h]
             [cljs.pprint :as pp]
             [pondermatic.portal.client :as portal]
-            [portal.console :as log]))
+            [portal.console :as log]
+            [promesa.core :as pa]))
 
 (defn portal
   ([]
@@ -82,9 +83,19 @@
     (flow/drain
      (m/ap (let [q< (m/? q<>)
                  result (m/?< q<)]
-             (log/debug {:query q
+             (log/trace {:query q
                          :result (p.util/table result)})
              (cb (clj->js result)))))))
+
+(defn entity [engine ident cb]
+  (let [ident (js->clj ident)
+        entity<> (p/entity<> engine ident true)]
+    (flow/drain
+     (m/ap (let [entity< (m/? entity<>)
+                 entity (m/?< entity<)]
+             (log/trace {:entity entity
+                         :ident ident})
+             (cb (clj->js entity)))))))
 
 (defn dispose! [task]
   (task))
@@ -93,6 +104,16 @@
   (-> e
       ex-data
       clj->js))
+
+(defn ->promise-fn [cb-fn]
+  (fn [& args]
+    (let [p (pa/deferred)
+          !dispose! (atom (constantly nil))
+          args (conj args (fn [result]
+                            (pa/resolve! p result)
+                            (@!dispose!)))]
+      (reset! !dispose! (apply cb-fn args))
+      p)))
 
 (defn log
   ([expr]
@@ -119,6 +140,9 @@
        :sh sh
        :addRulesMsg add-rules-msg
        :q q
+       :qP (->promise-fn q)
+       :entity entity
+       :entityP (->promise-fn entity)
        :hashId hash-id
        :errorInfo error-info
        :portal portal
