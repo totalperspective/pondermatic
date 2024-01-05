@@ -88,7 +88,10 @@
              (cb (clj->js result)))))))
 
 (defn entity [engine ident cb]
-  (let [ident (js->clj ident)
+  (let [ident (-> ident
+                  js->clj
+                  str
+                  edn/read-string)
         entity<> (p/entity<> engine ident true)]
     (flow/drain
      (m/ap (let [entity< (m/? entity<>)
