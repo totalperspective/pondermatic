@@ -1,7 +1,5 @@
 (ns example.ui
   (:require [pondermatic.core :as p]
-            [pondermatic.shell :as sh]
-            [pondermatic.flow :as flow]
             [clojure.pprint :as cpp]))
 
 (def data
