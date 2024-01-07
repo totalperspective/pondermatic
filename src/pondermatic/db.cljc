@@ -32,19 +32,18 @@
   [{:keys [::db-uri]} tx]
   (log/debug (utils/pprint tx))
   (when-not (= tx sh/done)
-    (let [idents (->> tx
+    (let [conn (d/connect db-uri)
+          idents (->> tx
                       :tx-data
                       idents
                       (remove nil?)
                       (map #(do {:db/ident %})))
-          ident-tx-data (-> db-uri
-                            d/connect
+          ident-tx-data (-> conn
                             (d/transact {:tx-data idents})
                             deref
                             :tx-data)]
       ;; (log/trace (p.p/table idents))
-      (-> db-uri
-          d/connect
+      (-> conn
           (d/transact tx)
           deref
           (update :tx-data (partial concat ident-tx-data))
@@ -65,6 +64,9 @@
 
 (defn db! [{:keys [::db-uri]}]
   (d/db (d/connect db-uri)))
+
+(defn db> [conn]
+  (sh/|!> conn :db-after))
 
 (defn q [query & args]
   (|<= (map :db-after)

@@ -14,7 +14,8 @@
             [sci.core :as sci]
             [pondermatic.portal.utils :as portal]
             [pondermatic.portal.utils :as ppu]
-            [portal.console :as log]))
+            [portal.console :as log]
+            [pondermatic.portal.utils :as p.util]))
 
 (def type-name ::type)
 (def rule-type ::rule)
@@ -231,14 +232,10 @@
 (defn rules> [engine]
   (sh/|!> engine ::rules))
 
-(defn conn*> [engine]
-  (m/sp
-   (-> engine
-       (sh/|!> ::conn)
-       m/?
-       (sh/|!> ::db/db-uri)
-       m/?
-       d/connect)))
+(defn db-uri> [engine]
+  (m/sp (let [conn (conn> engine)
+              db-uri (m/? (sh/|!> conn ::db/db-uri))]
+          db-uri)))
 
 (defn rule-atom [engine]
   (let [atom (atom nil)]
@@ -267,3 +264,9 @@
   (m/sp (let [conn (m/? (conn> engine))
               entity< (db/entity ident :nested? nested?)]
           (sh/|< conn entity<))))
+
+(defn entity*> [engine ident nested?]
+  (m/sp
+   (let [conn (m/? (conn> engine))
+         db (m/? (db/db> conn))]
+     (d/entity db ident nested?))))

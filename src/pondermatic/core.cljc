@@ -182,3 +182,5 @@
 (def q<> engine/q<>)
 
 (def entity<> engine/entity<>)
+
+(def entity*> engine/entity*>)

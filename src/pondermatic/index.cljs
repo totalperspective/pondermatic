@@ -88,17 +88,18 @@
              (cb (clj->js result)))))))
 
 (defn entity [engine ident cb]
+  (log/trace {:entity ident})
   (let [ident (-> ident
                   js->clj
                   str
                   edn/read-string)
-        entity<> (p/entity<> engine ident true)]
-    (flow/drain
-     (m/ap (let [entity< (m/? entity<>)
-                 entity (m/?< entity<)]
-             (log/trace {:entity entity
-                         :ident ident})
-             (cb (clj->js entity)))))))
+        entity> (p/entity*> engine ident true)]
+    (entity> (fn [entity]
+               (log/trace {:entity entity
+                           :ident ident})
+               (cb (clj->js entity)))
+             (fn [e]
+               (cb nil e)))))
 
 (defn dispose! [task]
   (task))
@@ -111,11 +112,13 @@
 (defn ->promise-fn [cb-fn]
   (fn [& args]
     (let [p (pa/deferred)
-          !dispose! (atom (constantly nil))
-          args (conj args (fn [result]
-                            (pa/resolve! p result)
-                            (@!dispose!)))]
-      (reset! !dispose! (apply cb-fn args))
+          args (conj (vec args)
+                     (fn
+                       ([result]
+                        (pa/resolve! p result))
+                       ([_ e]
+                        (pa/reject! p e))))]
+      (apply cb-fn args)
       p)))
 
 (defn log
@@ -136,6 +139,7 @@
          (log/error expr)
          (log/log expr))))))
 
+#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def exports
   #js {:createEngine create-engine
        :ruleset ruleset

@@ -33,5 +33,4 @@
 
 (defn start [_launcher]
   (add-tap #'submit)
-  (tap> :started....)
-  (log/info {:port port}))
+  (log/info {:portal/port port}))

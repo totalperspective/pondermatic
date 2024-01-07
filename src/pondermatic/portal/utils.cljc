@@ -22,3 +22,11 @@
   ([x label]
    (log/trace {label x})
    x))
+
+(defn p-trace
+  ([x]
+   (prn x)
+   x)
+  ([x label]
+   (prn label x)
+   x))
