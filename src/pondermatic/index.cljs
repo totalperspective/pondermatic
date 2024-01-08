@@ -87,17 +87,6 @@
                          :result (p.util/table result)})
              (cb (clj->js result)))))))
 
-(defn entity* [engine ident cb]
-  (let [ident (-> ident
-                  js->clj
-                  str
-                  edn/read-string)
-        entity<> (p/entity<> engine ident true)]
-    (flow/drain
-     (m/ap (let [entity< (m/? entity<>)
-                 entity (m/?< entity<)]
-             (log/trace {:entity entity})
-             (cb (clj->js entity)))))))
 
 (defn entity [engine ident cb]
   (log/trace {:entity ident})
@@ -112,6 +101,19 @@
                (cb (clj->js entity)))
              (fn [e]
                (cb nil e)))))
+
+(defn entity* [engine ident cb]
+  (entity entity ident cb)
+  (let [ident (-> ident
+                  js->clj
+                  str
+                  edn/read-string)
+        entity<> (p/entity<> engine ident true)]
+    (flow/drain
+     (m/ap (let [entity< (m/? entity<>)
+                 entity (m/?< entity<)]
+             (log/trace {:entity entity})
+             (cb (clj->js entity)))))))
 
 (defn dispose! [task]
   (task))
