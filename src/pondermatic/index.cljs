@@ -87,6 +87,18 @@
                          :result (p.util/table result)})
              (cb (clj->js result)))))))
 
+(defn entity* [engine ident cb]
+  (let [ident (-> ident
+                  js->clj
+                  str
+                  edn/read-string)
+        entity<> (p/entity<> engine ident true)]
+    (flow/drain
+     (m/ap (let [entity< (m/? entity<>)
+                 entity (m/?< entity<)]
+             (log/trace {:entity entity})
+             (cb (clj->js entity)))))))
+
 (defn entity [engine ident cb]
   (log/trace {:entity ident})
   (let [ident (-> ident
@@ -150,6 +162,7 @@
        :qP (->promise-fn q)
        :entity entity
        :entityP (->promise-fn entity)
+       :watchEntity entity*
        :hashId hash-id
        :errorInfo error-info
        :portal portal
