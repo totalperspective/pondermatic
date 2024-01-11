@@ -47,6 +47,6 @@
   ;;  :js-options {:entry-keys ["module" "browser" "main"]}
    :compiler-options {:reader-features #{:browser}
                       :source-map true
-                      :output-feature-set :es6}
+                      :output-feature-set :es5}
    :modules {:index {:exports {default pondermatic.index/exports}}}
    :release {}}}}
