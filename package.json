@@ -15,6 +15,9 @@
     },
     "./esm": "./dist/mjs/index.js"
   },
+  "browser": {
+    "fs": false
+  },
   "scripts": {
     "test": "jest",
     "dev": "[ -f ./out/dev.js ] || shadow-cljs compile :dev; node out/dev.js"

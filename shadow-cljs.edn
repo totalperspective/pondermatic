@@ -45,7 +45,8 @@
   ;;  :runtime :browser
   ;;  :js-options {:js-provider :import}
    :js-options {:entry-keys ["module" "browser" "main"]}
-   :compiler-options {:reader-features #{:browser}}
+   :compiler-options {:reader-features #{:browser}
+                      :source-map true
+                      :output-feature-set :browser-2020}
    :modules {:index {:exports {default pondermatic.index/exports}}}
-   :release {:compiler-options {:source-map true
-                                :output-feature-set :browser-2020}}}}}
+   :release {}}}}
