@@ -44,6 +44,7 @@
    :output-dir "dist/mjs"
   ;;  :runtime :browser
   ;;  :js-options {:js-provider :import}
+   :js-options {:entry-keys ["module" "browser" "main"]}
    :compiler-options {:reader-features #{:browser}}
    :modules {:index {:exports {default pondermatic.index/exports}}}
    :release {:compiler-options {:source-map true
