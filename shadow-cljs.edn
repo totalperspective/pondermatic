@@ -1,6 +1,6 @@
 ;; shadow-cljs configuration
 {:deps {:aliases [:cljs :dev]}
-
+ :jvm-opts ["-Dlogging.enabled=false"]
  :builds
  {:dev
   {:target :node-script
