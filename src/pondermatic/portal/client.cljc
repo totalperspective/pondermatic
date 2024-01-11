@@ -1,15 +1,20 @@
 (ns pondermatic.portal.client
   (:require #?(:clj
                [portal.client.jvm :as p]
-               :browser
-               [portal.client.web :as p]
                :cljs
                [portal.client.node :as p])
+            #?(:browser
+               [portal.client.web :as pw])
             [clojure.datafy :as datafy]
             [portal.console :as log]))
 
 (def port 5678)
 
+(def submit-impl
+  #?(:browser (if js/window
+                pw/submit
+                p/submit)
+     :default p/submit))
 #?(:cljs
    (defn error->data [ex]
      (merge
@@ -28,10 +33,10 @@
   (instance? #?(:cljs js/Error :default Exception) e))
 
 (defn submit [value]
-  (p/submit {:port port}
-            (if-not (exception? value)
-              (datafy/datafy value)
-              (error->data value))))
+  (submit-impl {:port port}
+               (if-not (exception? value)
+                 (datafy/datafy value)
+                 (error->data value))))
 
 (defn start [_launcher]
   (add-tap #'submit)
