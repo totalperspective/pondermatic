@@ -43,7 +43,7 @@
   {:target :esm
    :output-dir "dist/mjs"
    :runtime :browser
-  ;;  :js-options {:js-provider :import}
+   :js-options {:js-provider :import}
    :compiler-options {:reader-features #{:browser}}
    :modules {:index {:exports {default pondermatic.index/exports}}}
    :release {:compiler-options {:source-map true
