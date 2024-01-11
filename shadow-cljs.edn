@@ -43,5 +43,6 @@
   {:target :esm
    :output-dir "dist/mjs"
    :runtime :browser
+   :compiler-options {:reader-features #{:browser}}
    :modules {:index {:exports {default pondermatic.index/exports}}}
    :release {:compiler-options {:optimizations :simple}}}}}

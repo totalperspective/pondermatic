@@ -6,14 +6,12 @@
     "node": ">=16"
   },
   "main": "dist/cjs/index.js",
-  "module": "dist/mjs/esm.js",
+  "module": "dist/mjs/index.js",
   "exports": {
     ".": {
-      "import": {
-        "node": "./dist/cjs/index.js",
-        "default": "./dist/mjs/index.js"
-      },
-      "require": "./dist/cjs/index.js"
+      "browser": "./dist/mjs/index.js",
+      "node": "./dist/cjs/index.js",
+      "default": "./dist/mjs/index.js"
     },
     "./esm": "./dist/mjs/index.js"
   },

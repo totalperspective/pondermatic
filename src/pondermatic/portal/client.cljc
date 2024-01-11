@@ -1,6 +1,8 @@
 (ns pondermatic.portal.client
   (:require #?(:clj
                [portal.client.jvm :as p]
+               :browser
+               [portal.client.web :as p]
                :cljs
                [portal.client.node :as p])
             [clojure.datafy :as datafy]
