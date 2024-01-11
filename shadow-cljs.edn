@@ -42,11 +42,11 @@
   :esm
   {:target :esm
    :output-dir "dist/mjs"
-  ;;  :runtime :browser
+   :runtime :browser
   ;;  :js-options {:js-provider :import}
-   :js-options {:entry-keys ["module" "browser" "main"]}
+  ;;  :js-options {:entry-keys ["module" "browser" "main"]}
    :compiler-options {:reader-features #{:browser}
                       :source-map true
-                      :output-feature-set :browser-2020}
+                      :output-feature-set :es6}
    :modules {:index {:exports {default pondermatic.index/exports}}}
    :release {}}}}
