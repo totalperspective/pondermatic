@@ -46,4 +46,5 @@
    :js-options {:js-provider :import}
    :compiler-options {:reader-features #{:browser}}
    :modules {:index {:exports {default pondermatic.index/exports}}}
-   :release {:compiler-options {:optimizations :advanced}}}}}
+   :release {:compiler-options {:output-feature-set :browser-2020
+                                :optimizations :advanced}}}}}
