@@ -42,6 +42,6 @@
   :esm
   {:target :esm
    :output-dir "dist/mjs"
-   :js-options {:entry-keys ["module" "browser" "main"]}
-   :compiler-options {:source-map true}
-   :modules {:index {:exports {default pondermatic.index/exports}}}}}}
+   :runtime :browser
+   :modules {:index {:exports {default pondermatic.index/exports}}}
+   :release {:compiler-options {:optimizations :simple}}}}}

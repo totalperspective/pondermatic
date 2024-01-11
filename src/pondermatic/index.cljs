@@ -4,6 +4,7 @@
             [pondermatic.flow :as flow]
             [missionary.core :as m]
             [pondermatic.portal.utils :as p.util]
+            [pondermatic.rules.production :as prp]
             [clojure.walk :as w]
             [clojure.edn :as edn]
             [hasch.core :as h]
@@ -135,6 +136,25 @@
       (apply cb-fn args)
       p)))
 
+(defn unify [expr-or-str env]
+  (let [expr (if (string? expr-or-str)
+               (edn/read-string expr-or-str)
+               (js->clj expr-or-str))
+        env (reduce-kv (fn [m k v]
+                         (let [k (if (= \? (first k))
+                                   (symbol k)
+                                   k)]
+                           (assoc m k v)))
+                       {}
+                       (js->clj env))]
+    (log/trace {:unify/expr expr
+                :unfy/env env})
+    (try
+      (clj->js (prp/unify-pattern expr env))
+      (catch js/Error e
+        (log/error e)
+        (throw e)))))
+
 (defn log
   ([expr]
    (log nil expr))
@@ -170,6 +190,7 @@
        :portal portal
        :dispose dispose!
        :log log
+       :unify unify
        :pprint #(-> % js->clj pp/pprint)
        :addTap (fn
                  ([] (add-tap pp/pprint))

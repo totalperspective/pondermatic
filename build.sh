@@ -5,7 +5,7 @@ clojure -T:build clean
 clojure -T:build jar :version '"'$TP_PONDERMATIC_VERSION'"'
 clojure -T:build install :version '"'$TP_PONDERMATIC_VERSION'"'
 rm -rf dist
-shadow-cljs release :npm :esm :portal
+shadow-cljs release :npm :esm :portal --pseudo-names
 
 cat >dist/cjs/package.json <<!EOF
 {
