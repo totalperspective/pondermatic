@@ -112,6 +112,9 @@
               (m/let [?ident (kw-fn ?id ?attr)]))
        [?attr (m/cata [?value {:ident ?ident & ?env}])]
 
+       [{::attr (m/some ?attr) ::value (m/pred nil?)} _]
+       [?attr nil]
+
        (m/and [[?item] {:ident ?id}]
               (m/let [?m-idx (inc-fn nil)
                       ?ident (kw-fn ?id (str "item-" ?m-idx))]))

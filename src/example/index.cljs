@@ -10,6 +10,6 @@
             []
             prn))
 
-(i/sh engine #js {"->db" (i/dataset #js [#js {"foo/key" "value"}])})
+(i/sh engine #js {"->db" (i/dataset #js [#js {"foo/key" "value" "foo/nothing" nil}])})
 
 (q)
