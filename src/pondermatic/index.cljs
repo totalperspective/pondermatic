@@ -142,7 +142,7 @@
                (cb nil e)))))
 
 (defn entity* [engine ident cb]
-  (entity entity ident cb)
+  (entity engine ident cb)
   (let [ident (-> ident
                   js->clj
                   str
