@@ -20,10 +20,12 @@
            {:rule/when when
             :rule/then then})
    'mutation (fn [mutation]
-               (let [{:keys [key params query]} (eql/expr->ast mutation)]
-                 {:mutation/call (keyword key)
-                  :mutation/params (p/kw->qkw params)
-                  :mutation/query query}))
+               (let [{:keys [key params query]} (eql/expr->ast mutation)
+                     m {:mutation/call (keyword key)
+                        :mutation/params (p/kw->qkw params)}]
+                 (if query
+                   (assoc m :mutation/query query)
+                   m)))
    'ruleset (fn [ruleset]
               (->> ruleset
                    (mapv (fn [[id rule]]
