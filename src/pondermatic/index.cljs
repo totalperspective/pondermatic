@@ -128,7 +128,7 @@
 
 
 (defn entity [engine ident cb]
-  (log/trace {:entity ident})
+  (log/trace {:entity/ident ident})
   (let [ident (-> ident
                   js->clj
                   str
@@ -151,7 +151,8 @@
     (flow/drain
      (m/ap (let [entity< (m/? entity<>)
                  entity (m/?< entity<)]
-             (log/trace {:entity entity})
+             (log/trace {:ident ident
+                         :entity entity})
              (cb (clj->js entity)))))))
 
 (defn dispose! [task]
