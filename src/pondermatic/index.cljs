@@ -32,7 +32,10 @@
                    p/ruleset))
    'dataset (fn [dataset]
               (prn (meta dataset))
-              (p/dataset dataset))})
+              (p/dataset dataset))
+   'json (fn [json]
+           (-> (.parse js/JSON json)
+               (js->clj :keywordize-keys true)))})
 
 (defn read-string [str]
   (edn/read-string {:readers readers
