@@ -13,7 +13,8 @@
             [portal.console :as log]
             [promesa.core :as pa]
             [edn-query-language.core :as eql]
-            [cognitect.transit :as t]))
+            [cognitect.transit :as t]
+            [sci.core :as sci]))
 
 (def readers
   {'rule (fn [[when then]]
@@ -239,4 +240,5 @@
        :readString read-string
        :toString pr-str
        :encode (partial t/write transit-json-writer)
-       :decode (partial t/read transit-json-reader)})
+       :decode (partial t/read transit-json-reader)
+       :eval sci.core/eval-string})
