@@ -23,7 +23,7 @@
    'mutation (fn [mutation]
                (let [{:keys [key params query]} (eql/expr->ast mutation)]
                  {:mutation/call (keyword key)
-                  :mutation/params params
+                  :mutation/params (p/kw->qkw params)
                   :mutation/query query}))
    'ruleset (fn [ruleset]
               (->> ruleset
