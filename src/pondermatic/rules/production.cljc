@@ -299,7 +299,7 @@
   (let [vars (reduce-kv (fn [m k v]
                           (assoc m k (sci/new-var k v)))
                         {} env)
-        add_ #(str/replace " " "_" %)
+        add_ #(str/replace % " " "_")
         normalize (comp add_ str/lower-case)]
     (sci/eval-string (str expr)
                      {:namespaces {'user vars
@@ -657,4 +657,5 @@
  (unify-pattern '{:attr :val & ?e} '{?e 1 entities {1 {:foo :bar}}})
  := {:attr :val :foo :bar}
 
+ (unify-pattern '[$ "(case/kebab ?name)"] '{?name "foo"}) := "foo"
  nil)
