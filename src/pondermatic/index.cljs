@@ -16,9 +16,8 @@
             [cognitect.transit :as t]))
 
 (def readers
-  {'rule (fn [[id when then]]
-           {:id id
-            :rule/when when
+  {'rule (fn [[when then]]
+           {:rule/when when
             :rule/then then})
    'mutation (fn [mutation]
                (let [{:keys [key params query]} (eql/expr->ast mutation)]
