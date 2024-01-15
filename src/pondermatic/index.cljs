@@ -32,7 +32,10 @@
               (p/dataset dataset))})
 
 (defn read-string [str]
-  (edn/read-string readers str))
+  (edn/read-string {:readers readers
+                    :default (fn [tag value]
+                               {:reader.unknown/tag tag
+                                :reader.unknown/value value})} str))
 
 (defn portal
   ([]
