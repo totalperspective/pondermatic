@@ -21,8 +21,8 @@
             :rule/when when
             :rule/then then})
    'mutation (fn [mutation]
-               (let [{:keys [call params query]} (eql/expr->ast mutation)]
-                 {:mutation/call call
+               (let [{:keys [key params query]} (eql/expr->ast mutation)]
+                 {:mutation/call (keyword key)
                   :mutation/params params
                   :mutation/query query}))
    'ruleset (fn [ruleset]
