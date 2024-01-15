@@ -236,5 +236,6 @@
                  ([] (add-tap pp/pprint))
                  ([tap] (add-tap (-> tap))))
        :readString read-string
+       :toString pr-str
        :encode (partial t/write transit-json-writer)
        :decode (partial t/read transit-json-reader)})
