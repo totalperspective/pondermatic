@@ -37,7 +37,7 @@
   {:target :node-library
    :output-to "dist/cjs/index.js"
    :compiler-options {:output-feature-set :es5
-                      :source-map true}
+                      :source-map false}
    :exports-var pondermatic.index/exports}
 
   :esm
@@ -47,7 +47,7 @@
   ;;  :js-options {:js-provider :import}
   ;;  :js-options {:entry-keys ["module" "browser" "main"]}
    :compiler-options {:reader-features #{:browser}
-                      :source-map true
+                      :source-map false
                       :output-feature-set :es5}
    :modules {:index {:exports {default pondermatic.index/exports}}}
    :release {}}}}
