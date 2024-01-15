@@ -36,7 +36,8 @@
   :npm
   {:target :node-library
    :output-to "dist/cjs/index.js"
-   :compiler-options {:source-map true}
+   :compiler-options {:output-feature-set :es5
+                      :source-map true}
    :exports-var pondermatic.index/exports}
 
   :esm

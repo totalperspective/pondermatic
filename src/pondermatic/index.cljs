@@ -11,7 +11,28 @@
             [cljs.pprint :as pp]
             [pondermatic.portal.client :as portal]
             [portal.console :as log]
-            [promesa.core :as pa]))
+            [promesa.core :as pa]
+            [edn-query-language.core :as eql]
+            [cognitect.transit :as t]))
+
+(def readers
+  {'rule (fn [[id when then]]
+           {:id id
+            :rule/when when
+            :rule/then then})
+   'mutation (fn [mutation]
+               (let [{:keys [call params query]} (eql/expr->ast mutation)]
+                 {:mutation/call call
+                  :mutation/params params
+                  :mutation/query query}))
+   'ruleset (fn [ruleset]
+              (p/ruleset ruleset))
+   'dataset (fn [dataset]
+              (prn (meta dataset))
+              (p/dataset dataset))})
+
+(defn read-string [str]
+  (edn/read-string readers str))
 
 (defn portal
   ([]
@@ -35,7 +56,7 @@
 (defn ->edn [form]
   (->> form
        str
-       edn/read-string
+       read-string
        (w/postwalk (fn [node]
                      #_{:clj-kondo/ignore [:unresolved-symbol]}
                      (if (instance? cljs.core.MapEntry  node)
@@ -54,14 +75,18 @@
   (mapv parse-rule rules))
 
 (defn ruleset [ruleset]
-  (-> ruleset
+  (-> (if (string? ruleset)
+        (read-string ruleset)
+        ruleset)
       (js->clj :keywordize-keys true)
       parse-rules
       p/ruleset
       (p.util/trace 'ruleset)))
 
 (defn dataset [dataset]
-  (-> dataset
+  (-> (if (string? dataset)
+        (read-string dataset)
+        dataset)
       (js->clj :keywordize-keys true)
       p/dataset
       (p.util/trace 'dataset)))
@@ -78,14 +103,16 @@
 
 (defn q [engine q args cb]
   (let [q (-> q
-              edn/read-string
-              (p.util/trace 'q))
+              read-string
+              (p.util/trace :parsed-query))
+        args (js->clj args)
         q<> (apply p/q<> engine q args)]
     (flow/drain
      (m/ap (let [q< (m/? q<>)
                  result (m/?< q<)]
-             (log/trace {:query q
-                         :result (p.util/table result)})
+             (log/trace {:q/query q
+                         :q/args args
+                         :q/result (p.util/table result)})
              (cb (clj->js result)))))))
 
 
@@ -94,7 +121,7 @@
   (let [ident (-> ident
                   js->clj
                   str
-                  edn/read-string)
+                  read-string)
         entity> (p/entity*> engine ident true)]
     (entity> (fn [entity]
                (log/trace {:entity entity
@@ -108,7 +135,7 @@
   (let [ident (-> ident
                   js->clj
                   str
-                  edn/read-string)
+                  read-string)
         entity<> (p/entity<> engine ident true)]
     (flow/drain
      (m/ap (let [entity< (m/? entity<>)
@@ -138,7 +165,7 @@
 
 (defn unify [expr-or-str env]
   (let [expr (if (string? expr-or-str)
-               (edn/read-string expr-or-str)
+               (read-string expr-or-str)
                (js->clj expr-or-str))
         env (reduce-kv (fn [m k v]
                          (let [k (if (= \? (first k))
@@ -173,6 +200,10 @@
          (log/error expr)
          (log/log expr))))))
 
+(def transit-json-reader (t/reader :json))
+
+(def transit-json-writer (t/writer :json))
+
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def exports
   #js {:createEngine create-engine
@@ -194,4 +225,7 @@
        :pprint #(-> % js->clj pp/pprint)
        :addTap (fn
                  ([] (add-tap pp/pprint))
-                 ([tap] (add-tap (-> tap))))})
+                 ([tap] (add-tap (-> tap))))
+       :readString read-string
+       :encode (partial t/write transit-json-writer)
+       :decode (partial t/read transit-json-reader)})

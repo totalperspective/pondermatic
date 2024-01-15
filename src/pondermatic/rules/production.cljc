@@ -4,7 +4,9 @@
             [clojure.edn :as edn]
             [sci.core :as sci]
             [hasch.core :as h]
-            [portal.console :as log]))
+            [portal.console :as log]
+            [camel-snake-kebab.core :as csk]
+            [clojure.string :as str]))
 
 (defn throwable? [e]
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
@@ -296,9 +298,17 @@
               :eval/env env})
   (let [vars (reduce-kv (fn [m k v]
                           (assoc m k (sci/new-var k v)))
-                        {} env)]
+                        {} env)
+        add_ #(str/replace " " "_" %)
+        normalize (comp add_ str/lower-case)]
     (sci/eval-string (str expr)
-                     {:namespaces {'user vars}})))
+                     {:namespaces {'user vars
+                                   'case {'normalize normalize
+                                          'upper str/upper-case
+                                          'lower str/lower-case
+                                          'camel (comp csk/->camelCase normalize)
+                                          'kebab (comp csk/->kebab-case normalize)
+                                          'snake (comp csk/->snake_case normalize)}}})))
 
 (defn parse-gen-pattern [pattern]
   (m/rewrite

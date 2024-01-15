@@ -15,7 +15,8 @@
         io.replikativ/hasch {:mvn/version "0.3.94"}
         http-kit/http-kit {:mvn/version "2.7.0"}
         djblue/portal {:mvn/version "0.50.0"}
-        funcool/promesa {:mvn/version "11.0.678"}}
+        funcool/promesa {:mvn/version "11.0.678"}
+        edn-query-language/eql {:mvn/version "2021.07.18"}}
  :aliases
  {:dev
   {:extra-paths ["dev"]
@@ -23,7 +24,8 @@
   :cljs
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.60"}
                 thheller/shadow-cljs {:mvn/version "2.26.2"}
-                com.google.javascript/closure-compiler-unshaded {:mvn/version "v20230802"}}}
+                com.google.javascript/closure-compiler-unshaded {:mvn/version "v20230802"}
+                com.cognitect/transit-cljs {:mvn/version "0.8.280"}}}
   :test
   {:jvm-opts    ["-XX:-OmitStackTraceInFastThrow"
                  "-Dhyperfiddle.rcf.generate-tests=true"]

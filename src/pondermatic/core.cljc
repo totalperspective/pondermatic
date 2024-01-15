@@ -99,7 +99,7 @@
                               (str/replace #"^:" ""))]
                     (keyword ns n)))]
       (m/rewrite
-       [data {:ident :item}]
+       [data {:ident (keyword "_item_")}]
 
        (m/and [(hash-set & ?elements) ?env]
               (m/let [?set (apply hash-set ?elements)]))
