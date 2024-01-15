@@ -9,6 +9,7 @@
             [portal.console :as log]))
 
 (def port 5678)
+(def host "localhost")
 
 (def submit-impl
   #?(:browser (if js/window
@@ -33,7 +34,7 @@
   (instance? #?(:cljs js/Error :default Exception) e))
 
 (defn submit [value]
-  (submit-impl {:port port}
+  (submit-impl {:port port :host host}
                (if-not (exception? value)
                  (datafy/datafy value)
                  (error->data value))))
