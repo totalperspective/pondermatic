@@ -15,5 +15,7 @@
 
 (q)
 
+(prn (i/read-string "#ruleset {:rule {}}"))
+
 (tests
- (i/read-string "#ruleset []") := [])
+ (i/read-string "#ruleset {:rule {}}") := [])

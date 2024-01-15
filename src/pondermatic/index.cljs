@@ -26,7 +26,10 @@
                   :mutation/params params
                   :mutation/query query}))
    'ruleset (fn [ruleset]
-              (p/ruleset ruleset))
+              (->> ruleset
+                   (mapv (fn [[id rule]]
+                           (assoc rule :id id)))
+                   p/ruleset))
    'dataset (fn [dataset]
               (prn (meta dataset))
               (p/dataset dataset))})
