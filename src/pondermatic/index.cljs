@@ -179,13 +179,19 @@
   (let [expr (if (string? expr-or-str)
                (read-string expr-or-str)
                (js->clj expr-or-str))
-        env (reduce-kv (fn [m k v]
-                         (let [k (if (= \? (first k))
-                                   (symbol k)
-                                   k)]
-                           (assoc m k v)))
-                       {}
-                       (js->clj env))]
+        env (js->clj env)
+        [env return] (if (sequential? env)
+                       [env vec]
+                       [env first])
+        env (->> env
+                 (map #(reduce-kv (fn [m k v]
+                                    (let [k (if (= \? (first k))
+                                              (symbol k)
+                                              k)]
+                                      (assoc m k v)))
+                                  {}
+                                  %))
+                 return)]
     (log/trace {:unify/expr expr
                 :unfy/env env})
     (try
