@@ -20,6 +20,11 @@
           parsed (m/rewrite
                   [pattern env]
 
+                  [(m/pred set? ?context (m/seqable !clauses ...)) {:part :sub-clause :as ?env}]
+                  {::tag :application
+                   ::fn 'hash-set
+                   ::args [(m/cata [!clauses {:context ?context & ?env}]) ...]}
+
                   [(m/pred set? ?context (m/seqable !clauses ...)) ?env]
                   {::tag :conjunction
                    ::clauses [(m/cata [!clauses {:context ?context & ?env}]) ...]}
@@ -213,6 +218,10 @@
                {:id (m/some ?id) :as ?env}]
               (m/cata [[?id (m/cata [?attr ?env]) (m/cata [?val ?env]) ?mod] nil])
 
+
+              [{::tag :application} _]
+              nil
+
               [{::tag :predicate} _]
               nil
 
@@ -269,6 +278,11 @@
                 ::predicate (m/pred symbol? ?symbol)
                 ::args [!args ...]} ?env]
               [(?symbol & [(m/cata [!args ?env]) ...])]
+
+              [{::tag :application
+                ::fn (m/pred symbol? ?fn)
+                ::args [!args ...]} ?env]
+              (?fn & [(m/cata [!args ?env]) ...])
 
               (m/and [?expr ?env]
                      (m/let [?e (throw (ex-info "Failed to compile expression" {:expr ?expr :env ?env}))]))
@@ -628,6 +642,9 @@
 
  (pattern->when '#{(and ?lhs ?rhs)})
  := '[(and ?lhs ?rhs)]
+
+ (pattern->when '#{(contains? #{"item1" "item2"} ?rhs)})
+ := '[(contains? (hash-set "item1" "item2") ?rhs)]
 
  (pattern->when '#{(">" ?lhs 1)} '{scope {">" `>}})
  := '[(`> ?lhs 1)]
