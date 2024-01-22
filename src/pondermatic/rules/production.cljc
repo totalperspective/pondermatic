@@ -6,7 +6,24 @@
             [hasch.core :as h]
             [portal.console :as log]
             [camel-snake-kebab.core :as csk]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [inflections.core :as i]))
+
+(def nss
+  (let [add_ #(str/replace % " " "_")
+        normalize (comp add_ str/lower-case)]
+    {'hash {'uuid h/uuid
+            'squuid h/squuid
+            'b64 h/b64-hash}
+     'inflection {'plural i/plural
+                  'singular i/singular
+                  'ordinalize i/ordinalize}
+     'case {'normalize normalize
+            'upper str/upper-case
+            'lower str/lower-case
+            'camel (comp csk/->camelCase normalize)
+            'kebab (comp csk/->kebab-case normalize)
+            'snake (comp csk/->snake_case normalize)}}))
 
 (defn throwable? [e]
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
@@ -312,17 +329,9 @@
               :eval/env env})
   (let [vars (reduce-kv (fn [m k v]
                           (assoc m k (sci/new-var k v)))
-                        {} env)
-        add_ #(str/replace % " " "_")
-        normalize (comp add_ str/lower-case)]
+                        {} env)]
     (sci/eval-string (str expr)
-                     {:namespaces {'user vars
-                                   'case {'normalize normalize
-                                          'upper str/upper-case
-                                          'lower str/lower-case
-                                          'camel (comp csk/->camelCase normalize)
-                                          'kebab (comp csk/->kebab-case normalize)
-                                          'snake (comp csk/->snake_case normalize)}}})))
+                     {:namespaces (assoc nss 'user vars)})))
 
 (defn parse-gen-pattern [pattern]
   (m/rewrite
