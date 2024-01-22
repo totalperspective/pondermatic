@@ -182,7 +182,7 @@
         env (js->clj env)
         [env return] (if (sequential? env)
                        [env vec]
-                       [env first])
+                       [[env] first])
         env (->> env
                  (map #(reduce-kv (fn [m k v]
                                     (let [k (if (= \? (first k))
