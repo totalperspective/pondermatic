@@ -216,8 +216,13 @@
 
 (def transit-json-writer (t/writer :json))
 
-(defn eval-string [str]
-  (-> str sci.core/eval-string clj->js))
+(defn eval-string
+  ([str]
+   (eval-string str false))
+  ([str ->js?]
+   (if ->js?
+     (-> str sci/eval-string clj->js)
+     (sci/eval-string str))))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def exports
