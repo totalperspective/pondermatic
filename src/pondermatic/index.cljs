@@ -250,4 +250,5 @@
        :toString pr-str
        :encode (partial t/write transit-json-writer)
        :decode (partial t/read transit-json-reader)
-       :eval eval-string})
+       :eval eval-string
+       :toJS clj->js})
