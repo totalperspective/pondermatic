@@ -7,7 +7,8 @@
             [portal.console :as log]
             [camel-snake-kebab.core :as csk]
             [clojure.string :as str]
-            [inflections.core :as i]))
+            [inflections.core :as i]
+            [clojure.walk :as w]))
 
 (def nss
   (let [add_ #(str/replace % " " "_")
@@ -455,10 +456,59 @@
           (m/let [?e (throw (ex-info "Failed to unify expr" {:expr ?expr :env ?env}))]))
    ?e))
 
-(defn unify-pattern [pattern env]
-  (-> pattern
-      parse-gen-pattern
-      (unify-gen-pattern env)))
+
+(defn unify*
+  ([pattern bindings]
+   (unify* pattern bindings {:id :unify-pattern :entities {}}))
+  ([pattern bindings env]
+   (let [{:keys [id entities]} env
+         ?id id]
+     (->> bindings
+          (map (fn [b]
+                 (unify-gen-pattern pattern (update b 'entities #(merge (or % {})
+                                                                        entities)))))
+          (reduce  (fn [m p]
+                     (let [p' (w/postwalk (fn [node]
+                                            (if (fn? node)
+                                              (node)
+                                              node))
+                                          p)
+                           id (h/uuid5 (h/edn-hash p'))]
+                       (merge-with
+                        (fn merge-fn [x y]
+                          (cond
+                            (map? x) (merge-with merge-fn x y)
+
+                            (and (fn? x) (fn? y)) (comp y x)
+
+                            (fn? y) y
+
+                            (= x y) x
+
+                            (nil? x) y
+
+                            :else (throw (ex-info "Couldn't perfoprm merge"
+                                                  {:rule ?id :args [x y]}))))
+                        m
+
+                        {id p})))
+                   {})
+          vals
+          (map (fn [p]
+                 (w/postwalk (fn [node]
+                               (if (fn? node)
+                                 (node nil)
+                                 node))
+                             p)))))))
+
+(defn unify-pattern [pattern bindings]
+  (let [[env return] (if (sequential? bindings)
+                       [bindings vec]
+                       [[bindings] first])]
+    (-> pattern
+        parse-gen-pattern
+        (unify* env)
+        return)))
 
 (tests
  (defn ! [x] (prn x) x)

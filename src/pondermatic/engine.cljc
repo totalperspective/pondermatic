@@ -161,42 +161,7 @@
                                                          (assoc m id (d/entity db id)))
                                                        {}
                                                        ids)
-                                      production (->> bindings
-                                                      (map (fn [b]
-                                                             (prp/unify-gen-pattern then (assoc b 'entities entities))))
-                                                      (reduce  (fn [m p]
-                                                                 (let [p' (w/postwalk (fn [node]
-                                                                                        (if (fn? node)
-                                                                                          (node)
-                                                                                          node))
-                                                                                      p)
-                                                                       id (h/uuid5 (h/edn-hash p'))]
-                                                                   (merge-with
-                                                                    (fn merge-fn [x y]
-                                                                      (cond
-                                                                        (map? x) (merge-with merge-fn x y)
-
-                                                                        (and (fn? x) (fn? y)) (comp y x)
-
-                                                                        (fn? y) y
-
-                                                                        (= x y) x
-
-                                                                        (nil? x) y
-
-                                                                        :else (throw (ex-info "Couldn't perfoprm merge"
-                                                                                              {:rule ?id :args [x y]}))))
-                                                                    m
-
-                                                                    {id p})))
-                                                               {})
-                                                      vals
-                                                      (map (fn [p]
-                                                             (w/postwalk (fn [node]
-                                                                           (if (fn? node)
-                                                                             (node nil)
-                                                                             node))
-                                                                         p))))
+                                      production (prp/unify* then bindings {:id ?id :entities entities})
                                       local? (-> production
                                                  first
                                                  :local/id)]
