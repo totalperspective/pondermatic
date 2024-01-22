@@ -225,10 +225,10 @@
      (sci/eval-string str))))
 
 (defn js? [x]
-  (not (or (number? x)
-           (string? x)
-           (array? x)
-           (object? x))))
+  (or (number? x)
+      (string? x)
+      (array? x)
+      (object? x)))
 
 (def devtoolsFormatter
   #js {:header (fn [obj _config]
