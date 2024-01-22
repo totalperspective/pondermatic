@@ -224,6 +224,20 @@
      (-> str sci/eval-string clj->js)
      (sci/eval-string str))))
 
+(defn js? [x]
+  (not (or (number? x)
+           (string? x)
+           (array? x)
+           (object? x))))
+
+(def devtoolsFormatter
+  #js {:header (fn [obj _config]
+                 (when-not (js? obj)
+                   (clj->js [:div, {}, (str "clj: " (pr-str obj))])))
+       :hasBody (constantly true)
+       :body (fn [obj, _config]
+               (clj->js [:object {:object obj}]))})
+
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def exports
   #js {:createEngine create-engine
@@ -251,4 +265,5 @@
        :encode (partial t/write transit-json-writer)
        :decode (partial t/read transit-json-reader)
        :eval eval-string
-       :toJS clj->js})
+       :toJS clj->js
+       :devtoolsFormatter devtoolsFormatter})
