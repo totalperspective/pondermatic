@@ -216,6 +216,9 @@
 
 (def transit-json-writer (t/writer :json))
 
+(defn eval-string [str]
+  (-> str sci.core/eval-string clj->js))
+
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def exports
   #js {:createEngine create-engine
@@ -242,4 +245,4 @@
        :toString pr-str
        :encode (partial t/write transit-json-writer)
        :decode (partial t/read transit-json-reader)
-       :eval sci.core/eval-string})
+       :eval eval-string})
