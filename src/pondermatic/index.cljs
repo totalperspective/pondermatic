@@ -228,7 +228,8 @@
   (or (number? x)
       (string? x)
       (array? x)
-      (object? x)))
+      (object? x)
+      (instance? js/Error x)))
 
 (def devtoolsFormatter
   #js {:header (fn [obj _config]
