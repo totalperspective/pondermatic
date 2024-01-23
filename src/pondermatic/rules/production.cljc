@@ -13,15 +13,17 @@
             [tick.core :as t]
             [incognito.base :as ib]
             #?(:cljs
-               [java.time :refer [LocalDate]]))
+               [java.time :refer [LocalDate LocalDateTime]]))
   #?(:clj
-     (:import [java.time LocalDate])))
+     (:import [java.time LocalDate LocalDateTime])))
 
 (def write-handlers
-  {`LocalDate (fn [d] (str d))})
+  {`LocalDate (fn [d] (str d))
+   `LocalDateTime (fn [dt] (str dt))})
 
 (def read-handlers
-  {`LocalDate (fn [d] (t/date d))})
+  {`LocalDate (fn [d] (t/date d))
+   `LocalDateTime (fn [dt] (t/date-time dt))})
 
 (extend-protocol
  hb/PHashCoercion
