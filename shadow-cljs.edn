@@ -48,6 +48,8 @@
   ;;  :js-options {:entry-keys ["module" "browser" "main"]}
    :compiler-options {:reader-features #{:browser}
                       :source-map false
-                      :output-feature-set :es5}
+                      :output-feature-set :es5
+                      :pseudo-names true
+                      :pretty-print true}
    :modules {:index {:exports {default pondermatic.index/exports}}}
    :release {}}}}
