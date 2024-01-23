@@ -55,8 +55,7 @@
 (defn hash-id [js-obj]
   (-> js-obj
       (js->clj :keywordize-keys true)
-      h/edn-hash
-      h/uuid5))
+      prp/uuid-hash))
 
 (defn create-engine
   ([name]

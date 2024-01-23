@@ -108,7 +108,7 @@
                  rule-hashes (mapv (fn [{:keys [?ident ?when-id ?then-id]}]
                                      [?ident
                                       {::type ::rule-info
-                                       ::hash (h/uuid5 (h/edn-hash [?ident ?when-id ?then-id]))}])
+                                       ::hash (prp/uuid-hash [?ident ?when-id ?then-id])}])
                                    matches)]
              (sh/|> rules (rules/insert* rule-hashes)))]
           ::rules
