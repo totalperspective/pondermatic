@@ -6,7 +6,26 @@
             #?(:browser
                [portal.client.web :as pw])
             [clojure.datafy :as datafy]
-            [portal.console :as log]))
+            [clojure.core.protocols :as ccp]
+            [portal.console :as log]
+            [incognito.base :as ib]
+            #?(:cljs
+               [java.time :refer [LocalDate LocalDateTime]]))
+  #?(:clj
+     (:import [java.time LocalDate LocalDateTime])))
+
+(def write-handlers
+  {`LocalDate (fn [d] (str d))
+   `LocalDateTime (fn [dt] (str dt))})
+
+(extend-protocol
+ ccp/Datafiable
+  LocalDate
+  (datafy [d]
+    (ib/incognito-writer write-handlers d))
+  LocalDateTime
+  (datafy [d]
+    (ib/incognito-writer write-handlers d)))
 
 (def port 5678)
 (def host "localhost")
