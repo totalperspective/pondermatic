@@ -9,6 +9,7 @@
             [clojure.core.protocols :as ccp]
             [portal.console :as log]
             [incognito.base :as ib]
+            [clojure.walk :as w]
             #?(:cljs
                [java.time :refer [LocalDate LocalDateTime]]))
   #?(:clj
@@ -35,6 +36,7 @@
                 pw/submit
                 p/submit)
      :default p/submit))
+
 #?(:cljs
    (defn error->data [ex]
      (merge
@@ -53,10 +55,14 @@
   (instance? #?(:cljs js/Error :default Exception) e))
 
 (defn submit [value]
-  (submit-impl {:port port :host host}
-               (if-not (exception? value)
-                 (datafy/datafy value)
-                 (error->data value))))
+  (->> value
+       (w/postwalk (fn [value]
+                     (prn value)
+                     (if (exception? value)
+                       (error->data value)
+                       value)))
+       datafy/datafy
+       (submit-impl {:port port :host host})))
 
 (defn start [_launcher]
   (add-tap #'submit)
