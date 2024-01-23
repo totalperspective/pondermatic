@@ -12,7 +12,7 @@
             [portal.console :as log]
             [promesa.core :as pa]
             [cognitect.transit :as t]
-            [sci.core :as sci]
+            [pondermatic.eval :as pe]
             [pondermatic.reader :refer [-read-string]]
             [pondermatic.data :refer [uuid-hash]]))
 
@@ -198,9 +198,9 @@
   ([str ->js?]
    (if ->js?
      (-> str
-         (sci/eval-string {:namespaces {'user prp/default-scope}})
+         pe/eval-string
          clj->js)
-     (sci/eval-string str {:namespaces {'user prp/default-scope}}))))
+     (pe/eval-string str))))
 
 (defn js? [x]
   (or (number? x)

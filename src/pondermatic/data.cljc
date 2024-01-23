@@ -3,7 +3,6 @@
             [hasch.benc :as hb]
             [clojure.core.protocols :as ccp]
             [tick.core :as t]
-            [tick.protocols :as tp]
             [incognito.base :as ib]
             [pondermatic.reader :as r]
             [cljc.java-time.period]

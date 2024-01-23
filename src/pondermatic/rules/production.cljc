@@ -2,6 +2,7 @@
   (:require [hyperfiddle.rcf :refer [tests]]
             [meander.epsilon :as m]
             [pondermatic.reader :as pr]
+            [pondermatic.eval :as pe]
             [sci.core :as sci]
             [hasch.core :as h]
             [portal.console :as log]
@@ -11,35 +12,6 @@
             [clojure.walk :as w]
             [pondermatic.data :refer [uuid-hash]]
             [tick.core]))
-
-(def nss
-  (let [add_ #(str/replace % " " "_")
-        normalize (comp add_ str/lower-case)
-        t (sci/create-ns 'tick.core)
-        sci-t-ns (sci/copy-ns tick.core t {:exclude []})]
-    {'hash {'uuid uuid-hash
-            'squuid h/squuid
-            'b64 h/b64-hash}
-     'inflection {'plural i/plural
-                  'singular i/singular
-                  'ordinalize i/ordinalize}
-     'case {'normalize normalize
-            'upper str/upper-case
-            'lower str/lower-case
-            'camel (comp csk/->camelCase normalize)
-            'kebab (comp csk/->kebab-case normalize)
-            'snake (comp csk/->snake_case normalize)}
-     't sci-t-ns}))
-
-(def default-scope
-  (reduce-kv (fn [m ns fns]
-               (reduce-kv (fn [m fn impl]
-                            (let [sym (symbol (str ns "." fn))]
-                              (assoc m sym impl)))
-                          m
-                          fns))
-             {}
-             nss))
 
 (defn throwable? [e]
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
@@ -176,7 +148,7 @@
 
               (m/and [{::tag :modifier
                        ::modifier (m/pred symbol? ?mod)} _]
-                     (m/let [?fn (sci/eval-string (str ?mod))]))
+                     (m/let [?fn (pe/eval-string (str ?mod))]))
               {:then ?fn}
 
               [{::tag :contains
@@ -336,7 +308,7 @@
   ([pattern]
    (pattern->when pattern {}))
   ([pattern opts]
-   (let [opts (update opts 'scope merge default-scope)]
+   (let [opts (update opts 'scope merge pe/default-scope)]
      (-> pattern
          (parse-pattern opts)
          (compile-when opts)))))
@@ -347,8 +319,7 @@
   (let [vars (reduce-kv (fn [m k v]
                           (assoc m k (sci/new-var k v)))
                         {} env)]
-    (sci/eval-string (str expr)
-                     {:namespaces {'user (merge default-scope vars)}})))
+    (pe/eval-string (str expr) {:bindings vars})))
 
 (defn parse-gen-pattern [pattern]
   (m/rewrite
@@ -465,7 +436,7 @@
                             ([other] (if (nil? other)
                                        ?val
                                        (agg-fn other ?val)))
-                            ([x y] (sci/eval-string (str (list ?merge x y)))))]))
+                            ([x y] (pe/eval-string (str (list ?merge x y)))))]))
    ?agg-fn
 
    (m/and [?expr ?env]

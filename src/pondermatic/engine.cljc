@@ -11,7 +11,7 @@
             [asami.core :as d]
             [pondermatic.flow :as f]
             [clojure.walk :as w]
-            [sci.core :as sci]
+            [pondermatic.eval :as pe]
             [pondermatic.portal.utils :as portal]
             [pondermatic.portal.utils :as ppu]
             [portal.console :as log]
@@ -141,7 +141,7 @@
                                   (zipmap pred-l-vars)
                                   (prp/unify-pattern preds)
                                   (map str)
-                                  (map sci/eval-string)
+                                  (map pe/eval-string)
                                   (every? identity)))
                    rule-spec {:what what
                               :when when-fn
