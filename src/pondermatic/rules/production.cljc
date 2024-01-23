@@ -4,19 +4,43 @@
             [clojure.edn :as edn]
             [sci.core :as sci]
             [hasch.core :as h]
+            [hasch.benc :as hb]
             [portal.console :as log]
             [camel-snake-kebab.core :as csk]
             [clojure.string :as str]
             [inflections.core :as i]
             [clojure.walk :as w]
-            [tick.core :as t]))
+            [tick.core :as t]
+            [incognito.base :as ib]
+            #?(:cljs
+               [java.time :refer [LocalDate]]))
+  #?(:clj
+     (:import [java.time LocalDate])))
+
+(def write-handlers
+  {`LocalDate (fn [d] (str d))})
+
+(def read-handlers
+  {`LocalDate (fn [d] (t/date d))})
+
+(extend-protocol
+ hb/PHashCoercion
+  LocalDate
+  (-coerce [this md-create-fn write-handlers]
+    (hb/-coerce
+     (ib/incognito-writer write-handlers this)
+     md-create-fn
+     write-handlers)))
+
+(defn uuid-hash [x]
+  (h/uuid x :write-handlers write-handlers))
 
 (def nss
   (let [add_ #(str/replace % " " "_")
         normalize (comp add_ str/lower-case)
         t (sci/create-ns 'tick.core)
         sci-t-ns (sci/copy-ns tick.core t {:exclude []})]
-    {'hash {'uuid h/uuid
+    {'hash {'uuid uuid-hash
             'squuid h/squuid
             'b64 h/b64-hash}
      'inflection {'plural i/plural
@@ -446,7 +470,7 @@
    (m/cata [(hash-set (m/cata [!items ?env]) ...) ?env])
 
    (m/and [{::tag :aggregate ::merge ?merge ::expr ?expr :as ?agg} ?env]
-          (m/let [?id (h/uuid5 (h/edn-hash ?agg))
+          (m/let [?id (uuid-hash ?agg)
                   ?val (unify-gen-pattern ?expr ?env)
                   ?agg-fn (fn agg-fn
                             ([] ?id)
@@ -477,7 +501,7 @@
                                               (node)
                                               node))
                                           p)
-                           id (h/uuid5 (h/edn-hash p'))]
+                           id (uuid-hash p')]
                        (merge-with
                         (fn merge-fn [x y]
                           (cond
