@@ -6,34 +6,8 @@
             #?(:browser
                [portal.client.web :as pw])
             [clojure.datafy :as datafy]
-            [clojure.core.protocols :as ccp]
             [portal.console :as log]
-            [incognito.base :as ib]
-            [clojure.walk :as w]
-            [tick.core :as t]
-            #?(:cljs
-               [java.time :refer [LocalDate LocalDateTime]]))
-  #?(:clj
-     (:import [java.time LocalDate LocalDateTime])))
-
-(defn ->type-sym [x]
-  (-> x type pr-str symbol))
-
-(def LocalDate-sym (->type-sym (t/date)))
-(def LocalDateTime-sym (->type-sym (t/date-time)))
-
-(def write-handlers
-  {LocalDate-sym (fn [d] (str d))
-   LocalDateTime-sym (fn [dt] (str dt))})
-
-(extend-protocol
- ccp/Datafiable
-  LocalDate
-  (datafy [d]
-    (ib/incognito-writer write-handlers d))
-  LocalDateTime
-  (datafy [d]
-    (ib/incognito-writer write-handlers d)))
+            [clojure.walk :as w]))
 
 (def port 5678)
 (def host "localhost")

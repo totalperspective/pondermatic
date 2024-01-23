@@ -4,47 +4,13 @@
             [clojure.edn :as edn]
             [sci.core :as sci]
             [hasch.core :as h]
-            [hasch.benc :as hb]
             [portal.console :as log]
             [camel-snake-kebab.core :as csk]
             [clojure.string :as str]
             [inflections.core :as i]
             [clojure.walk :as w]
-            [tick.core :as t]
-            [incognito.base :as ib]
-            #?(:cljs
-               [java.time :refer [LocalDate LocalDateTime]]))
-  #?(:clj
-     (:import [java.time LocalDate LocalDateTime])))
-
-(defn ->type-sym [x]
-  (-> x type pr-str symbol))
-
-(def LocalDate-sym (->type-sym (t/date)))
-(def LocalDateTime-sym (->type-sym (t/date-time)))
-
-(def write-handlers
-  {LocalDate-sym (fn [d] (str d))
-   LocalDateTime-sym (fn [dt] (str dt))})
-
-
-(extend-protocol
- hb/PHashCoercion
-  LocalDate
-  (-coerce [this md-create-fn write-handlers]
-    (hb/-coerce
-     (ib/incognito-writer write-handlers this)
-     md-create-fn
-     write-handlers))
-  LocalDateTime
-  (-coerce [this md-create-fn write-handlers]
-    (hb/-coerce
-     (ib/incognito-writer write-handlers this)
-     md-create-fn
-     write-handlers)))
-
-(defn uuid-hash [x]
-  (h/uuid x :write-handlers write-handlers))
+            [pondermatic.data :refer [uuid-hash]]
+            [tick.core]))
 
 (def nss
   (let [add_ #(str/replace % " " "_")

@@ -15,7 +15,8 @@
             [pondermatic.portal.utils :as portal]
             [pondermatic.portal.utils :as ppu]
             [portal.console :as log]
-            [pondermatic.portal.utils :as p.util]))
+            [pondermatic.portal.utils :as p.util]
+            [pondermatic.data :refer [uuid-hash]]))
 
 (def type-name ::type)
 (def rule-type ::rule)
@@ -108,7 +109,7 @@
                  rule-hashes (mapv (fn [{:keys [?ident ?when-id ?then-id]}]
                                      [?ident
                                       {::type ::rule-info
-                                       ::hash (prp/uuid-hash [?ident ?when-id ?then-id])}])
+                                       ::hash (uuid-hash [?ident ?when-id ?then-id])}])
                                    matches)]
              (sh/|> rules (rules/insert* rule-hashes)))]
           ::rules

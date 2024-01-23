@@ -14,7 +14,8 @@
             [promesa.core :as pa]
             [edn-query-language.core :as eql]
             [cognitect.transit :as t]
-            [sci.core :as sci]))
+            [sci.core :as sci]
+            [pondermatic.data :refer [uuid-hash]]))
 
 (def readers
   {'rule (fn [[when then]]
@@ -55,7 +56,7 @@
 (defn hash-id [js-obj]
   (-> js-obj
       (js->clj :keywordize-keys true)
-      prp/uuid-hash))
+      uuid-hash))
 
 (defn create-engine
   ([name]
