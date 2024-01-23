@@ -6,45 +6,15 @@
             [pondermatic.portal.utils :as p.util]
             [pondermatic.rules.production :as prp]
             [clojure.walk :as w]
-            [clojure.edn :as edn]
             [hasch.core :as h]
             [cljs.pprint :as pp]
             [pondermatic.portal.client :as portal]
             [portal.console :as log]
             [promesa.core :as pa]
-            [edn-query-language.core :as eql]
             [cognitect.transit :as t]
             [sci.core :as sci]
+            [pondermatic.reader :refer [-read-string]]
             [pondermatic.data :refer [uuid-hash]]))
-
-(def readers
-  {'rule (fn [[when then]]
-           {:rule/when when
-            :rule/then then})
-   'mutation (fn [mutation]
-               (let [{:keys [key params query]} (eql/expr->ast mutation)
-                     m {:mutation/call (keyword key)
-                        :mutation/params (p/kw->qkw params)}]
-                 (if query
-                   (assoc m :mutation/query query)
-                   m)))
-   'ruleset (fn [ruleset]
-              (->> ruleset
-                   (mapv (fn [[id rule]]
-                           (assoc rule :id id)))
-                   p/ruleset))
-   'dataset (fn [dataset]
-              (prn (meta dataset))
-              (p/dataset dataset))
-   'json (fn [json]
-           (-> (.parse js/JSON json)
-               (js->clj :keywordize-keys true)))})
-
-(defn read-string [str]
-  (edn/read-string {:readers readers
-                    :default (fn [tag value]
-                               {:reader.unknown/tag tag
-                                :reader.unknown/value value})} str))
 
 (defn portal
   ([]
@@ -67,7 +37,7 @@
 (defn ->edn [form]
   (->> form
        str
-       read-string
+       -read-string
        (w/postwalk (fn [node]
                      #_{:clj-kondo/ignore [:unresolved-symbol]}
                      (if (instance? cljs.core.MapEntry  node)
@@ -87,7 +57,7 @@
 
 (defn ruleset [ruleset]
   (-> (if (string? ruleset)
-        (read-string ruleset)
+        (-read-string ruleset)
         ruleset)
       (js->clj :keywordize-keys true)
       parse-rules
@@ -96,7 +66,7 @@
 
 (defn dataset [dataset]
   (-> (if (string? dataset)
-        (read-string dataset)
+        (-read-string dataset)
         dataset)
       (js->clj :keywordize-keys true)
       p/dataset
@@ -114,7 +84,7 @@
 
 (defn q [engine q args cb]
   (let [q (-> q
-              read-string
+              -read-string
               (p.util/trace :parsed-query))
         args (js->clj args)
         q<> (apply p/q<> engine q args)]
@@ -132,7 +102,7 @@
   (let [ident (-> ident
                   js->clj
                   str
-                  read-string)
+                  -read-string)
         entity> (p/entity*> engine ident true)]
     (entity> (fn [entity]
                (log/trace {:entity entity
@@ -146,7 +116,7 @@
   (let [ident (-> ident
                   js->clj
                   str
-                  read-string)
+                  -read-string)
         entity<> (p/entity<> engine ident true)]
     (flow/drain
      (m/ap (let [entity< (m/? entity<>)
@@ -177,7 +147,7 @@
 
 (defn unify [expr-or-str env]
   (let [expr (if (string? expr-or-str)
-               (read-string expr-or-str)
+               (-read-string expr-or-str)
                (js->clj expr-or-str))
         env (js->clj env)
         [env return] (if (sequential? env)
@@ -269,7 +239,7 @@
        :addTap (fn
                  ([] (add-tap pp/pprint))
                  ([tap] (add-tap (-> tap))))
-       :readString read-string
+       :readString -read-string
        :toString pr-str
        :encode (partial t/write transit-json-writer)
        :decode (partial t/read transit-json-reader)

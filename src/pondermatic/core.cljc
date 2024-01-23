@@ -5,10 +5,11 @@
             [pondermatic.shell :as sh]
             [clojure.walk :as w]
             [clojure.string :as str]
-            [clojure.edn :as edn]
+            [pondermatic.reader :as pr]
             [pondermatic.rules.production :as prod]
             [meander.epsilon :as m]
-            [portal.console :as log]))
+            [portal.console :as log]
+            [edn-query-language.core :as eql]))
 
 (defn ->engine [name & {:keys [:reset-db?] :or {reset-db? false}}]
   (let [db-uri (db/name->mem-uri name)
@@ -35,10 +36,10 @@
                 #_{:clj-kondo/ignore [:unresolved-symbol]}
                 (cond
                   (and (string? node) (re-matches #"^[+].*$" node))
-                  (edn/read-string (apply str (rest node)))
+                  (pr/-read-string (apply str (rest node)))
 
                   (and (string? node) (re-matches #"^[?:].*$" node))
-                  (edn/read-string node)
+                  (pr/-read-string node)
 
                   (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
                   (let [[key val] node]
@@ -63,14 +64,14 @@
                        [:db/ident (cond
                                     (and (string? val)
                                          (= \: (first  val)))
-                                    (edn/read-string val)
+                                    (pr/-read-string val)
 
                                     (string? val)
-                                    (edn/read-string (str ":" val))
+                                    (pr/-read-string (str ":" val))
 
                                     (and (symbol? val)
                                          (not (#{\+ \?} (first (str val)))))
-                                    (edn/read-string (str ":" val))
+                                    (pr/-read-string (str ":" val))
 
                                     :else
                                     val)]
@@ -78,7 +79,7 @@
                    (and (vector? node)
                         (= (count node) 2)
                         (= (str (first node)) "id"))
-                   (edn/read-string (str ":" (second node)))
+                   (pr/-read-string (str ":" (second node)))
 
                    :else
                    node))
@@ -187,3 +188,22 @@
 (def entity<> engine/entity<>)
 
 (def entity*> engine/entity*>)
+
+(pr/add-readers {'mutation (fn [mutation]
+                             (let [{:keys [key params query]} (eql/expr->ast mutation)
+                                   m {:mutation/call (keyword key)
+                                      :mutation/params (kw->qkw params)}]
+                               (if query
+                                 (assoc m :mutation/query query)
+                                 m)))
+                 'ruleset (fn [ruleset]
+                            (->> ruleset
+                                 (mapv (fn [[id rule]]
+                                         (assoc rule :id id)))
+                                 ruleset))
+                 'dataset (fn [dataset]
+                            (prn (meta dataset))
+                            (dataset dataset))
+                 #?@(:cljs ['json (fn [json]
+                                    (-> (.parse js/JSON json)
+                                        (js->clj :keywordize-keys true)))])})

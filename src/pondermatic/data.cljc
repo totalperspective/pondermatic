@@ -3,7 +3,11 @@
             [hasch.benc :as hb]
             [clojure.core.protocols :as ccp]
             [tick.core :as t]
+            [tick.protocols :as tp]
             [incognito.base :as ib]
+            [pondermatic.reader :as r]
+            [cljc.java-time.period]
+            [cljc.java-time.duration]
             #?(:cljs
                [java.time :refer [LocalDate LocalDateTime Period Duration]]))
   #?(:clj
@@ -57,3 +61,8 @@
   LocalDateTime
   (datafy [d]
     (ib/incognito-writer write-handlers d)))
+
+(r/add-readers {'time/date t/date
+                'time/date-time t/date-time
+                'time/period cljc.java-time.period/parse
+                'time/duration cljc.java-time.duration/parse})

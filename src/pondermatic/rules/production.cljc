@@ -1,7 +1,7 @@
 (ns pondermatic.rules.production
   (:require [hyperfiddle.rcf :refer [tests]]
             [meander.epsilon :as m]
-            [clojure.edn :as edn]
+            [pondermatic.reader :as pr]
             [sci.core :as sci]
             [hasch.core :as h]
             [portal.console :as log]
@@ -105,7 +105,7 @@
 
                   (m/and ?context
                          [(m/pred string? ?attr-str) {:part :sub-clause :type :attr :as ?env}]
-                         (m/let [?attr (edn/read-string ?attr-str)]))
+                         (m/let [?attr (pr/-read-string ?attr-str)]))
                   (m/cata [?attr {:context ?context & ?env}])
 
                   [(?mod ?attr :as ?context) {:part :sub-clause :type :attr :as ?env}]
@@ -355,7 +355,7 @@
    [pattern {}]
 
    (m/and [(m/pred string? (m/re #"^\[\$ .*\]$") ?str) ?env]
-          (m/let [?expr (edn/read-string ?str)]))
+          (m/let [?expr (pr/-read-string ?str)]))
    (m/cata [?expr ?env])
 
    [[$ ?expr ?merge] ?env]
@@ -428,12 +428,12 @@
    ?e
 
    (m/and [{::tag :map-entry ::key (m/pred string? ?k-str) ::value ?v} ?env]
-          (m/let [?k (edn/read-string ?k-str)]))
+          (m/let [?k (pr/-read-string ?k-str)]))
    (m/cata [{::tag :map-entry ::key ?k ::value ?v} ?env])
 
    (m/and [{::tag :map-entry ::key (m/pred keyword? (m/re #"^::") ?k-kw) ::value ?v} ?env]
           (m/let [[_ ?k-str] (re-matches #"^:(.*)$" (str ?k-kw))
-                  ?k (edn/read-string ?k-str)]))
+                  ?k (pr/-read-string ?k-str)]))
    (m/cata [{::tag :map-entry ::key ?k ::value ?v} ?env])
 
    [{::tag :map-entry ::key ?k ::value ?v} ?env]

@@ -7,10 +7,10 @@
             [pyramid.core :as p]
             [asami.memory]
             [hyperfiddle.rcf :refer [tests]]
-            [clojure.edn :as edn]
             [clojure.walk :as w]
             [pondermatic.portal.utils :as utils]
-            [portal.console :as log]))
+            [portal.console :as log]
+            [pondermatic.reader :as pr]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
@@ -77,7 +77,7 @@
        (map #(d/entity % id nested?))))
 
 (defn upsert-name [attr]
-  (edn/read-string (str attr "'")))
+  (pr/-read-string (str attr "'")))
 
 (defn upsert [tx]
   (w/postwalk (fn [node]
