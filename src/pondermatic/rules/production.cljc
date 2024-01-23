@@ -17,19 +17,26 @@
   #?(:clj
      (:import [java.time LocalDate LocalDateTime])))
 
-(def write-handlers
-  {`LocalDate (fn [d] (str d))
-   `LocalDateTime (fn [dt] (str dt))
-   (symbol "#object[LocalDate]") (fn [d] (str d))
-   (symbol "#object[LocalDateTime]") (fn [d] (str d))})
+(defn ->type-sym [x]
+  (-> x type pr-str symbol))
 
-(def read-handlers
-  {`LocalDate (fn [d] (t/date d))
-   `LocalDateTime (fn [dt] (t/date-time dt))})
+(def LocalDate-sym (->type-sym (t/date)))
+(def LocalDateTime-sym (->type-sym (t/date-time)))
+
+(def write-handlers
+  {LocalDate-sym (fn [d] (str d))
+   LocalDateTime-sym (fn [dt] (str dt))})
+
 
 (extend-protocol
  hb/PHashCoercion
   LocalDate
+  (-coerce [this md-create-fn write-handlers]
+    (hb/-coerce
+     (ib/incognito-writer write-handlers this)
+     md-create-fn
+     write-handlers))
+  LocalDateTime
   (-coerce [this md-create-fn write-handlers]
     (hb/-coerce
      (ib/incognito-writer write-handlers this)

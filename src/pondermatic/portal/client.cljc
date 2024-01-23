@@ -10,16 +10,21 @@
             [portal.console :as log]
             [incognito.base :as ib]
             [clojure.walk :as w]
+            [tick.core :as t]
             #?(:cljs
                [java.time :refer [LocalDate LocalDateTime]]))
   #?(:clj
      (:import [java.time LocalDate LocalDateTime])))
 
+(defn ->type-sym [x]
+  (-> x type pr-str symbol))
+
+(def LocalDate-sym (->type-sym (t/date)))
+(def LocalDateTime-sym (->type-sym (t/date-time)))
+
 (def write-handlers
-  {`LocalDate (fn [d] (str d))
-   `LocalDateTime (fn [dt] (str dt))
-   (symbol "#object[LocalDate]") (fn [d] (str d))
-   (symbol "#object[LocalDateTime]") (fn [d] (str d))})
+  {LocalDate-sym (fn [d] (str d))
+   LocalDateTime-sym (fn [dt] (str dt))})
 
 (extend-protocol
  ccp/Datafiable
