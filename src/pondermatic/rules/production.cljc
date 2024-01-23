@@ -8,11 +8,14 @@
             [camel-snake-kebab.core :as csk]
             [clojure.string :as str]
             [inflections.core :as i]
-            [clojure.walk :as w]))
+            [clojure.walk :as w]
+            [tick.core :as t]))
 
 (def nss
   (let [add_ #(str/replace % " " "_")
-        normalize (comp add_ str/lower-case)]
+        normalize (comp add_ str/lower-case)
+        t (sci/create-ns 'tick.core)
+        sci-t-ns (sci/copy-ns tick.core t {:exclude []})]
     {'hash {'uuid h/uuid
             'squuid h/squuid
             'b64 h/b64-hash}
@@ -24,7 +27,8 @@
             'lower str/lower-case
             'camel (comp csk/->camelCase normalize)
             'kebab (comp csk/->kebab-case normalize)
-            'snake (comp csk/->snake_case normalize)}}))
+            'snake (comp csk/->snake_case normalize)}
+     't sci-t-ns}))
 
 (defn throwable? [e]
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
