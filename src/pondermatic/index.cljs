@@ -192,7 +192,7 @@
                                   %))
                  return)]
     (log/trace {:unify/expr expr
-                :unfy/env env})
+                :unify/env env})
     (try
       (clj->js (prp/unify-pattern expr env))
       (catch js/Error e
