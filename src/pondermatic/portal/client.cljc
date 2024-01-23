@@ -57,7 +57,6 @@
 (defn submit [value]
   (->> value
        (w/postwalk (fn [value]
-                     (prn value)
                      (if (exception? value)
                        (error->data value)
                        value)))
