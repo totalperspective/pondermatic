@@ -228,9 +228,9 @@
   ([str ->js?]
    (if ->js?
      (-> str
-         (sci/eval-string {:namespaces prp/nss})
+         (sci/eval-string {:namespaces {'user prp/default-scope}})
          clj->js)
-     (sci/eval-string str {:namespaces prp/nss}))))
+     (sci/eval-string str {:namespaces {'user prp/default-scope}}))))
 
 (defn js? [x]
   (or (number? x)

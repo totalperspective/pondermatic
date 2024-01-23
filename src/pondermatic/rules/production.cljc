@@ -31,6 +31,16 @@
             'snake (comp csk/->snake_case normalize)}
      't sci-t-ns}))
 
+(def default-scope
+  (reduce-kv (fn [m ns fns]
+               (reduce-kv (fn [m fn impl]
+                            (let [sym (symbol (str ns "." fn))]
+                              (assoc m sym impl)))
+                          m
+                          fns))
+             {}
+             nss))
+
 (defn throwable? [e]
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
 
@@ -326,9 +336,10 @@
   ([pattern]
    (pattern->when pattern {}))
   ([pattern opts]
-   (-> pattern
-       (parse-pattern opts)
-       (compile-when opts))))
+   (let [opts (update opts 'scope merge default-scope)]
+     (-> pattern
+         (parse-pattern opts)
+         (compile-when opts)))))
 
 (defn eval-expr [expr env]
   (log/trace {:eval/expr expr
@@ -337,7 +348,7 @@
                           (assoc m k (sci/new-var k v)))
                         {} env)]
     (sci/eval-string (str expr)
-                     {:namespaces (assoc nss 'user vars)})))
+                     {:namespaces {'user (merge default-scope vars)}})))
 
 (defn parse-gen-pattern [pattern]
   (m/rewrite
