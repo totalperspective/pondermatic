@@ -226,8 +226,10 @@
    (eval-string str false))
   ([str ->js?]
    (if ->js?
-     (-> str sci/eval-string clj->js)
-     (sci/eval-string str))))
+     (-> str
+         (sci/eval-string {:namespaces prp/nss})
+         clj->js)
+     (sci/eval-string str {:namespaces prp/nss}))))
 
 (defn js? [x]
   (or (number? x)
