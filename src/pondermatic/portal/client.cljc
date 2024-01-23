@@ -17,7 +17,9 @@
 
 (def write-handlers
   {`LocalDate (fn [d] (str d))
-   `LocalDateTime (fn [dt] (str dt))})
+   `LocalDateTime (fn [dt] (str dt))
+   (symbol "#object[LocalDate]") (fn [d] (str d))
+   (symbol "#object[LocalDateTime]") (fn [d] (str d))})
 
 (extend-protocol
  ccp/Datafiable
