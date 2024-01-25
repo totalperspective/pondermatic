@@ -407,8 +407,9 @@
                   ?k (pr/-read-string ?k-str)]))
    (m/cata [{::tag :map-entry ::key ?k ::value ?v} ?env])
 
-   [{::tag :map-entry ::key ?k ::value ?v} ?env]
-   [?k (m/cata [?v ?env])]
+   (m/and [{::tag :map-entry ::key ?k ::value ?v} ?env]
+          (m/let [?key (keyword ?k)]))
+   [?key (m/cata [?v ?env])]
 
    [{::tag :value ::value ?expr} ?env]
    ?expr
