@@ -13,6 +13,8 @@
             [pondermatic.data :refer [uuid-hash]]
             [tick.core]))
 
+(pr/add-readers {'expr (fn [expr] [''$ expr])})
+
 (defn throwable? [e]
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
 
