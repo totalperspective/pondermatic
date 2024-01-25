@@ -407,9 +407,15 @@
                   ?k (pr/-read-string ?k-str)]))
    (m/cata [{::tag :map-entry ::key ?k ::value ?v} ?env])
 
-   (m/and [{::tag :map-entry ::key ?k ::value ?v} ?env]
+   [{::tag :map-entry ::key (m/pred? symbol? ?k) ::value ?v} ?env]
+   (m/cata [{::tag :map-entry ::key (m/cata [?k ?env]) ::value ?v} ?env])
+
+   (m/and [{::tag :map-entry ::key (m/pred? string? ?k) ::value ?v} ?env]
           (m/let [?key (keyword ?k)]))
    [?key (m/cata [?v ?env])]
+
+   [{::tag :map-entry ::key ?k ::value ?v} ?env]
+   [?k (m/cata [?v ?env])]
 
    [{::tag :value ::value ?expr} ?env]
    ?expr
