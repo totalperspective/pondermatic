@@ -15,9 +15,7 @@
 
 (def nss
   (let [add_ #(str/replace % " " "_")
-        normalize (comp add_ str/lower-case)
-        t (sci/create-ns 'tick.core)
-        sci-t-ns (sci/copy-ns tick.core t {:exclude []})]
+        normalize (comp add_ str/lower-case)]
     {'hash {'uuid pd/uuid-hash
             'squuid h/squuid
             'b64 h/b64-hash}
@@ -30,12 +28,14 @@
             'camel (comp csk/->camelCase normalize)
             'kebab (comp csk/->kebab-case normalize)
             'snake (comp csk/->snake_case normalize)}
-     't sci-t-ns}))
+     'str (sci/copy-ns clojure.string (sci/create-ns 'clojure.string) {:exclude []})
+     't (sci/copy-ns tick.core (sci/create-ns 'tick.core) {:exclude []})}))
 
 (def locals {'LocalDate LocalDate
              'LocalDateTime LocalDateTime
              'Period LocalDateTime
              'Duration LocalDateTime})
+
 (def default-scope
   (reduce-kv (fn [m ns fns]
                (reduce-kv (fn [m fn impl]

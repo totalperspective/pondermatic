@@ -4,11 +4,7 @@
             [pondermatic.reader :as pr]
             [pondermatic.eval :as pe]
             [sci.core :as sci]
-            [hasch.core :as h]
             [portal.console :as log]
-            [camel-snake-kebab.core :as csk]
-            [clojure.string :as str]
-            [inflections.core :as i]
             [clojure.walk :as w]
             [pondermatic.data :refer [uuid-hash]]
             [tick.core]))
