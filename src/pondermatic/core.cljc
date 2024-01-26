@@ -61,20 +61,20 @@
                    (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
                    (let [[attr val] node]
                      (if (= attr id-attr)
-                       [attr (cond
-                               (and (string? val)
-                                    (#{\# \:} (first val)))
-                               (pr/-read-string val)
+                       [:db/ident (cond
+                                    (and (string? val)
+                                         (#{\# \:} (first val)))
+                                    (pr/-read-string val)
 
-                               (string? val)
-                               (pr/-read-string (str ":" val))
+                                    (string? val)
+                                    (pr/-read-string (str ":" val))
 
-                               (and (symbol? val)
-                                    (not (#{\+ \?} (first (str val)))))
-                               (pr/-read-string (str ":" val))
+                                    (and (symbol? val)
+                                         (not (#{\+ \?} (first (str val)))))
+                                    (pr/-read-string (str ":" val))
 
-                               :else
-                               val)]
+                                    :else
+                                    val)]
                        [attr val]))
 
                    (and (vector? node)
@@ -82,10 +82,6 @@
                         (= (str (first node)) "id"))
                    (pr/-read-string (str ":" (second node)))
 
-                   (map? node)
-                   (if-let [id (get node id-attr)]
-                     (assoc node :db/ident id)
-                     node)
                    :else
                    node))
                data)))
