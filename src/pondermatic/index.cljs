@@ -126,7 +126,7 @@
                  (log/trace {:ident ident
                              :entity entity})
                  (cb (clj->js entity)))
-               (recur entity)))))))
+               (m/amb (recur entity))))))))
 
 (defn dispose! [task]
   (task))
