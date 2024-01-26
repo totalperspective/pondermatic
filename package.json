@@ -1,6 +1,6 @@
 {
   "name": "@totalperspective/pondermatic",
-  "version": "1.1.105",
+  "version": "1.1.106",
   "description": "Functional effect system driven rules engine",
   "engines": {
     "node": ">=16"
