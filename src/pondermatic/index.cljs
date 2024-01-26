@@ -119,14 +119,14 @@
                   -read-string)
         entity<> (p/entity<> engine ident true)]
     (flow/drain
-     (m/ap (loop [last nil]
-             (let [entity< (m/? entity<>)
-                   entity (m/?< entity<)]
-               (when (not= last entity)
-                 (log/trace {:ident ident
-                             :entity entity})
-                 (cb (clj->js entity)))
-               (m/amb (recur entity))))))))
+     (m/ap (let [entity< (m/? entity<>)]
+             (loop [last nil]
+               (let [entity (m/?< entity<)]
+                 (when (not= last entity)
+                   (log/trace {:ident ident
+                               :entity entity})
+                   (cb (clj->js entity)))
+                 (m/amb (recur entity)))))))))
 
 (defn dispose! [task]
   (task))
