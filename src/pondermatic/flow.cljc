@@ -49,17 +49,28 @@
   ([flow prefix]
    (drain-using flow (tap prefix))))
 
+(def pairs
+  (m/reductions (fn [[_ n-1] n]
+                  [n-1 n])
+                [[] []]))
+
 (defn diff [flow]
   (->> flow
-       (m/reductions (fn [[_ n-1] n]
-                       [n-1 n])
-                     [[] []])
+       pairs
        (m/eduction (map (fn [[n-1 n]]
                           {:old (with-meta n-1 {:portal.viewer/default :portal.viewer/table})
                            :new (with-meta n {:portal.viewer/default :portal.viewer/table})
                            :edits (with-meta
                                     (es/get-edits (es/diff n-1 n))
                                     {:portal.viewer/default :portal.viewer/table})})))))
+
+(defn updates [flow]
+  (->> flow
+       pairs
+       (m/eduction (map (fn [[n-1 n]]
+                          (when (not= n-1 n)
+                            n)))
+                   (remove nil?))))
 
 (defn split [flow]
   (m/eduction (remove nil?)

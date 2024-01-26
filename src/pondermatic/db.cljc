@@ -10,7 +10,8 @@
             [clojure.walk :as w]
             [pondermatic.portal.utils :as utils]
             [portal.console :as log]
-            [pondermatic.reader :as pr]))
+            [pondermatic.reader :as pr]
+            [pondermatic.flow :as flow]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
@@ -73,8 +74,9 @@
        (map #(apply d/q query % args))))
 
 (defn entity [id & {:keys [nested?] :or {nested? false}}]
-  (|<= (map :db-after)
-       (map #(d/entity % id nested?))))
+  (flow/updates
+   (|<= (map :db-after)
+        (map #(d/entity % id nested?)))))
 
 (defn upsert-name [attr]
   (pr/-read-string (str attr "'")))

@@ -11,9 +11,12 @@
             []
             prn))
 
-(i/sh engine #js {"->db" (i/dataset #js [#js {"foo/key" "value" "foo/nothing" nil}])})
+(def e (i/entity* engine "test" prn))
+
+(i/sh engine #js {"->db" (i/dataset #js [#js {"id" "test" "foo/key" "value" "foo/nothing" nil}])})
 
 (q)
+(e)
 
 (prn (i/read-string "#ruleset {:rule {}}"))
 
