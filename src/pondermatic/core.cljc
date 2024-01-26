@@ -76,6 +76,7 @@
                                     :else
                                     val)]
                        [attr val]))
+
                    (and (vector? node)
                         (= (count node) 2)
                         (= (str (first node)) "id"))
