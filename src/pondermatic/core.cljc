@@ -63,7 +63,7 @@
                      (if (= attr id-attr)
                        [:db/ident (cond
                                     (and (string? val)
-                                         (= \: (first  val)))
+                                         (#{\# \:} (first val)))
                                     (pr/-read-string val)
 
                                     (string? val)
