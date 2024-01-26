@@ -11,3 +11,12 @@
              '{:bindings {?length-min  1
                           ?length-max 12}})
 
+
+(eval-string (str '{prompt #expr (if ?single
+                                   "I can confirm I am able to pay the deposit of £"
+                                   "I can confirm we are able to pay the deposit of £")
+                    deposit ?deposit}
+                  '{:bindings {?single true
+                               ?deposit 100}}))
+
+(eval-string (str '(math.round 122)))

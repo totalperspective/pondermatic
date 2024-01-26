@@ -8,6 +8,10 @@
             [inflections.core :as i]
             [camel-snake-kebab.core :as csk]
             [pondermatic.data :as pd]
+            #?(:clj
+               [clojure.math :as math]
+               :cljs
+               [cljs.math :as math])
             #?(:cljs
                [java.time :refer [LocalDate LocalDateTime Period Duration]]))
   #?(:clj
@@ -28,7 +32,12 @@
             'camel (comp csk/->camelCase normalize)
             'kebab (comp csk/->kebab-case normalize)
             'snake (comp csk/->snake_case normalize)}
-     'str (sci/copy-ns clojure.string (sci/create-ns 'clojure.string) {:exclude []})
+     'math (sci/copy-ns #?(:clj clojure.math :cljs cljs.math)
+                        (sci/create-ns #?(:clj 'clojure.math :cljs 'cljs.math))
+                        {:exclude []})
+     'str (sci/copy-ns clojure.string
+                       (sci/create-ns 'clojure.string)
+                       {:exclude []})
      't (sci/copy-ns tick.core (sci/create-ns 'tick.core) {:exclude []})}))
 
 (def locals {'LocalDate LocalDate
