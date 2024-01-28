@@ -6,7 +6,6 @@
             [pondermatic.portal.utils :as p.util]
             [pondermatic.rules.production :as prp]
             [clojure.walk :as w]
-            [hasch.core :as h]
             [cljs.pprint :as pp]
             [pondermatic.portal.client :as portal]
             [portal.console :as log]
@@ -105,8 +104,8 @@
                   -read-string)
         entity> (p/entity*> engine ident true)]
     (entity> (fn [entity]
-               (log/trace {:entity entity
-                           :ident ident})
+               (log/trace {:ident ident
+                           :entity' entity})
                (cb (clj->js entity)))
              (fn [e]
                (cb nil e)))))
@@ -125,7 +124,7 @@
              (when (not= @!last entity)
                (reset! !last entity)
                (log/trace {:ident ident
-                           :entity entity})
+                           :entity' entity})
                (cb (clj->js entity))))))))
 
 (defn dispose! [task]
