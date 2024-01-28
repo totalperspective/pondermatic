@@ -104,7 +104,7 @@
                   -read-string)
         entity> (p/entity*> engine ident true)]
     (entity> (fn [entity]
-               (let [entity (assoc entity :id ident)]
+               (let [entity (assoc entity :id (str ident))]
                  (log/trace {:ident ident
                              :entity' entity})
                  (cb (clj->js entity))))
@@ -122,7 +122,7 @@
     (flow/drain
      (m/ap (let [entity< (m/? entity<>)
                  entity' (m/?< entity<)
-                 entity (when entity' (assoc entity' :id ident))]
+                 entity (when entity' (assoc entity' :id (str ident)))]
              (when (not= @!last entity)
                (reset! !last entity)
                (log/trace {:ident ident
