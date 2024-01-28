@@ -104,9 +104,10 @@
                   -read-string)
         entity> (p/entity*> engine ident true)]
     (entity> (fn [entity]
-               (log/trace {:ident ident
-                           :entity' entity})
-               (cb (clj->js entity)))
+               (let [entity (assoc entity :id ident)]
+                 (log/trace {:ident ident
+                             :entity' entity})
+                 (cb (clj->js entity))))
              (fn [e]
                (cb nil e)))))
 
@@ -120,7 +121,8 @@
         !last (atom nil)]
     (flow/drain
      (m/ap (let [entity< (m/? entity<>)
-                 entity (m/?< entity<)]
+                 entity' (m/?< entity<)
+                 entity (when entity' (assoc entity' :id ident))]
              (when (not= @!last entity)
                (reset! !last entity)
                (log/trace {:ident ident
@@ -164,12 +166,17 @@
                                   {}
                                   %))
                  return)]
-    (log/trace {:unify/expr expr
-                :unify/env env})
     (try
-      (clj->js (prp/unify-pattern expr env))
+      (let [result (prp/unify-pattern expr env)]
+        (log/trace {:unify/expr expr
+                    :unify/env env
+                    :unify/result result})
+        (clj->js result))
       (catch js/Error e
-        (log/error e)
+        (log/error (ex-info "Failed to unify"
+                            {:unify/expr expr
+                             :unify/env env}
+                            e))
         (throw e)))))
 
 (defn log
