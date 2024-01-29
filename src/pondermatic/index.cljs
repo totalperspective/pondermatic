@@ -13,7 +13,9 @@
             [cognitect.transit :as t]
             [pondermatic.eval :as pe]
             [pondermatic.reader :refer [-read-string]]
-            [pondermatic.data :refer [uuid-hash]]))
+            [pondermatic.data :refer [uuid-hash]]
+            [clojure.walk :as walk]
+            [clojure.edn :as edn]))
 
 (defn portal
   ([]
@@ -226,6 +228,14 @@
        :body (fn [obj, _config]
                (clj->js [:object {:object obj}]))})
 
+(defn toJS [form]
+  (->> form
+       (walk/postwalk (fn [node]
+                        (if (= \# (pr-str node))
+                          (str node)
+                          node)))
+       clj->js))
+
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def exports
   #js {:createEngine create-engine
@@ -253,5 +263,5 @@
        :encode (partial t/write transit-json-writer)
        :decode (partial t/read transit-json-reader)
        :eval eval-string
-       :toJS clj->js
+       :toJS toJS
        :devtoolsFormatter devtoolsFormatter})
