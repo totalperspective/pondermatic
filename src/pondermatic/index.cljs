@@ -231,7 +231,10 @@
 (defn toJS [form]
   (->> form
        (walk/postwalk (fn [node]
-                        (if (= \# (first (pr-str node)))
+                        (if (-> node
+                                pr-str
+                                first
+                                (= \#))
                           (str node)
                           node)))
        clj->js))
