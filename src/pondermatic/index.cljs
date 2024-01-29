@@ -230,6 +230,7 @@
 
 (defn toJS [form]
   (->> form
+       js->clj
        (walk/postwalk (fn [node]
                         (if (-> node
                                 pr-str
