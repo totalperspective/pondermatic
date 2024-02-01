@@ -708,6 +708,8 @@
 
  (unify-pattern '{:x ?x} '{?x 1}) := {:x 1}
 
+ (unify-pattern '{:y [{:x ?x}]} '{?x 1}) := {:y [{:x 1}]}
+
  (unify-pattern '{:x ?x} '{?x nil}) := {:x nil}
 
  (unify-pattern '[?x] '{?x 1 ?y 2}) := [1]

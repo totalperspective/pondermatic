@@ -227,6 +227,11 @@
               q< (apply db/q q args)]
           (sh/|< conn q<))))
 
+(defn query-rule<> [engine & args]
+  (m/sp (let [rules (m/? (rules> engine))
+              query-rule< (apply rules/query args)]
+          (sh/|< rules query-rule<))))
+
 (defn entity<> [engine ident nested?]
   (m/sp (let [conn (m/? (conn> engine))
               entity< (db/entity ident :nested? nested?)]

@@ -95,6 +95,16 @@
                          :q/result (p.util/table result)})
              (cb (clj->js result)))))))
 
+(defn query-rule [engine id cb]
+  (let [id (-read-string id)
+        query-rule<> (p/query-rule<> engine id)]
+    (flow/drain
+     (m/ap (let [query-rule< (m/? query-rule<>)
+                 result (m/?< query-rule<)]
+             (log/trace #:query-rule
+                         {:id id
+                          :result (p.util/table result)})
+             (cb (clj->js result)))))))
 
 (defn entity [engine ident cb]
   (log/trace {:entity/ident ident})
@@ -291,6 +301,8 @@
        :addRulesMsg add-rules-msg
        :q q
        :qP (->promise-fn q)
+       :queryRule query-rule
+       :queryRuleP (->promise-fn query-rule)
        :entity entity
        :entityP (->promise-fn entity)
        :watchEntity entity*

@@ -1,5 +1,6 @@
 (ns scratch.fns
-  (:require [pondermatic.eval :refer [eval-string]]))
+  (:require [pondermatic.eval :refer [eval-string]]
+            [clojure.string :as s]))
 
 (eval-string (str '(->> ?length-max
                         inc
@@ -20,3 +21,40 @@
                                ?deposit 100}}))
 
 (eval-string (str '(math.round 122)))
+
+(let [f (eval-string
+         (str '(fn [provides]
+                 (->> provides
+                      read-string
+                      (w.postwalk
+                       (fn [node]
+                         (cond
+                           (map-entry? node)
+                           (let [[k v] node]
+                             (if (and (vector? v) (= '$ (first v)))
+                               (let [sym (->> k
+                                              name
+                                              gensym
+                                              (str "?")
+                                              symbol)]
+                                 [k sym])
+                               [k v]))
+
+                           (and (vector? node)
+                                (= '$ (first node))
+                                (list? (second node)))
+                           (let [[_ expr] node
+                                 expr (apply hash-set expr)]
+                             (if (contains? expr '?answer)
+                               '?answer
+                               node))
+                           :else
+                           node)))
+                      pr-str)))
+         {:bindings {'prn prn}})
+      expr "{id ?answers
+ seeker_profile/occupations
+ [{id #expr (random-uuid)
+   seeker_profile_occupations/occupation ?answer}]}"]
+  (f expr))
+
