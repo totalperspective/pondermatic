@@ -389,8 +389,12 @@
           (m/let [?result (eval-expr ?expr ?env)]))
    ?result
 
-   [{::tag :logic-variable ::symbol ?symbol} {?symbol (m/some ?val) & ?env}]
+   [{::tag :logic-variable ::symbol ?symbol} {::contains? true ?symbol ?val & ?env}]
    ?val
+
+   (m/and [{::tag :logic-variable ::symbol ?symbol :as ?expr} {::contains? (m/pred nil?) & ?env}]
+          (m/let [?contains (contains? ?env ?symbol)]))
+   (m/cata [?expr {::contains? ?contains & ?env}])
 
    (m/and [{::tag :logic-variable ::symbol ?symbol} ?env]
           (m/let [?e (throw (ex-info "Failed to unify symbol" {:symbol ?symbol :env ?env}))]))
@@ -445,7 +449,6 @@
    (m/and [?expr ?env]
           (m/let [?e (throw (ex-info "Failed to unify expr" {:expr ?expr :env ?env}))]))
    ?e))
-
 
 (defn unify*
   ([pattern bindings]
@@ -705,6 +708,8 @@
 
  (unify-pattern '{:x ?x} '{?x 1}) := {:x 1}
 
+ (unify-pattern '{:x ?x} '{?x nil}) := {:x nil}
+
  (unify-pattern '[?x] '{?x 1 ?y 2}) := [1]
 
  (unify-pattern '[?x ?y] '{?x 1 ?y 2}) := [1 2]
@@ -723,5 +728,5 @@
  (unify-pattern '{:attr :val & ?e} '{?e 1 entities {1 {:foo :bar}}})
  := {:attr :val :foo :bar}
 
- (unify-pattern '[$ "(case/kebab ?name)"] '{?name "foo"}) := "foo"
+ (unify-pattern '[$ "(case.kebab ?name)"] '{?name "foo"}) := "foo"
  nil)
