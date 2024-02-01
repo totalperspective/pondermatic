@@ -4,10 +4,12 @@
             [clojure.string :as str]
             [hasch.core :as h]
             [tick.core :as t]
+            [clojure.walk :as w]
             [tick.locale-en-us]
             [inflections.core :as i]
             [camel-snake-kebab.core :as csk]
             [pondermatic.data :as pd]
+            [pondermatic.reader :refer [-read-string]]
             #?(:clj
                [clojure.math :as math]
                :cljs
@@ -23,6 +25,8 @@
     {'hash {'uuid pd/uuid-hash
             'squuid h/squuid
             'b64 h/b64-hash}
+     'w {'postwalk w/postwalk
+         'prewalk w/prewalk}
      'inflection {'plural i/plural
                   'singular i/singular
                   'ordinalize i/ordinalize}
@@ -43,7 +47,8 @@
 (def locals {'LocalDate LocalDate
              'LocalDateTime LocalDateTime
              'Period Period
-             'Duration Duration})
+             'Duration Duration
+             'read-string -read-string})
 
 (def default-scope
   (reduce-kv (fn [m ns fns]
