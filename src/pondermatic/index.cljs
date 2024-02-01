@@ -211,21 +211,6 @@
                     [(-read-string (str key)) val])
                   node))
               (js->clj node)))
-(declare js?)
-
-(defn eval-string
-  ([str]
-   (eval-string str false))
-  ([str ->js?]
-   (eval-string str ->js? {}))
-  ([str ->js? opts]
-   (let [res (pe/eval-string str {:bindings
-                                  (-> opts
-                                      parse-opts
-                                      (assoc 'js? js?))})]
-     (if ->js?
-       (clj->js res)
-       res))))
 
 (defn js? [x]
   (or (number? x)
@@ -282,6 +267,20 @@
          (log x)
          (.log js/console x)))
      (.log js/console x))))
+
+(defn eval-string
+  ([str]
+   (eval-string str false))
+  ([str ->js?]
+   (eval-string str ->js? {}))
+  ([str ->js? opts]
+   (let [res (pe/eval-string str {:bindings
+                                  (-> opts
+                                      parse-opts
+                                      (assoc 'js? js?))})]
+     (if ->js?
+       (clj->js res)
+       res))))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def exports
