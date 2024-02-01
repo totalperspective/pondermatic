@@ -217,7 +217,7 @@
       (array? x)
       (object? x)
       (instance? js/Error x)
-      (= \# (str (type x)))))
+      (= \# (first (str (type x))))))
 
 (def devtoolsFormatter
   #js {:header (fn [obj _config]
