@@ -233,7 +233,11 @@
       (= \# (first (pr-str (type x))))))
 
 (defn format-obj [obj]
-  (clj->js [:div, {}, (str "clj: " (pp/write obj :stream nil))]))
+  (if (and (map? obj) (:level obj))
+    (clj->js [:div {}
+              [:div (pr-str (dissoc obj :result :form))]
+              [:div (str (pp/write (:result obj) :stream nil))]])
+    (clj->js [:div {} (str "clj: " (pp/write obj :stream nil))])))
 
 (def devtoolsFormatter
   #js {:header (fn [obj _config]
