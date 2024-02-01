@@ -233,7 +233,7 @@
       (= \# (first (pr-str (type x))))))
 
 (defn format-obj [obj]
-  (clj->js [:div, {}, (str "clj: " (pr-str obj))]))
+  (clj->js [:div, {}, (str "clj: " (pp/write obj :stream nil))]))
 
 (def devtoolsFormatter
   #js {:header (fn [obj _config]
@@ -259,6 +259,19 @@
                        node)))
        clj->js))
 
+(defn console-tap
+  ([x]
+   (if (and (map? x) (:level x))
+     (let [{:keys [level]} x
+           log (get (js->clj js/console)
+                    (if (string? level)
+                      level
+                      (name level)))]
+       (if (fn? log)
+         (log x)
+         (.log js/console x)))
+     (.log js/console x))))
+
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def exports
   #js {:createEngine create-engine
@@ -279,8 +292,8 @@
        :unify unify
        :pprint #(-> % js->clj pp/pprint)
        :addTap (fn
-                 ([] (add-tap pp/pprint))
-                 ([tap] (add-tap (-> tap))))
+                 ([] (add-tap console-tap))
+                 ([tap] (add-tap #(tap %))))
        :readString -read-string
        :toString pr-str
        :encode (partial t/write transit-json-writer)
