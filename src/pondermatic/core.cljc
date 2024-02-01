@@ -23,7 +23,7 @@
   ([data ns]
    (w/postwalk (fn [node]
                  #_{:clj-kondo/ignore [:unresolved-symbol]}
-                 (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
+                 (if (map-entry? node)
                    (let [[attr val] node]
                      (if (and (keyword? attr) (nil? (namespace attr)))
                        [(keyword ns (name attr)) val]
@@ -41,7 +41,7 @@
                   (and (string? node) (re-matches #"^[?:].*$" node))
                   (pr/-read-string node)
 
-                  (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
+                  (map-entry? node)
                   (let [[key val] node]
                     (if (list? key)
                       (let [[mod key] key]
@@ -58,7 +58,7 @@
    (w/postwalk (fn [node]
                  #_{:clj-kondo/ignore [:unresolved-symbol]}
                  (cond
-                   (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
+                   (map-entry? node)
                    (let [[attr val] node]
                      (if (= attr id-attr)
                        [:db/ident (cond

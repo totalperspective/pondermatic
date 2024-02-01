@@ -19,7 +19,7 @@
   (let [idents! (atom [])]
     (w/postwalk (fn [node]
                   #_{:clj-kondo/ignore [:unresolved-symbol]}
-                  (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
+                  (if (map-entry? node)
                     (let [[attr val] node]
                       (when (= attr :db/ident)
                         (swap! idents! conj val))
@@ -82,7 +82,7 @@
 (defn upsert [tx]
   (w/postwalk (fn [node]
                 #_{:clj-kondo/ignore [:unresolved-symbol]}
-                (if (instance? #?(:clj clojure.lang.IMapEntry :cljs cljs.core.MapEntry)  node)
+                (if (map-entry? node)
                   (let [[attr val] node]
                     (if (and (keyword? attr) (not= :db/ident attr))
                       [(upsert-name attr) val]

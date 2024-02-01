@@ -39,7 +39,7 @@
        -read-string
        (w/postwalk (fn [node]
                      #_{:clj-kondo/ignore [:unresolved-symbol]}
-                     (if (instance? cljs.core.MapEntry  node)
+                     (if (map-entry? node)
                        (let [[attr val] node]
                          (if (symbol? attr)
                            [(keyword (str attr)) val]
@@ -206,7 +206,7 @@
 
 (defn parse-opts [node]
   (w/postwalk (fn [node]
-                (if (instance? cljs.core.MapEntry node)
+                (if (map-entry? node)
                   (let [[key val] node]
                     [(-read-string (str key)) val])
                   node))
