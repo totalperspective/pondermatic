@@ -140,13 +140,16 @@
 (defn ->promise-fn [cb-fn]
   (fn [& args]
     (let [p (pa/deferred)
+          dispose! (atom (constantly nil))
           args (conj (vec args)
                      (fn
                        ([result]
+                        (@dispose!)
                         (pa/resolve! p result))
                        ([_ e]
+                        (@dispose!)
                         (pa/reject! p e))))]
-      (apply cb-fn args)
+      (reset! dispose! (apply cb-fn args))
       p)))
 
 (defn unify [expr-or-str env]
