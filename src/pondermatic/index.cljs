@@ -201,17 +201,28 @@
 
 (def transit-json-writer (t/writer :json))
 
+(defn parse-opts [node]
+  (w/postwalk (fn [node]
+                (if (instance? cljs.core.MapEntry node)
+                  (let [[key val] node]
+                    [(-read-string (str key)) val])
+                  node))
+              (js->clj node)))
+(declare js?)
+
 (defn eval-string
   ([str]
    (eval-string str false))
   ([str ->js?]
    (eval-string str ->js? {}))
   ([str ->js? opts]
-   (if ->js?
-     (-> str
-         pe/eval-string
-         clj->js)
-     (pe/eval-string str (js->clj opts)))))
+   (let [res (pe/eval-string str {:bindings
+                                  (-> opts
+                                      parse-opts
+                                      (assoc 'js? js?))})]
+     (if ->js?
+       (clj->js res)
+       res))))
 
 (defn js? [x]
   (or (number? x)
@@ -233,7 +244,7 @@
 
                    :else nil))
        :hasBody (constantly true)
-       :body (fn [obj, _config]
+       :body (fn [obj _config]
                (clj->js [:object {:object obj}]))})
 
 (defn toJS [form]
