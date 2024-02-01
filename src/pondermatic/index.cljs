@@ -205,11 +205,13 @@
   ([str]
    (eval-string str false))
   ([str ->js?]
+   (eval-string str ->js? {}))
+  ([str ->js? opts]
    (if ->js?
      (-> str
          pe/eval-string
          clj->js)
-     (pe/eval-string str))))
+     (pe/eval-string str (js->clj opts)))))
 
 (defn js? [x]
   (or (number? x)
@@ -219,10 +221,17 @@
       (instance? js/Error x)
       (= \# (first (pr-str (type x))))))
 
+(defn format-obj [obj]
+  (clj->js [:div, {}, (str "clj: " (pr-str obj))]))
+
 (def devtoolsFormatter
   #js {:header (fn [obj _config]
-                 (when-not (js? obj)
-                   (clj->js [:div, {}, (str "clj: " (pr-str obj))])))
+                 (cond
+                   (coll? obj) (format-obj obj)
+
+                   (not (js? obj)) (format-obj obj)
+
+                   :else nil))
        :hasBody (constantly true)
        :body (fn [obj, _config]
                (clj->js [:object {:object obj}]))})
