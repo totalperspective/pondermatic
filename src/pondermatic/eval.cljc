@@ -42,8 +42,8 @@
 
 (def locals {'LocalDate LocalDate
              'LocalDateTime LocalDateTime
-             'Period LocalDateTime
-             'Duration LocalDateTime})
+             'Period Period
+             'Duration Duration})
 
 (def default-scope
   (reduce-kv (fn [m ns fns]

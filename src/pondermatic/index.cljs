@@ -13,9 +13,7 @@
             [cognitect.transit :as t]
             [pondermatic.eval :as pe]
             [pondermatic.reader :refer [-read-string]]
-            [pondermatic.data :refer [uuid-hash]]
-            [clojure.walk :as walk]
-            [clojure.edn :as edn]))
+            [pondermatic.data :refer [uuid-hash]]))
 
 (defn portal
   ([]
@@ -218,7 +216,8 @@
       (string? x)
       (array? x)
       (object? x)
-      (instance? js/Error x)))
+      (instance? js/Error x)
+      (= \# (str (type x)))))
 
 (def devtoolsFormatter
   #js {:header (fn [obj _config]
@@ -231,13 +230,13 @@
 (defn toJS [form]
   (->> form
        js->clj
-       (walk/postwalk (fn [node]
-                        (if (-> node
-                                pr-str
-                                first
-                                (= \#))
-                          (str node)
-                          node)))
+       (w/postwalk (fn [node]
+                     (if (-> node
+                             pr-str
+                             first
+                             (= \#))
+                       (str node)
+                       node)))
        clj->js))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
