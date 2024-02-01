@@ -51,6 +51,7 @@
                 #_{:clj-kondo/ignore [:unresolved-symbol]}
                 (cond
                   (= :a/empty-list node) []
+                  (= :a/nil node) nil
                   :else node))
               data))
 
