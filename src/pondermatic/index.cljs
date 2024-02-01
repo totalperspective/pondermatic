@@ -267,6 +267,10 @@
   ([x]
    (if (and (map? x) (:level x))
      (let [{:keys [level]} x
+           level (condp = level
+                   :trace :debug
+                   :fatal :error
+                   level)
            log (get (js->clj js/console)
                     (if (string? level)
                       level
