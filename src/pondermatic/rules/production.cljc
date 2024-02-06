@@ -378,7 +378,7 @@
 
    [{:key (m/some ?k) :value ?v} ?env]
    {::tag :map-entry
-    ::key ?k
+    ::key (m/cata [?k ?env])
     ::value (m/cata [?v ?env])}
 
    [{(m/symbol "&") ?e & ?rest} ?env]
@@ -448,6 +448,9 @@
    (m/cata [{::tag :map-entry
              ::key (m/cata [{::tag :logic-variable ::symbol ?symbol} ?env])
              ::value ?v} ?env])
+
+   [{::tag :map-entry ::key {::tag (m/some) :as ?k} ::value ?v} ?env]
+   (m/cata [{::tag :map-entry ::key (m/cata [?k ?env]) ::value ?v} ?env])
 
    [{::tag :map-entry ::key ?k ::value ?v} ?env]
    [?k (m/cata [?v ?env])]
@@ -704,8 +707,8 @@
 
  (pattern->what '{:id ?a
                   :_a {:b :c}})
- := [[?b :b :c]
-     [?b :a '?a]]
+ := [[?b :a '?a]
+     [?b :b :c]]
 
  (pattern->what '{:tick ?t
                   (:skip :a) ?a})
@@ -771,4 +774,6 @@
  := {:attr :val :foo :bar}
 
  (unify-pattern '[$ "(case.kebab ?name)"] '{?name "foo"}) := "foo"
+
+ (unify-pattern '{[$ (keyword "data" ?attr)] true} '{?attr "attribute"}) := {:data/attribute true}
  nil)
