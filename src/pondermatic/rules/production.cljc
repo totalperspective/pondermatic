@@ -83,6 +83,11 @@
                    ::modifier ?mod
                    ::attr (m/cata [?attr {:context ?context & ?env}])}
 
+                  (m/and [(m/keyword ?ns (m/re #"^_(.+)$" [_ ?name])) {:part :sub-clause :type :attr}]
+                         (m/let [?attr (keyword ?ns ?name)]))
+                  {::tag :inverse-relation
+                   ::attribute ?attr}
+
                   [?attr {:part :sub-clause :type :attr}]
                   {::tag :attribute
                    ::attribute ?attr}
@@ -174,6 +179,36 @@
                 ::id ?id
                 ::select []} _]
               []
+
+              [{::tag :join
+                ::id ?id
+                ::select [{::tag :project
+                           ::attr {::tag :inverse-relation
+                                   ::attribute ?attr-name}
+                           ::val {::id (m/some ?iid)
+                                  :as ?val}}
+                          & ?rest]}
+               ?env]
+              [[?iid ?attr-name ?id]
+               & (m/cata [?val ?env])
+               & (m/cata [{::tag :join
+                           ::id ?id
+                           ::select [& ?rest]}
+                          ?env])]
+
+              [{::tag :join
+                ::id ?id
+                ::select [{::tag :project
+                           ::attr {::tag :inverse-relation
+                                   ::attribute ?attr-name}
+                           ::val ?value}
+                          & ?rest]}
+               ?env]
+              [[(m/cata [?value ?env]) ?attr-name ?id]
+               & (m/cata [{::tag :join
+                           ::id ?id
+                           ::select [& ?rest]}
+                          ?env])]
 
               [{::tag :join
                 ::id ?id
@@ -666,6 +701,11 @@
                   :a {:b :c}})
  := [['?a :a ?b]
      [?b :b :c]]
+
+ (pattern->what '{:id ?a
+                  :_a {:b :c}})
+ := [[?b :b :c]
+     [?b :a '?a]]
 
  (pattern->what '{:tick ?t
                   (:skip :a) ?a})
