@@ -10,6 +10,7 @@
             [camel-snake-kebab.core :as csk]
             [pondermatic.data :as pd]
             [pondermatic.reader :refer [-read-string]]
+            [cljstache.core :as stach]
             #?(:clj
                [clojure.math :as math]
                :cljs
@@ -48,7 +49,14 @@
              'LocalDateTime LocalDateTime
              'Period Period
              'Duration Duration
-             'read-string -read-string})
+             'read-string -read-string
+             'stash (fn [s env]
+                      (->> env
+                           (reduce-kv (fn [m k v]
+                                        (assoc m (name k) v))
+                                      {})
+                           w/keywordize-keys
+                           (stach/render s)))})
 
 (def default-scope
   (reduce-kv (fn [m ns fns]
