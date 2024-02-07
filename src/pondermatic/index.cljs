@@ -86,14 +86,17 @@
               -read-string
               (p.util/trace :parsed-query))
         args (js->clj args)
-        q<> (apply p/q<> engine q args)]
+        q<> (apply p/q<> engine q args)
+        !last (atom nil)]
     (flow/drain
      (m/ap (let [q< (m/? q<>)
                  result (m/?< q<)]
-             (log/trace {:q/query q
-                         :q/args args
-                         :q/result (p.util/table result)})
-             (cb (clj->js result)))))))
+             (when (not= @!last result)
+               (reset! !last result)
+               (log/trace {:q/query q
+                           :q/args args
+                           :q/result (p.util/table result)})
+               (cb (clj->js result))))))))
 
 (defn query-rule [engine id cb]
   (let [id (-read-string id)
