@@ -82,5 +82,5 @@
        (catch #?(:clj Exception :cljs js/Error) e
          (log/error {:eval/error (ex-message e)
                      :eval/expr s
-                     :eval/bindings (:bindings opts)})
+                     :eval/bindings (pr-str (:bindings opts))})
          (throw e))))))
