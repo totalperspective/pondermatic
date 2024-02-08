@@ -38,8 +38,14 @@
 (defn submit [value]
   (->> value
        (w/postwalk (fn [value]
-                     (if (exception? value)
+                     (cond
+                       (exception? value)
                        (error->data value)
+
+                       (fn? value)
+                       (pr-str value)
+
+                       :else
                        value)))
        datafy/datafy
        (submit-impl {:port port :host host})))
