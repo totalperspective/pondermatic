@@ -9,7 +9,6 @@
   "module": "dist/mjs/index.js",
   "exports": {
     ".": {
-      "worker": "./dist/cjs/index.js",
       "browser": "./dist/mjs/index.js",
       "require": "./dist/cjs/index.js",
       "default": "./dist/cjs/index.js"

@@ -1,4 +1,4 @@
-import pondermatic from '../dist/mjs/index.js'
+import pondermatic from '../dist/cjs/index.js'
 
 // pondermatic.portal("vs-code")
 // pondermatic.addTap()

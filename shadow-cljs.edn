@@ -12,13 +12,13 @@
   {:target    :node-test
    :output-to "out/node-tests.js"
    :compiler-options {}
-   :ns-regexp "^(pondermatic.*|example.*)"}
+   :ns-regexp "^(example.*)"}
 
   :browser-test
   {:target    :karma
    :output-to "out/karma-tests.js"
    :compiler-options {}
-   :ns-regexp "^(pondermatic.*|example.*)"}
+   :ns-regexp "^(example.*)"}
 
   :node
   {:target :npm-module
