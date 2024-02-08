@@ -42,7 +42,7 @@
                             (d/transact {:tx-data idents})
                             deref
                             :tx-data)]
-      (log/debug {:tx tx})
+      (log/debug tx)
       ;; (log/trace (p.p/table idents))
       (-> conn
           (d/transact tx)
