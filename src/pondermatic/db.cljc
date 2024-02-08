@@ -30,9 +30,10 @@
 
 (defn transactor
   [{:keys [::db-uri]} tx]
-  (log/debug (utils/pprint tx))
   (when-not (= tx sh/done)
-    (let [tx (remove nil? tx)
+    (let [tx (->> tx
+                  (remove nil?)
+                  (into []))
           conn (d/connect db-uri)
           idents (->> tx
                       :tx-data
@@ -43,6 +44,7 @@
                             (d/transact {:tx-data idents})
                             deref
                             :tx-data)]
+      (log/debug tx)
       ;; (log/trace (p.p/table idents))
       (-> conn
           (d/transact tx)
