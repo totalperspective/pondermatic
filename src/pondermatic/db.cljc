@@ -32,7 +32,8 @@
   [{:keys [::db-uri]} tx]
   (log/debug (utils/pprint tx))
   (when-not (= tx sh/done)
-    (let [conn (d/connect db-uri)
+    (let [tx (remove nil? tx)
+          conn (d/connect db-uri)
           idents (->> tx
                       :tx-data
                       idents
