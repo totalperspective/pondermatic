@@ -11,6 +11,7 @@
             [pondermatic.data :as pd]
             [pondermatic.reader :refer [-read-string]]
             [cljstache.core :as stach]
+            [portal.console :as log]
             #?(:clj
                [clojure.math :as math]
                :cljs
@@ -79,6 +80,5 @@
      (try
        (sci/eval-string s opts)
        (catch #?(:clj Exception :cljs js/Error) e
-         (throw (ex-info (ex-message e)
-                         {:expr s :opts opts}
-                         e)))))))
+         (log/error {:eval/error (ex-message e) :eval/expr s})
+         (throw e))))))
