@@ -76,4 +76,9 @@
                           {:namespaces {'user default-scope}
                            :readers @pr/!readers}
                           opts)]
-     (sci/eval-string s opts))))
+     (try
+       (sci/eval-string s opts)
+       (catch #?(:clj Exception :cljs js/Error) e
+         (throw (ex-info (ex-message e)
+                         {:expr s :opts opts}
+                         e)))))))
