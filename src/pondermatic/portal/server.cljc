@@ -1,5 +1,6 @@
 (ns pondermatic.portal.server
-  (:require [portal.api :as p]
+  (:require #?(:browser [portal.web :as p]
+               :default [portal.api :as p])
             [pondermatic.rules.production :as prp]))
 
 (defn compile-pattern [& patterns]
@@ -14,4 +15,4 @@
 
 (defn -main [& _]
   (let [p (p/open {:port port})]
-    (println "Portal open on " (p/url p))))
+    (prn p)))

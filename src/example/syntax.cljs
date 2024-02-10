@@ -1,10 +1,10 @@
 (ns example.syntax
   (:require [pondermatic.index :as i]
-            [pondermatic.portal.api :as pp]
+            ;; [pondermatic.portal.api :as pp]
             [portal.console :as log]))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-(defonce _ (pp/start :vs-code))
+;; (defonce _ (pp/start :vs-code))
 
 (log/info ::starting)
 
