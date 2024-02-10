@@ -16,7 +16,8 @@
   },
   "scripts": {
     "test": "jest",
-    "dev": "[ -f ./out/dev.js ] || shadow-cljs compile :dev; node out/dev.js"
+    "prepare": "./build-shadow.sh",
+    "dev": "([ -f ./out/dev.js ] || shadow-cljs compile :dev) && node out/dev.js"
   },
   "bin": {
     "pportal": "./dist/portal.js"

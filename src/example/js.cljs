@@ -1,6 +1,5 @@
 (ns example.js
-  (:require [pondermatic.index :as i]
-            [hyperfiddle.rcf :refer [tests]]))
+  (:require [pondermatic.index :as i]))
 
 ;; (defonce p (i/portal "vs-code"))
 

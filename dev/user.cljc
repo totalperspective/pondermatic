@@ -2,13 +2,13 @@
   #_{:clj-kondo/ignore [:unused-namespace]}
   (:require [pondermatic.rules :as rules]
             [pondermatic.db :as db]
-            [pondermatic.portal.api :as portal]
+            [pondermatic.portal.client :as portal]
             [pondermatic.rules.production :as prod]
             [hyperfiddle.rcf :refer [tests]]))
 
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-(defonce _portal (portal/start :vs-code))
+;; (defonce _portal (portal/start :vs-code))
 
 (hyperfiddle.rcf/enable!)
 
