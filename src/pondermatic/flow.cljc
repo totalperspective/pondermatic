@@ -21,6 +21,9 @@
      (tap x)
      x)))
 
+(def prn-tap
+  (tapper prn))
+
 (defn tap [prefix]
   (tapper
    (fn [x]
@@ -29,8 +32,11 @@
                {:portal.viewer/default :portal.viewer/inspector}))))))
 
 (defn run [task]
-  (task #(tap> {"Success" %})
-        #(tap> %)))
+  (task (fn [x]
+          (let [n (or (-> task meta :task) "Success")
+                x' (if (fn? x) (x) x)]
+            (tap> {n x'})))
+        #(throw %)))
 
 (defn counter [r _] (inc r))    ;; A reducing function counting the number of items.
 
@@ -45,14 +51,15 @@
 
 (defn drain
   ([flow]
-   (drain flow nil))
+   (drain flow (-> flow meta :flow)))
   ([flow prefix]
    (drain-using flow (tap prefix))))
 
 (def pairs
-  (m/reductions (fn [[_ n-1] n]
-                  [n-1 n])
-                [[] []]))
+  (partial m/reductions
+           (fn [[_n-2 n-1] n]
+             [n-1 n])
+           [nil nil]))
 
 (defn diff [flow]
   (->> flow
@@ -67,15 +74,17 @@
 (defn updates [flow]
   (->> flow
        pairs
-       (m/eduction (map (fn [[n-1 n]]
-                          (when (not= n-1 n)
-                            n)))
-                   (remove nil?))))
+       (m/eduction (remove (fn [[n-1 n]] (= n n-1)))
+                   (map second))))
 
 (defn split [flow]
   (m/eduction (remove nil?)
-              (m/ap (let [items (m/?> flow)]
+              (m/ap (let [items (m/?< flow)]
                       (loop [items items]
                         (when-some [item (first items)]
                           (m/amb item
                                  (recur (rest items)))))))))
+
+(defn <->! [<task !atom]
+  (<task (partial reset! !atom)
+         #(throw %)))

@@ -15,7 +15,7 @@
     }
   },
   "scripts": {
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "prepare": "./build-shadow.sh",
     "dev": "([ -f ./out/dev.js ] || shadow-cljs compile :dev) && node out/dev.js"
   },

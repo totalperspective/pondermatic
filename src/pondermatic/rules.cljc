@@ -2,9 +2,11 @@
   (:require [odoyle.rules :as o]
             [pondermatic.shell :as sh :refer [|> |< |<=]]
             [pondermatic.flow :as f]
-            [hyperfiddle.rcf :as rcf :refer [tests %]]
-            [portal.console :as log]
-            [pondermatic.portal.utils :as p.util]))
+            [hyperfiddle.rcf :as rcf :refer [tests %]])
+  #?(:cljs
+     (:require-macros [portal.console :as log])
+     :default
+     (:require [portal.console :as log])))
 
 (defn cmd-type
   [[cmd] _]
@@ -70,17 +72,17 @@
 (defn retract* [id:attrs]
   (list 'retract* id:attrs))
 
-(def query-all (|<= (map #(o/query-all %))
-                    (dedupe)))
+(def query-all< (|<= (map #(o/query-all %))
+                     (dedupe)))
 
-(defn query [rule-name]
+(defn query< [rule-name]
   (|<= (map #(o/query-all % rule-name))
        (dedupe)))
 
 (defn process
   [session cmd]
   (when-not (= cmd sh/done)
-    (log/debug (p.util/pprint {::cmd cmd}))
+    (log/debug {::cmd cmd})
     (->> session
          (exec cmd)
          o/fire-rules)))
@@ -112,9 +114,9 @@
               (fn [_]
                 (println "This will fire once"))})]
 
-   (rcf/set-timeout! 100)
+   (rcf/set-timeout! 1000)
    (-> session
-       (|< (query ::character))
+       (|< (query< ::character))
        (f/drain-using tap))
    (|> (add-rule rule))
    % := []

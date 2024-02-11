@@ -21,11 +21,11 @@
         inflections/inflections {:mvn/version "0.14.1"}
         tick/tick {:mvn/version "0.7.5"}
         io.replikativ/incognito {:mvn/version "0.3.66"}
-        cljstache/cljstache {:mvn/version "2.0.6"}}
+        cljstache/cljstache {:mvn/version "2.0.6"}
+        org.clojars.quoll/asami-loom {:mvn/version "0.3.1"}}
  :aliases
  {:dev
-  {:extra-paths ["dev"]
-   :main user/-main}
+  {:extra-paths ["dev"]}
   :cljs
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.60"}
                 thheller/shadow-cljs {:mvn/version "2.26.2"}

@@ -1,6 +1,7 @@
 (ns pondermatic.portal.server
   (:require #?(:browser [portal.web :as p]
                :default [portal.api :as p])
+            [pondermatic.portal.client :as pc]
             [pondermatic.rules.production :as prp]))
 
 (defn compile-pattern [& patterns]
@@ -13,6 +14,14 @@
 
 (def port 5678)
 
-(defn -main [& _]
-  (let [p (p/open {:port port})]
-    (prn p)))
+(def submit (pc/submitter p/submit))
+
+(defn -main [& [launcher]]
+  (if (keyword? launcher)
+    (do
+      (p/open {:launcher launcher})
+      (add-tap #'submit)
+      (tap> launcher))
+    (do
+      (let [p (p/open {:port port})]
+        (prn p)))))

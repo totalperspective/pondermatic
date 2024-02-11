@@ -1,4 +1,5 @@
 (ns pondermatic.engine
+  (:refer-clojure :exclude [import])
   (:require [pondermatic.shell :as sh]
             [pondermatic.flow :as flow]
             [pondermatic.rules :as rules]
@@ -218,27 +219,44 @@
   (sh/|> conn {:tx-data (db/upsert data)})
   e)
 
+(defmethod dispatch :!>db [{:keys [::conn] :as e} [_ data]]
+  (sh/|> conn data)
+  e)
+
 (defmethod dispatch :->rules [{:keys [::rules] :as e} [_ msg]]
   (sh/|> rules msg)
   e)
 
-(defn q<> [engine q & args]
+(defn q>< [engine q & args]
   (m/sp (let [conn (m/? (conn> engine))
-              q< (apply db/q q args)]
-          (sh/|< conn q<))))
+              >q (apply db/q> q args)]
+          (flow/updates
+           (sh/|< conn >q)))))
 
-(defn query-rule<> [engine & args]
-  (m/sp (let [rules (m/? (rules> engine))
-              query-rule< (apply rules/query args)]
-          (sh/|< rules query-rule<))))
-
-(defn entity<> [engine ident nested?]
+(defn entity>< [engine ident nested?]
   (m/sp (let [conn (m/? (conn> engine))
-              entity< (db/entity ident :nested? nested?)]
-          (sh/|< conn entity<))))
+              >entity (db/entity> ident :nested? nested?)]
+          (flow/updates
+           (sh/|< conn >entity)))))
 
-(defn entity*> [engine ident nested?]
+(defn entity< [engine ident nested?]
   (m/sp
    (let [conn (m/? (conn> engine))
-         db (m/? (db/db> conn))]
-     (d/entity db ident nested?))))
+         db (m/? (db/db< conn))]
+     (when db
+       (d/entity db ident nested?)))))
+
+(defn query-rule>< [engine & args]
+  (m/sp (let [rules (m/? (rules> engine))
+              query-rule< (apply rules/query< args)]
+          (sh/|< rules query-rule<))))
+
+(defn export< [engine]
+  (m/sp
+   (let [conn (m/? (conn> engine))]
+     (prn conn)
+     (m/? (db/export< conn)))))
+
+(defn import [engine data]
+  (prn :import data)
+  (sh/|> engine {:!>db {:tx-triples data}}))

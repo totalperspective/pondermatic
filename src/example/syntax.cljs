@@ -3,9 +3,6 @@
             ;; [pondermatic.portal.api :as pp]
             [portal.console :as log]))
 
-#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-;; (defonce _ (pp/start :vs-code))
-
 (log/info ::starting)
 
 (def engine (i/create-engine "test" true))
