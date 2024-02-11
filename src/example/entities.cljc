@@ -1,5 +1,6 @@
 (ns example.entities
-  (:require [pondermatic.core :as p]))
+  (:require [pondermatic.core :as p]
+            [pondermatic.shell :refer [|>]]))
 
 (def data
   (p/dataset
@@ -18,5 +19,6 @@
 
 (def engine (p/->engine "fruit" :reset-db? true))
 
-(p/|> engine {:->db rules})
-(p/|> engine {:->db data})
+(-> engine
+    (|> {:->db rules})
+    (|> {:->db data}))

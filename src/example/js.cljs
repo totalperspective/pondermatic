@@ -1,19 +1,20 @@
 (ns example.js
-  (:require [pondermatic.index :as i]))
+  (:require [pondermatic.index :as i]
+            [pondermatic.core :as p]))
 
-;; (defonce p (i/portal "vs-code"))
-
-(def engine (i/create-engine "test" true))
+(def engine (i/create-engine (str (gensym "test")) true))
 
 (def q (i/q engine
-            "[:find ?id ?v :where [?id :foo/key ?v]]"
+            "[:find [?v ...]
+              :where
+              [?id :foo/key ?v]]"
             []
-            prn))
+            #(-> % js->clj prn)))
 
-(def e (i/entity* engine "test" prn))
-
+(def e (i/entity* engine ":test" prn))
 (i/sh engine #js {"->db" (i/dataset #js [#js {"id" "test" "foo/key" "value" "foo/nothing" nil}])})
+(i/sh engine #js {"->db" (i/dataset #js [#js {"id" "test2" "foo/key" "value2" "foo/nothing" 1}])})
 
 (q)
 (e)
-
+(p/stop engine)

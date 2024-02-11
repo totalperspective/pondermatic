@@ -8,7 +8,6 @@
             [asami.memory]
             [hyperfiddle.rcf :refer [tests]]
             [clojure.walk :as w]
-            [pondermatic.portal.utils :as utils]
             [portal.console :as log]
             [pondermatic.reader :as pr]))
 
@@ -16,17 +15,17 @@
   (str "asami:mem://" db-name))
 
 (defn idents [tx]
-  (let [idents! (atom [])]
+  (let [!idents (atom [])]
     (w/postwalk (fn [node]
                   #_{:clj-kondo/ignore [:unresolved-symbol]}
                   (if (map-entry? node)
                     (let [[attr val] node]
                       (when (= attr :db/ident)
-                        (swap! idents! conj val))
+                        (swap! !idents conj val))
                       node)
                     node))
                 tx)
-    @idents!))
+    @!idents))
 
 (defn transactor
   [{:keys [::db-uri]} tx]
@@ -38,16 +37,18 @@
                       idents
                       (remove nil?)
                       (map #(do {:db/ident %})))
-          ident-tx-data (-> conn
-                            (d/transact {:tx-data idents})
-                            deref
-                            :tx-data)]
+          ident-tx-data (when (seq idents)
+                          (-> conn
+                              (d/transact {:tx-data idents})
+                              deref
+                              :tx-data))
+          ident-datoms (vec ident-tx-data)]
       (log/debug tx)
       ;; (log/trace (p.p/table idents))
       (-> conn
           (d/transact tx)
           deref
-          (update :tx-data (partial concat ident-tx-data))
+          (update :tx-data (partial into ident-datoms))
           (update :tx-data (partial mapv datom/as-vec))
           (assoc ::db-uri db-uri)))))
 
@@ -66,16 +67,26 @@
 (defn db! [{:keys [::db-uri]}]
   (d/db (d/connect db-uri)))
 
-(defn db> [conn]
+(defn db< [conn]
   (sh/|!> conn :db-after))
 
-(defn q [query & args]
-  (|<= (map :db-after)
-       (map #(apply d/q query % args))))
+(defn ^:private -q [q db args]
+  (when db
+    (let [result (apply d/q q db args)]
+      (log/trace {:db db :q q :args args :result result})
+      result)))
 
-(defn entity [id & {:keys [nested?] :or {nested? false}}]
+(defn q> [query & args]
   (|<= (map :db-after)
-       (map #(d/entity % id nested?))))
+       (map #(-q query % args))))
+
+(defn ^:private -entity [db id nested?]
+  (when db
+    (d/entity db id nested?)))
+
+(defn entity> [id & {:keys [nested?] :or {nested? false}}]
+  (|<= (map :db-after)
+       (map #(-entity % id nested?))))
 
 (defn upsert-name [attr]
   (pr/-read-string (str attr "'")))
@@ -108,6 +119,9 @@
 (defn pull [db eql]
   (p/pull db eql))
 
+(defn export< [db]
+  (sh/|!> db #(-> % ::db-uri d/connect d/export-data)))
+
 (extend-protocol pp/IPullable
   asami.memory.MemoryDatabase
   (resolve-ref
@@ -133,8 +147,8 @@
                       :movie/genre "animation/adventure"
                       :movie/release-year 1995}]]
    (-> conn
-       (|< (q '[:find ?movie-title
-                :where [?m :movie/title ?movie-title]]))
+       (|< (q> '[:find ?movie-title
+                 :where [?m :movie/title ?movie-title]]))
        (f/drain :movie-titles))
    (-> conn
        (|> {:tx-data first-movies})
@@ -148,3 +162,4 @@
        (pull [{[:db/ident :first] [:movie/title :movie/release-year]}])
        (get [:db/ident :first]))
    := #:movie{:title "Explorers", :release-year 1985}))
+

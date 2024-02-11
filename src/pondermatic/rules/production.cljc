@@ -542,8 +542,6 @@
         return)))
 
 (tests
- (defn ! [x] (prn x) x)
-
  (parse-pattern {} {})
  := {::tag :join
      ::id ?id

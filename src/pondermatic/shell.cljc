@@ -11,22 +11,19 @@
 
 (defn actor [init]
   (let [self (m/mbx)
-        >return (m/stream
-                 (m/eduction
-                  (remove nil?)
-                  (m/ap
-                   (loop [process init]
-                     (let [cmd (m/? self)]
-                       (if (not= done cmd)
-                         (let [emit (m/rdv)
-                               next (process (partial return emit) cmd)]
-                           (m/amb
-                            (m/? emit)
-                            (recur next)))
-                         (do
-                           (process identity done)
-                           (println done)
-                           nil)))))))]
+        >actor (m/ap
+                (loop [process init]
+                  (let [cmd (m/? self)]
+                    (if (not= done cmd)
+                      (let [emit (m/rdv)
+                            next (process (partial return emit) cmd)]
+                        (m/amb
+                         (m/? emit)
+                         (recur next)))
+                      (process identity done)))))
+        >return (->> >actor
+                     (m/eduction (remove nil?))
+                     m/stream)]
     (f/drain >return)
     {::send self
      ::receive >return}))
@@ -50,6 +47,9 @@
       a)
     (throw (ex-info "Not a valid actor" {:actor a}))))
 
+(defn stop [engine]
+  (|> engine done))
+
 (defn |< [{:keys [::receive] :as a} create-flow & {:keys [signal?] :or {signal? false}}]
   (if receive
     (create-flow (if signal?
@@ -59,7 +59,7 @@
      (m/amb nil)
      (throw (ex-info "Not a valid actor" {:actor a})))))
 
-(defn >< [flow]
+(defn >->< [flow]
   (->> flow
        (m/eduction (take 1))
        (m/reduce f/latest)))
@@ -67,8 +67,8 @@
 (defn flow [{:keys [::receive]}]
   receive)
 
-(defn |>< [a flow & {:keys [signal?] :or {signal? false}}]
-  (>< (|< a flow :signal? signal?)))
+(defn |<->< [a flow & {:keys [signal?] :or {signal? false}}]
+  (>->< (|< a flow :signal? signal?)))
 
 (defn |<= [& xf*]
   (fn [& arg*]

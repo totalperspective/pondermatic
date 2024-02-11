@@ -1,19 +1,20 @@
 import pondermatic from '../dist/cjs/index.js'
 
-// pondermatic.portal("vs-code")
+// pondermatic.portal()
 // pondermatic.addTap()
 
 let engine
 beforeEach(() => {
   engine = pondermatic.createEngine('tests', true)
-});
+})
 
 // afterEach(done => {
 //   setTimeout(done, 1000);
 // });
 
 afterAll(() => {
-});
+  pondermatic.stop(engine)
+})
 
 test('adding data', done => {
   const q = pondermatic.q(
@@ -21,6 +22,9 @@ test('adding data', done => {
     "[:find ?v . :where [?id :data/key ?v]]",
     [],
     r => {
+      if (!r) {
+        return
+      }
       try {
         expect(r).toBe("value")
         done()

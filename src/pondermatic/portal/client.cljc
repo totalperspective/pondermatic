@@ -12,6 +12,8 @@
 (def port 5678)
 (def host "localhost")
 
+(def !opts (atom {:port port :host host}))
+
 (def submit-impl
   #?(:browser (if js/window
                 pw/submit
@@ -35,21 +37,26 @@
 (defn exception? [e]
   (instance? #?(:cljs js/Error :default Exception) e))
 
-(defn submit [value]
-  (->> value
-       (w/postwalk (fn [value]
-                     (cond
-                       (exception? value)
-                       (error->data value)
+(defn submitter [submit-impl]
+  (fn [value]
+    (->> value
+         (w/postwalk (fn [value]
+                       (cond
+                         (exception? value)
+                         (error->data value)
 
-                       (fn? value)
-                       (pr-str value)
+                         (fn? value)
+                         (pr-str value)
 
-                       :else
-                       value)))
-       datafy/datafy
-       (submit-impl {:port port :host host})))
+                         :else
+                         value)))
+         datafy/datafy
+         submit-impl)))
 
-(defn start [_launcher]
+(def submit (submitter #(submit-impl @!opts %)))
+
+(defn start [launcher]
+  (when launcher
+    (reset! !opts {}))
   (add-tap #'submit)
-  (log/info {:portal/port port}))
+  (log/info !opts))

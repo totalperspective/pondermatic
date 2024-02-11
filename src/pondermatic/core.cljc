@@ -1,8 +1,10 @@
 (ns pondermatic.core
+  (:refer-clojure :exclude [import])
   (:require [pondermatic.db :as db]
             [pondermatic.rules :as rules]
             [pondermatic.engine :as engine]
             [pondermatic.shell :as sh]
+            [pondermatic.flow :as flow]
             [clojure.walk :as w]
             [clojure.string :as str]
             [pondermatic.reader :as pr]
@@ -144,12 +146,6 @@
        [?expr ?env]
        ?expr))))
 
-(def |> sh/|>)
-
-(def |< sh/|<)
-
-(def |>< sh/|><)
-
 (def type-name engine/type-name)
 
 (def rule-type engine/rule-type)
@@ -184,12 +180,24 @@
 (def rules<
   (sh/|<= (map ::rules)))
 
-(def q<> engine/q<>)
-(def query-rule<> engine/query-rule<>)
+(def q>< engine/q><)
+(def query-rule>< engine/query-rule><)
 
-(def entity<> engine/entity<>)
+(def entity>< engine/entity><)
 
-(def entity*> engine/entity*>)
+(def entity< engine/entity<)
+
+(def export< engine/export<)
+
+(def stop sh/stop)
+
+(defn export->! [engine !data]
+  (-> engine
+      export<
+      (flow/<->! !data))
+  engine)
+
+(def import engine/import)
 
 (pr/add-readers {'mutation (fn [mutation]
                              (let [{:keys [key params query]} (eql/expr->ast mutation)
@@ -204,8 +212,8 @@
                                          (assoc rule :id id)))
                                  ruleset))
                  'dataset (fn [dataset]
-                            (prn (meta dataset))
                             (dataset dataset))
                  #?@(:cljs ['json (fn [json]
                                     (-> (.parse js/JSON json)
                                         (js->clj :keywordize-keys true)))])})
+
