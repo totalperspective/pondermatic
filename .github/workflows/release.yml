@@ -25,7 +25,8 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 16.17.1   
+          node-version: 16.17.1
+          registry-url: 'https://registry.npmjs.org'
       # - name: Create Release
       #   id: create_release
       #   uses: actions/create-release@v1
@@ -46,7 +47,7 @@ jobs:
         run: ./build.sh
       - name: Deploy
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
           CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
         run: ./deploy.sh
