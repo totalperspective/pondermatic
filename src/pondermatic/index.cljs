@@ -89,22 +89,14 @@
               (p.util/trace :parsed-query))
         args (js->clj args)
         <>q (with-meta (apply p/q>< engine q args) {:flow :query})
-        query-cb (fn [result]
-                   (log/trace {:q/query q
-                               :q/args args
-                               :q/result (p.util/table result)})
-                   (cb (clj->js result)))]
+        query-cb #(cb (clj->js %))]
     (|-> <>q
          (flow/drain-using (flow/tapper query-cb)))))
 
 (defn query-rule [engine id cb]
   (let [id (-read-string id)
         <>query-rule (p/query-rule>< engine id)
-        query-cb (fn [result]
-                   (log/trace #:query-rule
-                               {:id id
-                                :result (p.util/table result)})
-                   (cb (clj->js result)))]
+        query-cb #(cb (clj->js %))]
     (|-> <>query-rule
          (flow/drain-using (flow/tapper query-cb)))))
 

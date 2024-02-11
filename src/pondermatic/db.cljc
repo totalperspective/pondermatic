@@ -71,10 +71,10 @@
   (sh/|!> conn :db-after))
 
 (defn ^:private -q [q db args]
-  (log/trace {:db db :q q :args args})
-  (if db
-    (apply d/q q db args)
-    ::db-not-ready))
+  (when db
+    (let [result (apply d/q q db args)]
+      (log/trace {:db db :q q :args args :result result})
+      result)))
 
 (defn q> [query & args]
   (|<= (map :db-after)

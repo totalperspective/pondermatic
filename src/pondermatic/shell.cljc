@@ -20,10 +20,7 @@
                         (m/amb
                          (m/? emit)
                          (recur next)))
-                      (do
-                        (process identity done)
-                        (println done)
-                        nil)))))
+                      (process identity done)))))
         >return (->> >actor
                      (m/eduction (remove nil?))
                      m/stream)]
