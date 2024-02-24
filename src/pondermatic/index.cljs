@@ -275,7 +275,8 @@
    (eval-string str ->js? {}))
   ([str ->js? opts]
    (let [res (pe/eval-string str
-                             {:bindings
+                             {:throw? true
+                              :bindings
                               (-> opts
                                   parse-opts
                                   (assoc 'js? js?))})]

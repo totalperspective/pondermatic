@@ -77,6 +77,7 @@
                           {:namespaces {'user default-scope}
                            :readers @pr/!readers}
                           opts)
+         {:keys [throw?]} opts
          s (if (string? s) s (pr-str s))]
      (try
        (sci/eval-string s opts)
@@ -86,4 +87,6 @@
                             :eval/bindings (pr-str (:bindings opts))}
                            e)]
            (log/error ex)
-           ex))))))
+           (if throw?
+             (throw ex)
+             ex)))))))
