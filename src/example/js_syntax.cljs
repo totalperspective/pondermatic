@@ -1,4 +1,4 @@
-(ns example.syntax
+(ns example.js-syntax
   (:require [pondermatic.index :as i]
             ;; [pondermatic.portal.api :as pp]
             [portal.console :as log]))
@@ -80,4 +80,4 @@
 (i/sh engine #js {"->db" rules})
 (i/sh engine #js {"->db" data})
 
-;; (q)
+(q)

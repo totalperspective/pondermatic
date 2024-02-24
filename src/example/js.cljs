@@ -15,6 +15,6 @@
 (i/sh engine #js {"->db" (i/dataset #js [#js {"id" "test" "foo/key" "value" "foo/nothing" nil}])})
 (i/sh engine #js {"->db" (i/dataset #js [#js {"id" "test2" "foo/key" "value2" "foo/nothing" 1}])})
 
-;; (q)
-;; (e)
-;; (p/stop engine)
+(q)
+(e)
+(p/stop engine)

@@ -13,18 +13,17 @@
   (let [self (m/mbx)
         >actor (m/ap
                 (loop [process init]
-                  (let [cmd (m/? self)]
+                  (let [cmd (m/? self)
+                        emit (m/rdv)
+                        next (process (partial return emit) cmd)]
                     (if (not= done cmd)
-                      (let [emit (m/rdv)
-                            next (process (partial return emit) cmd)]
-                        (m/amb
-                         (m/? emit)
-                         (recur next)))
-                      (process identity done)))))
+                      (m/amb (m/? emit)
+                             (recur next))
+                      (m/? emit)))))
         >return (->> >actor
                      (m/eduction (remove nil?))
                      m/stream)]
-    (f/drain >return)
+    (f/drain >return ::>return)
     {::send self
      ::receive >return}))
 
@@ -89,5 +88,6 @@
   ([actor]
    (->atom actor (atom nil)))
   ([actor atom]
-   (f/drain (|< actor (|<= (map (partial reset! atom)))))
+   (f/drain (|< actor (|<= (map (partial reset! atom))))
+            ::->atom)
    atom))

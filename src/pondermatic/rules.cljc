@@ -138,13 +138,11 @@
                    [2 ::x]
                    [2 ::y]
                    [2 ::z]]))
-
    % := []
    % := [{:id 2, :x 10, :y 2, :z 1}]
    % := [{:id 2, :x 10, :y 2, :z 1} {:id 3, :x 7, :y 1, :z 2}]
    % := [{:id 2, :x 10, :y 2, :z 5} {:id 3, :x 7, :y 1, :z 6}]
    % := [{:id 3, :x 7, :y 1, :z 6}]
 
-   ;(dispose!)
-   ;(sh/stop session)
-   ))
+   (dispose!)
+   (sh/stop session)))

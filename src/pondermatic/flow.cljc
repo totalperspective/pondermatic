@@ -1,7 +1,8 @@
 (ns pondermatic.flow
   (:require [missionary.core :as m]
             [editscript.core :as es]
-            [portal.console :as log])
+            [portal.console :as log]
+            [pondermatic.portal.utils :as p.util])
   (:import [missionary Cancelled]))
 
 (defn crash [e]                                ;; let it crash philosophy
@@ -29,18 +30,24 @@
 (defn tap [prefix]
   (tapper
    (fn [x]
-     (when prefix
-       (tap> (with-meta {prefix x}
-               {:portal.viewer/default :portal.viewer/inspector}))))))
+     (log/info {(or prefix :tap) x}))))
 
-(defn run [task]
-  (task (fn [x]
-          (let [n (or (-> task meta :task) "Success")
-                x' (if (fn? x) (x) x)]
-            (tap> {n x'})))
-        #(throw %)))
+(defn run
+  ([task]
+   (run task (-> task meta :task)))
+  ([task m]
+   (task (fn [x]
+           (let [x' (if (fn? x) (x) x)]
+             (log/trace {::success x' ::task m}))
+           x)
+         #(try
+            (throw %)
+            (catch Cancelled e
+              (log/warn (ex-info "Flow Cancelled" {} e)))))))
 
-(defn counter [r _] (inc r))    ;; A reducing function counting the number of items.
+(defn counter
+  "A reducing function counting the number of items."
+  [r _] (inc r))
 
 (defn latest
   ([]
@@ -50,9 +57,9 @@
 
 (defn drain-using
   ([flow tap]
-   (drain-using flow tap (or (meta tap) {})))
+   (drain-using flow (or (meta tap) {}) tap))
   ([flow m tap]
-   (let [dispose! (run (m/reduce tap flow))]
+   (let [dispose! (run (m/reduce tap flow) m)]
      #(try (dispose!)
            (catch Cancelled e
              (log/warn (ex-info "Flow Cancelled" m e)))))))

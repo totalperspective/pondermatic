@@ -60,7 +60,7 @@
   (-> conn
       (sh/|< db-diff)
       (flow/drain-using
-       {::flow db=>rules}
+       {::flow :db=>rules}
        (flow/tapper
         (fn update-session [datums]
           (let [datums (kw->ds datums)
@@ -211,7 +211,8 @@
 (defn rule-atom [engine]
   (let [atom (atom nil)]
     (f/run (m/sp (let [rules (m/? (rules> engine))]
-                   (sh/->atom rules atom))))
+                   (sh/->atom rules atom)))
+           :rule-atom)
     atom))
 
 (defmethod dispatch :->db [{:keys [::conn] :as e} [_ data]]

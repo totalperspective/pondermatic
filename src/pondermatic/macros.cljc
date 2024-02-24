@@ -8,17 +8,21 @@
 (defmacro |->
   {:clj-kondo/lint-as 'clojure.core/->}
   [<val & body]
-  (let [val (sym-name <val)]
+  (let [{:keys [line column file]} (meta &form)
+        val (sym-name <val)]
     `(flow/run
       (m/sp (let [~val (m/? ~<val)]
               (-> ~val
-                  ~@body))))))
+                  ~@body)))
+      {:line ~line :column ~column :file ~file})))
 
 (defmacro |->>
   {:clj-kondo/lint-as 'clojure.core/->>}
   [<val & body]
-  (let [val (sym-name <val)]
+  (let [{:keys [line column file]} (meta &form)
+        val (sym-name <val)]
     `(flow/run
       (m/sp (let [~val (m/? ~<val)]
               (->> ~val
-                   ~@body))))))
+                   ~@body)))
+      {:line ~line :column ~column :file ~file})))
