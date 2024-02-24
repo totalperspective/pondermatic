@@ -41,24 +41,27 @@
            [?apple-id :data/color ?color]
            [?apple-id :data/size ?size]]))
 
-(def !data (atom nil))
-(let  [engine (p/->engine "fruit" :reset-db? true)
-       <>q (with-meta (<>apples engine) {:flow :query1})]
-  (|-> <>q
-       (flow/drain-using flow/prn-tap))
-  (-> engine
-      (|> {:->db rules})
-      (|> {:->db data})
-      (p/export->! !data)
-      sh/stop))
+(comment
+  (def !data (atom nil))
 
-(log/info "Import")
+  (let  [engine (p/->engine "fruit" :reset-db? true)
+         <>q (with-meta (<>apples engine) {:flow :query1})]
+    (|-> <>q
+         (flow/drain-using {::flow :fruit} flow/prn-tap))
+    (-> engine
+        (|> {:->db rules})
+        (|> {:->db data})
+        (p/export->! !data)
+        #_sh/stop))
 
-(let [engine (p/->engine "fruit2" :reset-db? true)
-      <>q (<>apples engine)]
-  (|-> <>q
-       (flow/drain-using flow/prn-tap))
-  (-> engine
-      (p/import @!data)
-      (|> {:->db data'})
-      sh/stop))
+  (log/info "Import")
+
+
+  (let [engine (p/->engine "fruit2" :reset-db? true)
+        <>q (<>apples engine)]
+    (|-> <>q
+         (flow/drain-using {::flow :fruit2} flow/prn-tap))
+    (-> engine
+        (p/import @!data)
+        (|> {:->db data'})
+        #_sh/stop)))

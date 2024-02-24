@@ -162,4 +162,3 @@
        (pull [{[:db/ident :first] [:movie/title :movie/release-year]}])
        (get [:db/ident :first]))
    := #:movie{:title "Explorers", :release-year 1985}))
-

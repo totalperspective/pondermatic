@@ -2,25 +2,25 @@
   (:require [pondermatic.eval :refer [eval-string]]
             [clojure.string :as s]))
 
-(eval-string (str '(->> ?length-max
-                        inc
-                        (range ?length-min)
-                        (map (fn [l]
-                               [l (str l (if (= 1 l) " month" " months"))]))
-                        (map (partial str.join "|"))
-                        (str.join "\n")))
+(eval-string '(->> ?length-max
+                   inc
+                   (range ?length-min)
+                   (map (fn [l]
+                          [l (str l (if (= 1 l) " month" " months"))]))
+                   (map (partial str.join "|"))
+                   (str.join "\n"))
              '{:bindings {?length-min  1
                           ?length-max 12}})
 
 
-(eval-string (str '{prompt #expr (if ?single
-                                   "I can confirm I am able to pay the deposit of £"
-                                   "I can confirm we are able to pay the deposit of £")
-                    deposit ?deposit}
-                  '{:bindings {?single true
-                               ?deposit 100}}))
+(eval-string '{prompt #expr (if ?single
+                              "I can confirm I am able to pay the deposit of £"
+                              "I can confirm we are able to pay the deposit of £")
+               deposit ?deposit}
+             '{:bindings {?single true
+                          ?deposit 100}})
 
-(eval-string (str '(math.round 122)))
+(eval-string '(math.round 122))
 
 (let [f (eval-string
          (str '(fn [provides]

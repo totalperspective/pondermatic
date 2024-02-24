@@ -31,14 +31,16 @@
 (defn engine
   [process session]
   (let [engine (partial engine process)]
-    (fn processor [ret cmd]
-      (if-let [rdv (get cmd ::rdv)]
-        (do (return rdv session)
-            (-> session ret engine))
-        (-> session
-            (process cmd)
-            ret
-            engine)))))
+    (fn processor
+      ([])
+      ([ret cmd]
+       (if-let [rdv (get cmd ::rdv)]
+         (do (return rdv session)
+             (-> session ret engine))
+         (-> session
+             (process cmd)
+             ret
+             engine))))))
 
 (defn |> [{:keys [::send] :as a} msg]
   (if send

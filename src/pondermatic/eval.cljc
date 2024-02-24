@@ -76,11 +76,14 @@
    (let [opts (merge-with merge
                           {:namespaces {'user default-scope}
                            :readers @pr/!readers}
-                          opts)]
+                          opts)
+         s (if (string? s) s (pr-str s))]
      (try
        (sci/eval-string s opts)
        (catch #?(:clj Exception :cljs js/Error) e
-         (log/error {:eval/error (ex-message e)
-                     :eval/expr s
-                     :eval/bindings (pr-str (:bindings opts))})
-         (throw e))))))
+         (let [ex (ex-info (ex-message e)
+                           {:eval/expr s
+                            :eval/bindings (pr-str (:bindings opts))}
+                           e)]
+           (log/error ex)
+           ex))))))

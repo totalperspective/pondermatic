@@ -5,9 +5,8 @@
                [portal.client.node :as p])
             #?(:browser
                [portal.client.web :as pw])
-            [clojure.datafy :as datafy]
             [portal.console :as log]
-            [clojure.walk :as w]))
+            [pondermatic.portal.utils :as p.utils]))
 
 (def port 5678)
 (def host "localhost")
@@ -20,37 +19,10 @@
                 p/submit)
      :default p/submit))
 
-#?(:cljs
-   (defn error->data [ex]
-     (merge
-      (when-let [data (.-data ex)]
-        {:data data})
-      {:runtime :cljs
-       :cause   (.-message ex)
-       :via     [{:type    (symbol (.-name (type ex)))
-                  :message (.-message ex)}]
-       :stack   (.-stack ex)}))
-   :default
-   (defn error->data [ex]
-     (assoc (datafy/datafy ex) :runtime :clj)))
-
-(defn exception? [e]
-  (instance? #?(:cljs js/Error :default Exception) e))
-
 (defn submitter [submit-impl]
   (fn [value]
     (->> value
-         (w/postwalk (fn [value]
-                       (cond
-                         (exception? value)
-                         (error->data value)
-
-                         (fn? value)
-                         (pr-str value)
-
-                         :else
-                         value)))
-         datafy/datafy
+         p.utils/datafy-value
          submit-impl)))
 
 (def submit (submitter #(submit-impl @!opts %)))

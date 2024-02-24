@@ -1,6 +1,8 @@
 (ns pondermatic.flow
   (:require [missionary.core :as m]
-            [editscript.core :as es]))
+            [editscript.core :as es]
+            [portal.console :as log])
+  (:import [missionary Cancelled]))
 
 (defn crash [e]                                ;; let it crash philosophy
   (println e)
@@ -13,7 +15,7 @@
 (defn tapper
   [tap]
   (fn tapper
-    ([] nil)
+    ([])
     ([x]
      (tap x)
      x)
@@ -46,14 +48,20 @@
   ([p n]
    (or n p)))
 
-(defn drain-using [flow tap]
-  (run (m/reduce tap flow)))
+(defn drain-using
+  ([flow tap]
+   (drain-using flow tap (or (meta tap) {})))
+  ([flow m tap]
+   (let [dispose! (run (m/reduce tap flow))]
+     #(try (dispose!)
+           (catch Cancelled e
+             (log/warn (ex-info "Flow Cancelled" m e)))))))
 
 (defn drain
   ([flow]
    (drain flow (-> flow meta :flow)))
   ([flow prefix]
-   (drain-using flow (tap prefix))))
+   (drain-using flow {::flow prefix} (tap prefix))))
 
 (def pairs
   (partial m/reductions

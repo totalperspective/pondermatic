@@ -2,6 +2,7 @@
   (:require [odoyle.rules :as o]
             [pondermatic.shell :as sh :refer [|> |< |<=]]
             [pondermatic.flow :as f]
+            [pondermatic.portal.utils :as p.utils]
             [hyperfiddle.rcf :as rcf :refer [tests %]])
   #?(:cljs
      (:require-macros [portal.console :as log])
@@ -17,7 +18,8 @@
 (defn upsert-rule [session rule]
   (try
     (o/add-rule session rule)
-    (catch #?(:clj Exception :cljs js/Error) _
+    (catch #?(:clj Exception :cljs js/Error) e
+      (log/warn e)
       (-> session
           (o/remove-rule (:name rule))
           (o/add-rule rule)))))
@@ -93,11 +95,10 @@
        sh/actor))
 
 (tests
- (let [tap (f/tapper #(do (log/trace (with-meta %
-                                       {:portal.viewer/default :portal.viewer/table}))
+ (let [tap (f/tapper #(do (log/trace (p.utils/table %))
                           (rcf/tap %)))
        session (->session)
-       |> (partial |> session)
+       |s> (partial |> session)
        rule (o/->rule
              ::character
              {:what
@@ -112,42 +113,38 @@
                 (println "This will fire twice"))
               :then-finally
               (fn [_]
-                (println "This will fire once"))})]
+                (println "This will fire once"))})
+       dispose! (-> session
+                    (|< (query< ::character))
+                    (f/drain-using {::flow :query ::query ::character} tap))]
+   (|s> (add-rule rule))
+   (|s> (insert 1 {::x 3 ::y -1 ::z 0}))
 
-   (rcf/set-timeout! 1000)
-   (-> session
-       (|< (query< ::character))
-       (f/drain-using tap))
-   (|> (add-rule rule))
+   (|s> (insert 2 {::x 10 ::y 2 ::z 1}))
+
+   (|s> (insert 2 {::x 10 ::y 2 ::z 1}))
+
+   (|s> (insert 3 {::x 7 ::y 1 ::z 2}))
+
+   (|s> (insert 3 {::x 7 ::y 1 ::z 2}))
+
+   (|s> (insert* [[1 {::x 3 ::y -1 ::z 4}]
+                  [2 {::x 10 ::y 2 ::z 5}]
+                  [3 {::x 7 ::y 1 ::z 6}]]))
+
+   (|s> (retract 1 ::x))
+   (|s> (retract* [[1 ::y]
+                   [1 ::z]
+                   [2 ::x]
+                   [2 ::y]
+                   [2 ::z]]))
+
    % := []
-   (|> (insert 1 {::x 3 ::y -1 ::z 0}))
-
-   (|> (insert 2 {::x 10 ::y 2 ::z 1}))
    % := [{:id 2, :x 10, :y 2, :z 1}]
-
-   (|> (insert 2 {::x 10 ::y 2 ::z 1}))
-   ;; No change so don't take from the tap
-
-   (|> (insert 3 {::x 7 ::y 1 ::z 2}))
    % := [{:id 2, :x 10, :y 2, :z 1} {:id 3, :x 7, :y 1, :z 2}]
-
-   (|> (insert 3 {::x 7 ::y 1 ::z 2}))
-   ;; No change so don't take from the tap
-
-   (|> (insert* [[1 {::x 3 ::y -1 ::z 4}]
-                 [2 {::x 10 ::y 2 ::z 5}]
-                 [3 {::x 7 ::y 1 ::z 6}]]))
    % := [{:id 2, :x 10, :y 2, :z 5} {:id 3, :x 7, :y 1, :z 6}]
-
-   (|> (retract 1 ::x))
-   ;; No change as entity 1 has a negative y co-ordinate
-   ;; so don't take from the tap
-   (|> (retract* [[1 ::y]
-                  [1 ::z]
-                  [2 ::x]
-                  [2 ::y]
-                  [2 ::z]]))
    % := [{:id 3, :x 7, :y 1, :z 6}]
 
-   (|> sh/done)))
-
+   ;(dispose!)
+   ;(sh/stop session)
+   ))

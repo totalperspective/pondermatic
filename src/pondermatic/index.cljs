@@ -91,14 +91,14 @@
         <>q (with-meta (apply p/q>< engine q args) {:flow :query})
         query-cb #(cb (clj->js %))]
     (|-> <>q
-         (flow/drain-using (flow/tapper query-cb)))))
+         (flow/drain-using {::flow :query ::query q} (flow/tapper query-cb)))))
 
 (defn query-rule [engine id cb]
   (let [id (-read-string id)
         <>query-rule (p/query-rule>< engine id)
         query-cb #(cb (clj->js %))]
     (|-> <>query-rule
-         (flow/drain-using (flow/tapper query-cb)))))
+         (flow/drain-using {::flow :query-rule ::id id} (flow/tapper query-cb)))))
 
 (defn entity [engine ident cb]
   (log/trace {:entity/ident ident})
@@ -127,7 +127,7 @@
                                   :entity' entity})
                       (cb (clj->js entity))))]
     (|-> <>entity
-         (flow/drain-using (flow/tapper entity-cb)))))
+         (flow/drain-using {::flow :entity ::ident ident} (flow/tapper entity-cb)))))
 
 (defn dispose! [task]
   (task))

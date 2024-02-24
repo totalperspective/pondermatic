@@ -1,9 +1,6 @@
 (ns user
   #_{:clj-kondo/ignore [:unused-namespace]}
-  (:require [pondermatic.rules :as rules]
-            [pondermatic.db :as db]
-            [pondermatic.portal.server :as p]
-            [pondermatic.rules.production :as prod]
+  (:require [pondermatic.portal.server :as p]
             [hyperfiddle.rcf :refer [tests]]))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
