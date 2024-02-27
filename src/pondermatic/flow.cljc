@@ -1,6 +1,10 @@
 (ns pondermatic.flow
   (:require [missionary.core :as m]
-            [editscript.core :as es]))
+            [editscript.core :as es]
+            [portal.console :as log])
+  (:import [missionary Cancelled]))
+
+(def ^:dynamic *dispose-ctx* nil)
 
 (defn crash [e]                                ;; let it crash philosophy
   (println e)
@@ -13,7 +17,7 @@
 (defn tapper
   [tap]
   (fn tapper
-    ([] nil)
+    ([])
     ([x]
      (tap x)
      x)
@@ -27,18 +31,24 @@
 (defn tap [prefix]
   (tapper
    (fn [x]
-     (when prefix
-       (tap> (with-meta {prefix x}
-               {:portal.viewer/default :portal.viewer/inspector}))))))
+     (log/info {(or prefix :tap) x}))))
 
-(defn run [task]
-  (task (fn [x]
-          (let [n (or (-> task meta :task) "Success")
-                x' (if (fn? x) (x) x)]
-            (tap> {n x'})))
-        #(throw %)))
+(defn run
+  ([task]
+   (run task (-> task meta :task)))
+  ([task m]
+   (let [dispose! (task (fn [x]
+                          (log/trace {::success x ::task m})
+                          x)
+                        #(log/warn (ex-info "Task Cancelled" {::task m
+                                                              ::context *dispose-ctx*} %)))]
+     (fn []
+       (binding [*dispose-ctx* (ex-info "dispose!" {})]
+         (dispose!))))))
 
-(defn counter [r _] (inc r))    ;; A reducing function counting the number of items.
+(defn counter
+  "A reducing function counting the number of items."
+  [r _] (inc r))
 
 (defn latest
   ([]
@@ -46,14 +56,20 @@
   ([p n]
    (or n p)))
 
-(defn drain-using [flow tap]
-  (run (m/reduce tap flow)))
+(defn drain-using
+  ([flow tap]
+   (drain-using flow (or (meta tap) {}) tap))
+  ([flow m tap]
+   (let [dispose! (run (m/reduce tap flow) m)]
+     #(try (dispose!)
+           (catch Cancelled e
+             (log/warn (ex-info "Flow Cancelled" m e)))))))
 
 (defn drain
   ([flow]
    (drain flow (-> flow meta :flow)))
   ([flow prefix]
-   (drain-using flow (tap prefix))))
+   (drain-using flow {::flow prefix} (tap prefix))))
 
 (def pairs
   (partial m/reductions

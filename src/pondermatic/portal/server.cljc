@@ -2,7 +2,8 @@
   (:require #?(:browser [portal.web :as p]
                :default [portal.api :as p])
             [pondermatic.portal.client :as pc]
-            [pondermatic.rules.production :as prp]))
+            [pondermatic.rules.production :as prp]
+            [portal.console :as log]))
 
 (defn compile-pattern [& patterns]
   (mapv (fn [pattern]
@@ -21,7 +22,10 @@
     (do
       (p/open {:launcher launcher})
       (add-tap #'submit)
-      (tap> launcher))
+      (log/info launcher))
     (do
-      (let [p (p/open {:port port})]
+      (let [p (p/open (merge {:port port}
+                             (if launcher
+                               {:launcher (keyword launcher)}
+                               {})))]
         (prn p)))))

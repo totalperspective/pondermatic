@@ -1,10 +1,11 @@
 (ns user
   #_{:clj-kondo/ignore [:unused-namespace]}
-  (:require [pondermatic.rules :as rules]
-            [pondermatic.db :as db]
-            [pondermatic.portal.server :as p]
-            [pondermatic.rules.production :as prod]
-            [hyperfiddle.rcf :refer [tests]]))
+  (:require [pondermatic.portal.server :as p]
+            [hyperfiddle.rcf :refer [tests]]
+            #?(:cljs
+               [cljs.repl :as repl]
+               :default
+               [clojure.repl :as repl])))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defonce _portal (p/-main :vs-code))

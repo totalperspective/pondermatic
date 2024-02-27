@@ -13,8 +13,9 @@
             [pondermatic.eval :as pe]
             [pondermatic.reader :refer [-read-string]]
             [pondermatic.data :refer [uuid-hash]]
-            [pondermatic.shell :as sh])
-  (:require-macros [pondermatic.macros :refer [|-> |->>]]))
+            [pondermatic.shell :as sh]
+            [pondermatic.log :as p.log])
+  (:require-macros [pondermatic.macros :refer [|->< |->><]]))
 
 (defn portal
   ([]
@@ -88,17 +89,19 @@
               -read-string
               (p.util/trace :parsed-query))
         args (js->clj args)
-        <>q (with-meta (apply p/q>< engine q args) {:flow :query})
+        <>q (apply p/q>< engine q args)
         query-cb #(cb (clj->js %))]
-    (|-> <>q
-         (flow/drain-using (flow/tapper query-cb)))))
+    (|->< <>q
+          (flow/drain-using {::flow :query ::query q}
+                            (flow/tapper query-cb)))))
 
 (defn query-rule [engine id cb]
   (let [id (-read-string id)
         <>query-rule (p/query-rule>< engine id)
         query-cb #(cb (clj->js %))]
-    (|-> <>query-rule
-         (flow/drain-using (flow/tapper query-cb)))))
+    (|->< <>query-rule
+          (flow/drain-using {::flow :query-rule ::id id}
+                            (flow/tapper query-cb)))))
 
 (defn entity [engine ident cb]
   (log/trace {:entity/ident ident})
@@ -126,8 +129,8 @@
                       (log/trace {:ident ident
                                   :entity' entity})
                       (cb (clj->js entity))))]
-    (|-> <>entity
-         (flow/drain-using (flow/tapper entity-cb)))))
+    (|->< <>entity
+          (flow/drain-using {::flow :entity ::ident ident} (flow/tapper entity-cb)))))
 
 (defn dispose! [task]
   (task))
@@ -275,7 +278,8 @@
    (eval-string str ->js? {}))
   ([str ->js? opts]
    (let [res (pe/eval-string str
-                             {:bindings
+                             {:throw? true
+                              :bindings
                               (-> opts
                                   parse-opts
                                   (assoc 'js? js?))})]
@@ -285,9 +289,9 @@
 
 (defn export [engine cb]
   (let [<export (p/export< engine)]
-    (|->> <export
-          (t/write transit-json-writer)
-          cb)))
+    (|->>< <export
+           (t/write transit-json-writer)
+           cb)))
 
 (defn import-data [engine data]
   (->> data
@@ -318,6 +322,10 @@
        :addTap (fn
                  ([] (add-tap console-tap))
                  ([tap] (add-tap #(tap %))))
+       :logLevel (fn [level]
+                   (p.log/log-tap)
+                   (let [level (keyword level)]
+                     (p.log/log-level level)))
        :readString -read-string
        :toString pr-str
        :encode (partial t/write transit-json-writer)

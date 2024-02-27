@@ -60,6 +60,7 @@
   (-> conn
       (sh/|< db-diff)
       (flow/drain-using
+       {::flow :db=>rules}
        (flow/tapper
         (fn update-session [datums]
           (let [datums (kw->ds datums)
@@ -74,6 +75,37 @@
               (sh/|> rule-session (rules/retract* retractions)))
             (when (seq assertions)
               (sh/|> rule-session (rules/insert* assertions)))))))))
+
+(defn ->then-finally [?id entity-lvars then conn rules]
+  (fn then-finally [session]
+    (let [matches (o/query-all session ?id)
+          bindings (map (partial reduce-kv (fn [m k v]
+                                             (assoc m (symbol k) v))
+                                 {})
+                        matches)
+          ids (->> bindings
+                   (mapcat (fn [match]
+                             (map (partial get match) entity-lvars)))
+                   (remove nil?)
+                   distinct)
+          db (db/db! conn)
+          entities (reduce (fn [m id]
+                             (assoc m id (d/entity db id)))
+                           {}
+                           ids)
+          production (prp/unify* then bindings {:id ?id :entities entities})
+          local? (-> production
+                     first
+                     :local/id)]
+      (log/debug {:rule ?id
+                  :type (if local?
+                          ::local
+                          ::db)
+                  :production production})
+      (if local?
+        (sh/|> rules (rules/insert* (map (juxt :local/id identity)
+                                         production)))
+        (sh/|> conn {:tx-data production})))))
 
 (defn add-base-rules [conn rules env]
   (let [ruleset
@@ -142,41 +174,12 @@
                                   (map match)
                                   (zipmap pred-l-vars)
                                   (prp/unify-pattern preds)
-                                  (map str)
                                   (map pe/eval-string)
                                   (every? identity)))
                    rule-spec {:what what
                               :when when-fn
                               :then-finally
-                              (fn then-finally [session]
-                                (let [matches (o/query-all session ?id)
-                                      bindings (map (partial reduce-kv (fn [m k v]
-                                                                         (assoc m (symbol k) v))
-                                                             {})
-                                                    matches)
-                                      ids (->> bindings
-                                               (mapcat (fn [match]
-                                                         (map (partial get match) entity-lvars)))
-                                               (remove nil?)
-                                               distinct)
-                                      db (db/db! conn)
-                                      entities (reduce (fn [m id]
-                                                         (assoc m id (d/entity db id)))
-                                                       {}
-                                                       ids)
-                                      production (prp/unify* then bindings {:id ?id :entities entities})
-                                      local? (-> production
-                                                 first
-                                                 :local/id)]
-                                  (log/debug {:rule ?id
-                                              :type (if local?
-                                                      ::local
-                                                      ::db)
-                                              :production production})
-                                  (if local?
-                                    (sh/|> rules (rules/insert* (map (juxt :local/id identity)
-                                                                     production)))
-                                    (sh/|> conn {:tx-data production}))))}
+                              (->then-finally ?id entity-lvars then conn rules)}
                    rule (o/->rule ?id rule-spec)]
                (log/debug {?id (update rule-spec :what ppu/table)})
                (sh/|> rules (rules/add-rule rule))
@@ -208,7 +211,8 @@
 (defn rule-atom [engine]
   (let [atom (atom nil)]
     (f/run (m/sp (let [rules (m/? (rules> engine))]
-                   (sh/->atom rules atom))))
+                   (sh/->atom rules atom)))
+           :rule-atom)
     atom))
 
 (defmethod dispatch :->db [{:keys [::conn] :as e} [_ data]]
@@ -254,9 +258,9 @@
 (defn export< [engine]
   (m/sp
    (let [conn (m/? (conn> engine))]
-     (prn conn)
+    ;;  (prn conn)
      (m/? (db/export< conn)))))
 
 (defn import [engine data]
-  (prn :import data)
+  ;; (prn :import data)
   (sh/|> engine {:!>db {:tx-triples data}}))

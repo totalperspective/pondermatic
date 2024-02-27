@@ -151,7 +151,7 @@
 
               (m/and [{::tag :modifier
                        ::modifier (m/pred symbol? ?mod)} _]
-                     (m/let [?fn (pe/eval-string (str ?mod))]))
+                     (m/let [?fn (pe/eval-string ?mod)]))
               {:then ?fn}
 
               [{::tag :contains
@@ -352,7 +352,7 @@
   (let [vars (reduce-kv (fn [m k v]
                           (assoc m k (sci/new-var k v)))
                         {} env)]
-    (pe/eval-string (str expr) {:bindings vars})))
+    (pe/eval-string expr {:bindings vars})))
 
 (defn parse-gen-pattern [pattern]
   (m/rewrite
@@ -481,7 +481,7 @@
                             ([other] (if (nil? other)
                                        ?val
                                        (agg-fn other ?val)))
-                            ([x y] (pe/eval-string (str (list ?merge x y)))))]))
+                            ([x y] (pe/eval-string (list ?merge x y))))]))
    ?agg-fn
 
    (m/and [?expr ?env]
