@@ -2,8 +2,8 @@
            meander.epsilon/let clojure.core/let
            meander.epsilon/match clojure.core.match/match
            meander.epsilon/rewrite clojure.core.match/match
-           pondermatic.macros/|-> clojure.core/->
-           pondermatic.macros/|->> clojure.core/->>}
+           pondermatic.macros/|->< clojure.core/->
+           pondermatic.macros/|->>< clojure.core/->>}
  :linters {:redundant-expression {:level :off}
            :redundant-do {:level :off}}
  :config-in-call {meander.epsilon/rewrite

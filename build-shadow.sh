@@ -1,6 +1,6 @@
 #!/bin/sh
 rm -rf dist
-npx shadow-cljs release :npm :esm :portal
+npx shadow-cljs $@ release :npm :esm :portal
 
 cat >dist/cjs/package.json <<!EOF
 {

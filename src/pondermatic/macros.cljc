@@ -5,7 +5,7 @@
 (defn sym-name [sym]
   (gensym (str (str/replace (name sym) #"^[<>]" "") "-")))
 
-(defmacro |->
+(defmacro |-><
   {:clj-kondo/lint-as 'clojure.core/->}
   [<val & body]
   (let [{:keys [line column file]} (meta &form)
@@ -16,7 +16,7 @@
                   ~@body)))
       {:line ~line :column ~column :file ~file})))
 
-(defmacro |->>
+(defmacro |->><
   {:clj-kondo/lint-as 'clojure.core/->>}
   [<val & body]
   (let [{:keys [line column file]} (meta &form)

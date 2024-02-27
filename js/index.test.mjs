@@ -1,16 +1,17 @@
 import pondermatic from '../dist/cjs/index.js'
 
+pondermatic.logLevel("info")
 // pondermatic.portal()
-// pondermatic.addTap()
 
 let engine
 beforeEach(() => {
   engine = pondermatic.createEngine('tests', true)
 })
 
-// afterEach(done => {
-//   setTimeout(done, 1000);
-// });
+afterEach(done => {
+  pondermatic.stop(engine);
+  setTimeout(done, 10);
+});
 
 afterAll(() => {
   pondermatic.stop(engine)
@@ -22,7 +23,7 @@ test('adding data', done => {
     "[:find ?v . :where [?id :data/key ?v]]",
     [],
     r => {
-      if (!r) {
+      if (!r || !r.length) {
         return
       }
       try {
@@ -31,14 +32,13 @@ test('adding data', done => {
       } catch (e) {
         done(e)
       } finally {
-        pondermatic.dispose(q)
+        // pondermatic.dispose(q)
       }
     }
   )
   const tx = pondermatic.dataset([{ "key": "value" }])
   pondermatic.sh(engine, { "->db": tx })
 });
-
 
 test('production rule json', done => {
   const rules = pondermatic.ruleset([

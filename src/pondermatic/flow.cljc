@@ -1,9 +1,10 @@
 (ns pondermatic.flow
   (:require [missionary.core :as m]
             [editscript.core :as es]
-            [portal.console :as log]
-            [pondermatic.portal.utils :as p.util])
+            [portal.console :as log])
   (:import [missionary Cancelled]))
+
+(def ^:dynamic *dispose-ctx* nil)
 
 (defn crash [e]                                ;; let it crash philosophy
   (println e)
@@ -36,14 +37,14 @@
   ([task]
    (run task (-> task meta :task)))
   ([task m]
-   (task (fn [x]
-           (let [x' (if (fn? x) (x) x)]
-             (log/trace {::success x' ::task m}))
-           x)
-         #(try
-            (throw %)
-            (catch Cancelled e
-              (log/warn (ex-info "Flow Cancelled" {} e)))))))
+   (let [dispose! (task (fn [x]
+                          (log/trace {::success x ::task m})
+                          x)
+                        #(log/warn (ex-info "Task Cancelled" {::task m
+                                                              ::context *dispose-ctx*} %)))]
+     (fn []
+       (binding [*dispose-ctx* (ex-info "dispose!" {})]
+         (dispose!))))))
 
 (defn counter
   "A reducing function counting the number of items."

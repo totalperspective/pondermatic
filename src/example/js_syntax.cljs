@@ -1,21 +1,25 @@
 (ns example.js-syntax
   (:require [pondermatic.index :as i]
-            ;; [pondermatic.portal.api :as pp]
-            [portal.console :as log]))
+            [portal.console :as log]
+            [pondermatic.portal.utils :as p.util]))
 
 (log/info ::starting)
 
 (def engine (i/create-engine "test" true))
 
-(def q (i/q engine
-            (str '[:find ?id ?key ?value
-                   :where
-                   [?id :data/type :task]
-                   [?id ?k ?v]
-                   [(str ?k) ?key]
-                   [(str ?v) ?value]])
-            []
-            #(.log js/console %)))
+(def q
+  (p.util/with-source-map
+    "/Users/bahulneel/Projects/TotalPerspective/pondermatic/.dev.source-map.edn"
+    (fn []
+      (i/q engine
+           (str '[:find ?id ?key ?value
+                  :where
+                  [?id :data/type :task]
+                  [?id ?k ?v]
+                  [(str ?k) ?key]
+                  [(str ?v) ?value]])
+           []
+           #(.log js/console %)))))
 
 (def rules
   (-> [{"id" "terminate/activate"
@@ -76,6 +80,7 @@
          terminate/reason Done}]
       clj->js
       i/dataset))
+
 
 (i/sh engine #js {"->db" rules})
 (i/sh engine #js {"->db" data})

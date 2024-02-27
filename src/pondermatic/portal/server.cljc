@@ -24,5 +24,8 @@
       (add-tap #'submit)
       (log/info launcher))
     (do
-      (let [p (p/open {:port port})]
+      (let [p (p/open (merge {:port port}
+                             (if launcher
+                               {:launcher (keyword launcher)}
+                               {})))]
         (prn p)))))

@@ -4,9 +4,9 @@
             [pondermatic.shell :as sh :refer [|>]]
             [portal.console :as log])
   #?(:cljs
-     (:require-macros [pondermatic.macros :refer [|->]])
+     (:require-macros [pondermatic.macros :refer [|-><]])
      :default
-     (:require [pondermatic.macros :refer [|->]])))
+     (:require [pondermatic.macros :refer [|-><]])))
 
 (def data
   (p/dataset
@@ -46,8 +46,8 @@
 
 (let  [engine (p/->engine "fruit" :reset-db? true)
        <>q (with-meta (<>apples engine) {:flow :query1})]
-  (|-> <>q
-       (flow/drain-using {::flow :fruit} flow/prn-tap))
+  (|->< <>q
+        (flow/drain-using {::flow :fruit} flow/prn-tap))
   (-> engine
       (|> {:->db rules})
       (|> {:->db data})
@@ -58,8 +58,8 @@
 
 (let [engine (p/->engine "fruit2" :reset-db? true)
       <>q (<>apples engine)]
-  (|-> <>q
-       (flow/drain-using {::flow :fruit2} flow/prn-tap))
+  (|->< <>q
+        (flow/drain-using {::flow :fruit2} flow/prn-tap))
   (-> engine
       (p/import @!data)
       (|> {:->db data'})
