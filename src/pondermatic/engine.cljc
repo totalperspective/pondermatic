@@ -10,6 +10,7 @@
             [asami.core :as d]
             [clojure.walk :as w]
             [portal.console :as log]
+            [pondermatic.eval :as pe]
             [pondermatic.portal.utils :as p.util]
             [pondermatic.data :refer [uuid-hash]]))
 
@@ -190,6 +191,17 @@
                    ::dispose:db=>rules dispose:db=>rules)
          (sh/engine engine)
          sh/actor)))
+
+(defn clone> [{:keys [conn rules]}]
+  (m/sp
+   (let [conn (m/? (db/clone> conn))
+         rules (m/? (rules/clone> rules))]
+     (let [dispose:db=>rules (db=>rules conn rules)]
+       (->> (hash-map ::conn conn
+                      ::rules rules
+                      ::dispose:db=>rules dispose:db=>rules)
+            (sh/engine engine)
+            sh/actor)))))
 
 (defn conn> [engine]
   (sh/|!> engine ::conn))

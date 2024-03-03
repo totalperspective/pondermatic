@@ -9,7 +9,8 @@
             [hyperfiddle.rcf :refer [tests]]
             [clojure.walk :as w]
             [portal.console :as log]
-            [pondermatic.reader :as pr]))
+            [pondermatic.reader :as pr]
+            [missionary.core :as m]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
@@ -63,6 +64,14 @@
                (sh/engine transactor)
                sh/actor)
           ::db-uri db-uri)))
+
+(defn clone> [conn & {:keys [db-uri]}]
+  (let [src-uri (::db-uri conn)
+        db (-> src-uri d/connect d/db)
+        uri (or db-uri (str (gensym (str src-uri "-"))))
+        conn> (m/dfv)]
+    (d/as-connection db uri)
+    (conn> (->conn uri))))
 
 (defn db! [{:keys [::db-uri]}]
   (d/db (d/connect db-uri)))
@@ -131,8 +140,8 @@
      (lookup-entity p lookup-ref not-found))))
 
 (tests
- (let [db-uri (name->mem-uri "test")
-       conn (->conn db-uri)
+ (let [db-uri (name->mem-uri (namespace ::test))
+       conn (->conn db-uri true)
        first-movies [{:db/ident :first
                       :movie/title "Explorers"
                       :movie/genre "adventure/comedy/family"
