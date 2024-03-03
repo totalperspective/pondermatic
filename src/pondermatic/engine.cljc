@@ -3,18 +3,12 @@
   (:require [pondermatic.shell :as sh]
             [pondermatic.flow :as flow]
             [pondermatic.rules :as rules]
-            [pondermatic.portal.utils :as p]
             [pondermatic.db :as db]
             [pondermatic.rules.production :as prp]
             [odoyle.rules :as o]
-            [hasch.core :as h]
             [missionary.core :as m]
             [asami.core :as d]
-            [pondermatic.flow :as f]
             [clojure.walk :as w]
-            [pondermatic.eval :as pe]
-            [pondermatic.portal.utils :as portal]
-            [pondermatic.portal.utils :as ppu]
             [portal.console :as log]
             [pondermatic.portal.utils :as p.util]
             [pondermatic.data :refer [uuid-hash]]))
@@ -69,8 +63,8 @@
                 retractions (remove (fn [[e a _]]
                                       (assert-attrs [e a]))
                                     (sort-by first (datums false)))]
-            (log/debug {:assertions (p/table assertions)
-                        :retractions (p/table retractions)})
+            (log/debug {:assertions (p.util/table assertions)
+                        :retractions (p.util/table retractions)})
             (when (seq retractions)
               (sh/|> rule-session (rules/retract* retractions)))
             (when (seq assertions)
@@ -181,7 +175,7 @@
                               :then-finally
                               (->then-finally ?id entity-lvars then conn rules)}
                    rule (o/->rule ?id rule-spec)]
-               (log/debug {?id (update rule-spec :what ppu/table)})
+               (log/debug {?id (update rule-spec :what p.util/table)})
                (sh/|> rules (rules/add-rule rule))
                rule)
              (catch #?(:clj Exception :cljs js/Error) e
@@ -210,9 +204,9 @@
 
 (defn rule-atom [engine]
   (let [atom (atom nil)]
-    (f/run (m/sp (let [rules (m/? (rules> engine))]
-                   (sh/->atom rules atom)))
-           :rule-atom)
+    (flow/run (m/sp (let [rules (m/? (rules> engine))]
+                      (sh/->atom rules atom)))
+              :rule-atom)
     atom))
 
 (defmethod dispatch :->db [{:keys [::conn] :as e} [_ data]]
