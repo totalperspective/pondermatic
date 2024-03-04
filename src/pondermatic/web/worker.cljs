@@ -9,8 +9,14 @@
             [zuko.logging :as log])
   (:import [missionary Cancelled]))
 
-(defn post [& msg]
+(enable-console-print!)
+
+(defn -post [& msg]
   (-> msg data/write-transit js/postMessage))
+
+(defn post [& msg]
+  (log/trace {:<-worker msg})
+  (apply -post msg))
 
 (def pool (-> {}
               (pool/contructor :db db/->conn db/clone>)
@@ -60,6 +66,12 @@
       (post id :throw ["Unknown Command" {:cmd cmd :msg :msg}]))))
 
 (defn init []
+  (js/console.log "Web worker startng")
+  (add-tap (fn [msg]
+             (js/console.debug msg)
+             (-post nil :tap {::msg msg})))
   (js/self.addEventListener "message"
                             (fn [^js e]
-                              (handle-msg (data/read-transit (.. e -data))))))
+                              (let [msg (.. e -data)]
+                                (log/trace {:->worker msg})
+                                (handle-msg (data/read-transit msg))))))

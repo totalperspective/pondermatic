@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/totalperspective/pondermatic#readme",
   "devDependencies": {
+    "@apacheli/web-workers": "github:apacheli/web-workers-polyfill",
     "@babel/preset-env": "^7.23.5",
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0",

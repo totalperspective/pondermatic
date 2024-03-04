@@ -1,0 +1,1 @@
+require("@apacheli/web-workers");

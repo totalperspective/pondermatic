@@ -3,7 +3,8 @@
            meander.epsilon/match clojure.core.match/match
            meander.epsilon/rewrite clojure.core.match/match
            pondermatic.macros/|->< clojure.core/->
-           pondermatic.macros/|->>< clojure.core/->>}
+           pondermatic.macros/|->>< clojure.core/->>
+           shadow.cljs.modern/js-await clojure.core/let}
  :linters {:redundant-expression {:level :off}
            :redundant-do {:level :off}}
  :config-in-call {meander.epsilon/rewrite
