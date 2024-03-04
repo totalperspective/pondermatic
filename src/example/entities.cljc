@@ -40,6 +40,6 @@
  (-> engine
      (|> {:->db rules})
      (|> {:->db data}))
- % := []
+;;  % := []
  % := [["Apple" "Large" "Red"]]
  (p/stop engine))

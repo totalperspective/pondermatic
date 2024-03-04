@@ -66,4 +66,18 @@
                       :pseudo-names true
                       :pretty-print true}
    :modules {:index {:exports {default pondermatic.index/exports}}}
-   :release {}}}}
+   :release {}}
+  :browser
+  {:target :browser
+   :output-dir "dist/browser"
+   :asset-path "/js"
+   :modules
+   {:shared
+    {:entries []}
+    :main
+    {:init-fn pondermatic.web.client/init
+     :depends-on #{:shared}}
+    :worker
+    {:init-fn pondermatic.web.worker/init
+     :depends-on #{:shared}
+     :web-worker true}}}}}

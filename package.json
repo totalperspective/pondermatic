@@ -7,12 +7,15 @@
   },
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
+  "browser": "dist/browser/main.js",
   "exports": {
     ".": {
       "browser": "./dist/mjs/index.js",
       "require": "./dist/cjs/index.js",
-      "default": "./dist/cjs/index.js"
-    }
+      "default": "./dist/cjs/index.js",
+      "worker": "./dist/browser/worker.js"
+    },
+    "./worker": "./dist/browser/worker.js"
   },
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",

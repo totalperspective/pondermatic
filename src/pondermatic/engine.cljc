@@ -195,13 +195,13 @@
 (defn clone> [{:keys [conn rules]}]
   (m/sp
    (let [conn (m/? (db/clone> conn))
-         rules (m/? (rules/clone> rules))]
-     (let [dispose:db=>rules (db=>rules conn rules)]
-       (->> (hash-map ::conn conn
-                      ::rules rules
-                      ::dispose:db=>rules dispose:db=>rules)
-            (sh/engine engine)
-            sh/actor)))))
+         rules (m/? (rules/clone> rules))
+         dispose:db=>rules (db=>rules conn rules)]
+     (->> (hash-map ::conn conn
+                    ::rules rules
+                    ::dispose:db=>rules dispose:db=>rules)
+          (sh/engine engine)
+          sh/actor))))
 
 (defn conn> [engine]
   (sh/|!> engine ::conn))

@@ -8,7 +8,8 @@
             [cljc.java-time.period]
             [cljc.java-time.duration]
             #?(:cljs
-               [java.time :refer [LocalDate LocalDateTime Period Duration]]))
+               [java.time :refer [LocalDate LocalDateTime Period Duration]])
+            #?(:cljs [cognitect.transit :as transit]))
   #?(:clj
      (:import [java.time LocalDate LocalDateTime Period Duration])))
 
@@ -65,3 +66,15 @@
                 'time/date-time t/date-time
                 'time/period cljc.java-time.period/parse
                 'time/duration cljc.java-time.duration/parse})
+
+#?(:cljs
+   (do
+     (def transit-json-reader (transit/reader :json))
+
+     (defn read-transit [msg]
+       (transit/read transit-json-reader msg))
+
+     (def transit-json-writer (transit/writer :json))
+
+     (defn write-transit [msg]
+       (transit/write transit-json-writer msg))))

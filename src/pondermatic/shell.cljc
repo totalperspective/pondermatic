@@ -13,8 +13,7 @@
   (let [self (m/mbx)
         >actor (m/ap
                 (loop [process init]
-                  (let [process (m/? process)
-                        cmd (m/? self)
+                  (let [cmd (m/? self)
                         emit (m/rdv)
                         next (process (partial return emit) cmd)]
                     (if (not= done cmd)
@@ -32,19 +31,15 @@
   [process session]
   (let [engine (partial engine process)]
     (fn processor
-      ([])
+      ([] session)
       ([ret cmd]
        (if-let [rdv (get cmd ::rdv)]
          (do (return rdv session)
              (-> session ret engine))
-         (let [result (-> session
-                          (process cmd)
-                          ret)]
-           (m/sp
-            (let [result (if (fn? result)
-                           (m/? result)
-                           result)]
-              (engine result)))))))))
+         (-> session
+             (process cmd)
+             ret
+             engine))))))
 
 (defn |> [{:keys [::send] :as a} msg]
   (if send

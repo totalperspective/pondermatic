@@ -9,13 +9,25 @@
             [pondermatic.portal.client :as portal]
             [portal.console :as log]
             [promesa.core :as pa]
-            [cognitect.transit :as t]
             [pondermatic.eval :as pe]
             [pondermatic.reader :refer [-read-string]]
-            [pondermatic.data :refer [uuid-hash]]
-            [pondermatic.shell :as sh]
-            [pondermatic.log :as p.log])
+            [pondermatic.log :as p.log]
+            [pondermatic.web.engine :as webe]
+            [pondermatic.pool :as pool]
+            [pondermatic.data :refer [uuid-hash] :as data])
   (:require-macros [pondermatic.macros :refer [|->< |->><]]))
+
+(def pool (-> {}
+              (webe/contructor :engine p/->engine p/clone>)
+              pool/->pool))
+
+(def with-agent< (partial pool/with-agent< pool))
+
+(def q>< (with-agent< p/q><))
+
+(def entity>< (with-agent< p/entity><))
+
+(def entity< (with-agent< p/entity<))
 
 (defn portal
   ([]
@@ -33,7 +45,11 @@
   ([name]
    (create-engine name false))
   ([name reset-db?]
-   (p/->engine name :reset-db? reset-db?)))
+   (let [id (pool/add-agent! pool :engine name :reset-db? reset-db?)]
+     {::id id})))
+
+(defn stop [{:keys [::id]}]
+  (pool/remove-agent! pool id))
 
 (defn ->edn [form]
   (let [visit-node (fn [node]
@@ -73,43 +89,46 @@
       p/dataset
       (p.util/trace 'dataset)))
 
-(defn sh [engine msg]
-  (sh/|> engine
-         (-> msg
-             (js->clj :keywordize-keys true)
-             (p.util/trace 'sh))))
+(defn sh [{:keys [::id]} msg]
+  (pool/to-agent! pool
+                  id
+                  (-> msg
+                      (js->clj :keywordize-keys true)
+                      (p.util/trace 'sh))))
 
 (defn add-rules-msg [rules]
   (r/add-rules (-> rules
                    (js->clj :keywordize-keys true)
                    (p.util/trace 'add-rules-msg))))
 
-(defn q [engine q args cb]
-  (let [q (-> q
-              -read-string
-              (p.util/trace :parsed-query))
-        args (js->clj args)
-        <>q (apply p/q>< engine q args)
+(defn q [{:keys [::id]} q args cb]
+  (let [args (js->clj args)
+        q-args (-> q
+                   -read-string
+                   vector
+                   (into args)
+                   (p.util/trace ::parsed-query))
+        <>q (q>< id q-args)
         query-cb #(cb (clj->js %))]
     (|->< <>q
           (flow/drain-using {::flow :query ::query q}
                             (flow/tapper query-cb)))))
 
-(defn query-rule [engine id cb]
-  (let [id (-read-string id)
-        <>query-rule (p/query-rule>< engine id)
-        query-cb #(cb (clj->js %))]
-    (|->< <>query-rule
-          (flow/drain-using {::flow :query-rule ::id id}
-                            (flow/tapper query-cb)))))
+;; (defn query-rule [engine id cb]
+;;   (let [id (-read-string id)
+;;         <>query-rule (p/query-rule>< engine id)
+;;         query-cb #(cb (clj->js %))]
+;;     (|->< <>query-rule
+;;           (flow/drain-using {::flow :query-rule ::id id}
+;;                             (flow/tapper query-cb)))))
 
-(defn entity [engine ident cb]
+(defn entity [{:keys [::id]} ident cb]
   (log/trace {:entity/ident ident})
   (let [ident (-> ident
                   js->clj
                   str
                   -read-string)
-        <entity (p/entity< engine ident true)
+        <entity (entity< id [ident true])
         entity-cb (fn [entity]
                     (let [entity (assoc entity :id (str ident))]
                       (log/trace {:ident ident
@@ -117,13 +136,13 @@
                       (cb (clj->js entity))))]
     (<entity entity-cb #(cb nil %))))
 
-(defn entity* [engine ident cb]
+(defn entity* [{:keys [::id] :as engine} ident cb]
   (entity engine ident cb)
   (let [ident (-> ident
                   js->clj
                   str
                   -read-string)
-        <>entity (p/entity>< engine ident true)
+        <>entity (entity>< id [ident true])
         entity-cb (fn [entity']
                     (let [entity (when entity' (assoc entity' :id (str ident)))]
                       (log/trace {:ident ident
@@ -202,10 +221,6 @@
        (if (instance? js/Error expr)
          (log/error expr)
          (log/log expr))))))
-
-(def transit-json-reader (t/reader :json))
-
-(def transit-json-writer (t/writer :json))
 
 (defn parse-opts [node]
   (w/postwalk (fn [node]
@@ -290,12 +305,12 @@
 (defn export [engine cb]
   (let [<export (p/export< engine)]
     (|->>< <export
-           (t/write transit-json-writer)
+           data/write-transit
            cb)))
 
 (defn import-data [engine data]
   (->> data
-       (t/read transit-json-reader)
+       data/read-transit
        (p/import engine)))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
@@ -307,8 +322,8 @@
        :addRulesMsg add-rules-msg
        :q q
        :qP (->promise-fn q)
-       :queryRule query-rule
-       :queryRuleP (->promise-fn query-rule)
+      ;;  :queryRule query-rule
+      ;;  :queryRuleP (->promise-fn query-rule)
        :entity entity
        :entityP (->promise-fn entity)
        :watchEntity entity*
@@ -328,11 +343,11 @@
                      (p.log/log-level level)))
        :readString -read-string
        :toString pr-str
-       :encode (partial t/write transit-json-writer)
-       :decode (partial t/read transit-json-reader)
+       :encode data/transit-json-writer
+       :decode data/read-transit
        :eval eval-string
        :toJS toJS
        :devtoolsFormatter devtoolsFormatter
        :import (->promise-fn import-data)
        :export (->promise-fn export)
-       :stop p/stop})
+       :stop stop})

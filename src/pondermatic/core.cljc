@@ -19,6 +19,8 @@
         session (rules/->session)]
     (engine/->engine conn session)))
 
+(def clone> engine/clone>)
+
 (defn kw->qkw
   ([data]
    (kw->qkw data "data"))
