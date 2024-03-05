@@ -1,6 +1,7 @@
 (ns pondermatic.shell
   (:require [missionary.core :as m]
-            [pondermatic.flow :as f]))
+            [pondermatic.flow :as f]
+            [portal.console :as log]))
 
 (defn return [emit result]
   (let [run (m/sp (m/? (emit result)))]
@@ -40,9 +41,13 @@
        (if-let [rdv (get cmd ::rdv)]
          (do (return rdv session)
              (engine session))
-         (-> session
-             (process cmd)
-             engine))))))
+         (try
+           (-> session
+               (process cmd)
+               engine)
+           (catch #?(:cljs js/Error :default Exception) e
+             (log/error e)
+             session)))))))
 
 (defn |> [{:keys [::send] :as a} msg]
   (if send

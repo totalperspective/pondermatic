@@ -85,7 +85,6 @@
          :via     (error->data (ex-cause ex))
          :stack   (-> ex
                       .-stack
-                      map-stacktrace
                       text)})))
    :default
    (defn error->data [ex]

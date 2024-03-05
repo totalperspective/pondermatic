@@ -6,23 +6,29 @@
             [pondermatic.flow :as flow]
             [pondermatic.data :as data]
             [missionary.core :as m]
-            [zuko.logging :as log])
+            [portal.console :as log]
+            [pondermatic.core :as p]
+            [pondermatic.portal.utils :as p.util]
+            [pondermatic.log :as p.log])
   (:import [missionary Cancelled]))
 
 (enable-console-print!)
 
 (defn -post [& msg]
-  (-> msg data/write-transit js/postMessage))
+  (try
+    (-> msg p.util/datafy-value data/write-transit js/postMessage)
+    (catch js/Error e
+      (js/console.error e))))
 
 (defn post [& msg]
-  (log/trace {:<-worker msg})
+  (js/console.debug "<-worker" msg)
   (apply -post msg))
 
-(def pool (-> {}
-              (pool/contructor :db db/->conn db/clone>)
-              (pool/contructor :rules rules/->session rules/clone>)
-              (pool/contructor :engine engine/->engine engine/conn>)
-              pool/->pool))
+(defonce pool (-> {}
+                  (pool/contructor :db db/->conn db/clone>)
+                  (pool/contructor :rules rules/->session rules/clone>)
+                  (pool/contructor :engine p/->engine engine/conn>)
+                  pool/->pool))
 
 (def !flows (atom {}))
 
@@ -67,11 +73,10 @@
 
 (defn init []
   (js/console.log "Web worker startng")
-  (add-tap (fn [msg]
-             (js/console.debug msg)
-             (-post nil :tap {::msg msg})))
+  (p.log/console-tap)
+  (add-tap #(-post nil :tap {:worker (update % :result data/->eql)}))
   (js/self.addEventListener "message"
                             (fn [^js e]
                               (let [msg (.. e -data)]
-                                (log/trace {:->worker msg})
+                                (js/console.debug "->worker" msg)
                                 (handle-msg (data/read-transit msg))))))

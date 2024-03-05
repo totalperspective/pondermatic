@@ -2,7 +2,8 @@
   (:require [pondermatic.data :as data]
             [promesa.core :as p]
             [portal.console :as log]
-            [pondermatic.flow :as flow]))
+            [pondermatic.flow :as flow]
+            [pondermatic.portal.utils :as p.util]))
 
 (def !worker (atom nil))
 
@@ -11,13 +12,16 @@
 (defn post [cmd & msg]
   (when-not @!worker
     (throw (ex-info "No worker registered" {})))
-  (let [id (random-uuid)
-        p (p/deferred)]
-    (swap! !ids assoc id p)
-    (let [t-msg (data/write-transit [id cmd msg])]
-      (log/debug {:<-window t-msg})
-      (.. @!worker (postMessage t-msg)))
-    p))
+  (try
+    (let [id (random-uuid)
+          p (p/deferred)]
+      (swap! !ids assoc id p)
+      (let [t-msg (data/write-transit (p.util/datafy-value [id cmd msg]))]
+        (js/console.debug "<-window" t-msg)
+        (.. @!worker (postMessage t-msg)))
+      p)
+    (catch js/Error e
+      (log/error e))))
 
 (defn post> [& args]
   (flow/await-promise (apply post args)))
@@ -32,7 +36,8 @@
     (when id
       (swap! !ids dissoc id))
     (condp = cmd
-      :tap (tap> msg)
+      :tap (tap> (update-in msg [:worker :result] p.util/pprint))
+      :error (log/error msg)
       :throw (let [[msg data] msg
                    e (ex-info msg data)]
                (p/reject! p e))
@@ -42,8 +47,8 @@
               (when-not done? (swap! !ids assoc id (p/deferred)))
               (p/resolve! p (clj->js {:value (when-not done? msg)
                                       :done done?})))
-      :else (log/warn (ex-info "Couldn't handle message"
-                               {:cmd cmd :msg msg})))))
+      (log/warn (ex-info "Couldn't handle message"
+                         {:cmd cmd :msg msg})))))
 
 (defn init []
   (let [location (or (.-location js/globalThis)
@@ -56,5 +61,5 @@
     (.. worker (addEventListener "message"
                                  (fn [^js e]
                                    (let [msg (.. e -data)]
-                                     (log/trace {:->window msg})
+                                     (js/console.debug "->window" msg)
                                      (handle-msg (data/read-transit msg))))))))

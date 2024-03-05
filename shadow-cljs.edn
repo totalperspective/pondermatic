@@ -81,11 +81,7 @@
    :output-dir "dist/browser/js"
    :asset-path "/js"
    :prepend-js "js/worker.js"
-   :compiler-options {:reader-features #{:browser}
-                      :source-map true
-                      :output-feature-set :es5
-                      :pseudo-names true
-                      :pretty-print true}
+   :compiler-options {:reader-features #{:browser}}
    :modules {:shared
              {:entries []}
              :main

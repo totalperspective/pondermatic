@@ -17,9 +17,9 @@
             [pondermatic.data :refer [uuid-hash] :as data])
   (:require-macros [pondermatic.macros :refer [|->< |->><]]))
 
-(def pool (-> {}
-              (webe/contructor :engine p/->engine p/clone>)
-              pool/->pool))
+(defonce pool (-> {}
+                  (webe/contructor :engine p/->engine p/clone>)
+                  pool/->pool))
 
 (def with-agent< (partial pool/with-agent< pool))
 

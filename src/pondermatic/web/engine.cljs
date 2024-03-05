@@ -10,15 +10,23 @@
 
 (def worker? (boolean @client/!worker))
 
-(defn forwarder [agent [cmd & msg]]
-  (log/trace {::agent agent ::cmd cmd ::msg msg})
-  (let [{:keys [type args]} agent]
-    (condp = cmd
-      ::create (m/sp (let [id (m/? (apply client/post> [:pool :add-agent] type args))]
-                       (log/trace {::id id})
-                       (assoc agent ::id id)))
-      :else (do (log/warn (ex-info "Unknown Command" {:cmd cmd}))
-                agent))))
+(defn forwarder [agent msg]
+  (let [[cmd msg] (if (map? msg)
+                    (first msg)
+                    msg)]
+    (log/trace {::agent agent ::cmd cmd ::msg msg})
+    (let [{:keys [type args id]} agent]
+      (condp = cmd
+        ::create (m/sp (let [id (m/? (apply client/post> [:pool :add-agent] type args))]
+                         (assoc agent :id id)))
+        :->db (m/sp (let [result (m/? (client/post> [:pool :to-agent] id {cmd msg}))]
+                      (log/trace {:agent agent
+                                  cmd msg
+                                  :result result})
+                      agent))
+
+        (do (log/warn (ex-info "Unknown Command" {:cmd cmd}))
+            agent)))))
 
 (defn ->agent [agent]
   (->> agent
@@ -27,7 +35,7 @@
 
 (defn create-local [type & args]
   (let [engine (->agent {:type type :args args})]
-    (sh/|> engine [::create])))
+    (sh/|> engine {::create type})))
 
 (defn agent> [engine]
   (sh/|!> engine identity))
