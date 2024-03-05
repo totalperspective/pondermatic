@@ -11,22 +11,25 @@
 (def worker? (boolean @client/!worker))
 
 (defn forwarder [agent msg]
-  (let [[cmd msg] (if (map? msg)
-                    (first msg)
-                    msg)]
-    (log/trace {::agent agent ::cmd cmd ::msg msg})
-    (let [{:keys [type args id]} agent]
-      (condp = cmd
-        ::create (m/sp (let [id (m/? (apply client/post> [:pool :add-agent] type args))]
-                         (assoc agent :id id)))
-        :->db (m/sp (let [result (m/? (client/post> [:pool :to-agent] id {cmd msg}))]
-                      (log/trace {:agent agent
-                                  cmd msg
-                                  :result result})
-                      agent))
+  (let [{:keys [type args id]} agent]
+    (log/trace {::agent agent ::msg msg})
+    (if (= sh/done msg)
+      (m/sp (m/? (client/post> [:pool :remove-agent] id))
+            agent)
+      (let [[cmd msg] (if (map? msg)
+                        (first msg)
+                        msg)]
+        (condp = cmd
+          ::create (m/sp (let [id (m/? (apply client/post> [:pool :add-agent] type args))]
+                           (assoc agent :id id)))
+          :->db (m/sp (let [result (m/? (client/post> [:pool :to-agent] id {cmd msg}))]
+                        (log/trace {:agent agent
+                                    cmd msg
+                                    :result result})
+                        agent))
 
-        (do (log/warn (ex-info "Unknown Command" {:cmd cmd}))
-            agent)))))
+          (do (log/warn (ex-info "Unknown Command" {:cmd cmd}))
+              agent))))))
 
 (defn ->agent [agent]
   (->> agent
