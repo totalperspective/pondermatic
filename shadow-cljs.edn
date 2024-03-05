@@ -80,7 +80,6 @@
   {:target :browser
    :output-dir "dist/browser/js"
    :asset-path "/js"
-   :prepend-js "js/worker.js"
    :compiler-options {:reader-features #{:browser}}
    :modules {:shared
              {:entries []}
