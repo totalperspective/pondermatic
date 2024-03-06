@@ -67,14 +67,9 @@
                       :output-feature-set :es5
                       :pseudo-names true
                       :pretty-print true}
-   :modules {:shared
-             {:entries []}
-             :index
+   :modules {:index
              {:exports {default pondermatic.index/exports}
-              :depends-on #{:shared}}
-             :worker
-             {:init-fn pondermatic.web.worker/init
-              :depends-on #{:shared}}}
+              :depends-on #{}}}
    :release {}}
   :browser
   {:target :browser
@@ -83,10 +78,12 @@
    :compiler-options {:reader-features #{:browser}}
    :modules {:shared
              {:entries []}
-             :main
-             {:entries [pondermatic.index]
+             :browser
+             {:entries [pondermatic.browser.client
+                        pondermatic.index]
+              :init-fn pondermatic.browser.handler/init
               :depends-on #{:shared}}
              :worker
-             {:init-fn pondermatic.web.worker/init
+             {:init-fn pondermatic.browser.worker/init
               :depends-on #{:shared}
               :web-worker true}}}}}

@@ -11,7 +11,7 @@
             [promesa.core :as pa]
             [pondermatic.eval :as pe]
             [pondermatic.reader :refer [-read-string]]
-            [pondermatic.web.engine :as webe]
+            [pondermatic.browser.engine :as webe]
             [pondermatic.pool :as pool]
             [pondermatic.data :refer [uuid-hash] :as data])
   (:require-macros [pondermatic.macros :refer [|-><]]))
@@ -334,3 +334,6 @@
        :toJS toJS
        :devtoolsFormatter devtoolsFormatter
        :stop stop})
+
+(defn init []
+  (set! js/globalThis.pondermatic exports))

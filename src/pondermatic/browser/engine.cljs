@@ -1,29 +1,32 @@
-(ns pondermatic.web.engine
+(ns pondermatic.browser.engine
   (:require [pondermatic.pool :as pool]
             [pondermatic.shell :as sh]
             [portal.console :as log]
             [missionary.core :as m]
-            [pondermatic.web.client :as client]
-            [pondermatic.core :as p])
+            [pondermatic.core :as p]
+            [pondermatic.browser.client :as client])
   (:require-macros [portal.console :as log]))
 
-(pondermatic.web.client/init)
+;; (pondermatic.browser.client/init)
 
-(def worker? (boolean @client/!worker))
+(def worker? (delay (boolean @client/>worker!)))
+
+(def post< client/post<)
+(def post> client/post>)
 
 (defn forwarder [agent msg]
   (let [{:keys [type args id]} agent]
     (log/trace {::agent agent ::msg msg})
     (if (= sh/done msg)
-      (m/sp (m/? (client/post< [:pool :remove-agent] id))
+      (m/sp (m/? (post< [:pool :remove-agent] id))
             agent)
       (let [[cmd msg] (if (map? msg)
                         (first msg)
                         msg)]
         (condp = cmd
-          ::create (m/sp (let [id (m/? (client/post< [:pool :add-agent] (apply vector type args)))]
+          ::create (m/sp (let [id (m/? (post< [:pool :add-agent] (apply vector type args)))]
                            (assoc agent :id id)))
-          :->db (m/sp (let [result (m/? (client/post< [:pool :to-agent] [id {cmd msg}]))]
+          :->db (m/sp (let [result (m/? (post< [:pool :to-agent] [id {cmd msg}]))]
                         (log/trace {:agent agent
                                     cmd msg
                                     :result result})
@@ -52,23 +55,27 @@
      (->agent (assoc agent :remote id)))))
 
 (defn contructor [cs type create clone]
-  (log/trace {::cs cs ::type type})
-  (let [create' (if worker?
-                  (partial create-local type)
-                  create)
-        clone' (if worker?
-                 clone-local
-                 clone)]
+  (let [create' (fn create' [& args]
+                  (prn :create type :worker @worker?)
+                  (if @worker?
+                    (apply create-local type args)
+                    (apply create args)))
+        clone' (fn clone' [& args]
+                 (prn :clone type :worker @worker?)
+                 (if @worker?
+                   (apply clone-local args)
+                   (apply clone args)))]
     (pool/contructor cs type create' clone')))
 
 (defn with-local [fun< alias & {:keys [:flow?] :or {flow? false}}]
-  (if worker?
-    (fn remote-fun< [agent & args]
+  (fn remote-fun< [agent & args]
+    (prn alias :worker @worker?)
+    (if @worker?
       (m/sp (let [id (m/? (sh/|!> agent :id))]
               (if flow?
-                (client/post> [:engine alias] args id)
-                (m/? (client/post< [:engine alias] args id))))))
-    fun<))
+                (post> [:engine alias] args id)
+                (m/? (post< [:engine alias] args id)))))
+      (apply fun< agent args))))
 
 (def q>< (with-local p/q>< :q>< :flow? true))
 

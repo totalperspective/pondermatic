@@ -118,8 +118,7 @@
     (.then p #(v (fn [] %)) #(v (fn [] (throw %))))
     (m/absolve v)))
 
-(defn mbx> [m]
-  (m/stream
-   (m/ap (loop []
-           (m/amb (m/? m)
-                  (recur))))))
+(defn mbx> [<m]
+  (let [>flow (m/seed (repeat <m))]
+    (m/ap (let [<m (m/?> >flow)]
+            (m/? <m)))))

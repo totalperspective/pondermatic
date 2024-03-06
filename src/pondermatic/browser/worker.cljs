@@ -1,4 +1,4 @@
-(ns pondermatic.web.worker
+(ns pondermatic.browser.worker
   (:require [pondermatic.pool :as pool]
             [pondermatic.engine :as engine]
             [pondermatic.db :as db]
@@ -9,19 +9,25 @@
             [portal.console :as log]
             [pondermatic.core :as p]
             [pondermatic.portal.utils :as p.util]
-            [pondermatic.log :as p.log])
+            [pondermatic.log :as p.log]
+            [pondermatic.flow.port :as !])
   (:import [missionary Cancelled]))
 
 (enable-console-print!)
 
+(def >window! (!/->>port! ::port))
+
 (defn -post [& msg]
   (try
-    (-> msg p.util/datafy-value data/write-transit js/postMessage)
+    (->> msg
+         p.util/datafy-value
+         data/write-transit
+         (!/send! >window!))
     (catch js/Error e
       (js/console.error e))))
 
 (defn post [& msg]
-  (js/console.debug "<-worker" (clj->js msg))
+  (js/console.trace "worker->" (clj->js msg))
   (apply -post msg))
 
 (defonce pool (-> {}
@@ -96,12 +102,20 @@
         (catch js/Error e
           (post id :throw [(ex-message e) (ex-data e)]))))))
 
+(flow/drain-using (!/recv> >window!)
+                  ::handle-msg
+                  (flow/tapper handle-msg))
+
 (defn init []
-  (js/console.log "Web worker startng")
+  (prn "Web worker startng")
   (p.log/console-tap)
   (add-tap #(-post nil :tap (update % :result data/->log-safe)))
-  (js/self.addEventListener "message"
-                            (fn [^js e]
-                              (let [msg (.. e -data)]
-                                (js/console.debug "->worker" msg)
-                                (handle-msg (data/read-transit msg))))))
+  (let [>worker! (!/!use->port! ::port)]
+    (flow/drain-using (!/recv> >worker!)
+                      ::post-message
+                      (flow/tapper js/postMessage))
+    (js/self.addEventListener "message"
+                              (fn [^js e]
+                                (let [msg (.. e -data)]
+                                  (js/console.debug "->worker" msg)
+                                  (!/send! >worker! (data/read-transit msg)))))))

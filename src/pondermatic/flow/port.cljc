@@ -11,8 +11,8 @@
 (defn ->>port! [port-id]
   (let [<send! (m/mbx)
         <recv! (m/mbx)]
-    (swap! !ports port-id {:send! (sender <send!)
-                           :>recv (flow/mbx> <recv!)})
+    (swap! !ports assoc port-id {:send! (sender <send!)
+                                 :>recv (flow/mbx> <recv!)})
     {:send! (sender <recv!)
      :>recv (flow/mbx> <send!)}))
 
@@ -24,11 +24,12 @@
   (when-not (>port!? >port!)
     (throw (ex-info "Invalid Port" {:>port! >port!}))))
 
-(defn !use->port! [port-id]
+(defn !use->port! [port-id & {:keys [throw?] :or {throw? true}}]
   (let [>port! (get @!ports port-id)]
-    (when-not (>port!? >port!)
-      (throw (ex-info "Unknown Port" {:id port-id})))
-    >port!))
+    (cond
+      (>port!? >port!) >port!
+      throw? (throw (ex-info "Unknown Port" {:id port-id}))
+      :else nil)))
 
 (defn send! [>port! msg]
   (guard->port! >port!)

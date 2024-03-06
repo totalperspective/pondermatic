@@ -8,8 +8,8 @@
                :default
                [clojure.repl :as repl])))
 
-#?(:cljs
-   (enable-console-print!))
+;; #?(:cljs
+;;    (enable-console-print!))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defonce _portal #?(:browser
