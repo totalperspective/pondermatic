@@ -1,14 +1,14 @@
 (ns user
   #_{:clj-kondo/ignore [:unused-namespace]}
-  (:require [pondermatic.portal.server :as p]
-            [hyperfiddle.rcf :refer [tests]]
-            #?(:cljs
-               [cljs.repl :as repl]
-               :default
-               [clojure.repl :as repl])))
+  (:require #?(:browser [pondermatic.portal.client :as p]
+               :default [pondermatic.portal.server :as p])
+            [hyperfiddle.rcf :refer [tests]]))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-(defonce _portal (p/-main :vs-code))
+(defonce _portal #?(:browser
+                    (p/start nil)
+                    :default
+                    (p/-main :vs-code)))
 
 (hyperfiddle.rcf/enable!)
 
