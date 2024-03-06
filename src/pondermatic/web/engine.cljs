@@ -6,7 +6,7 @@
             [pondermatic.web.client :as client])
   (:require-macros [portal.console :as log]))
 
-(pondermatic.web.client/init)
+;; (pondermatic.web.client/init)
 
 (def worker? (boolean @client/!worker))
 
