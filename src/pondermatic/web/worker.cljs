@@ -21,7 +21,7 @@
       (js/console.error e))))
 
 (defn post [& msg]
-  (js/console.debug "<-worker" msg)
+  (js/console.debug "<-worker" (clj->js msg))
   (apply -post msg))
 
 (defonce pool (-> {}
@@ -34,6 +34,9 @@
 
 (def with-agent< (partial pool/with-agent< pool))
 
+(defn flow [flow><]
+  (with-meta flow>< {:flow? true}))
+
 (def cmd->fun {:dispose (fn [id]
                           (let [dispose! (get @!flows id)]
                             (dispose!)))
@@ -41,26 +44,27 @@
                       :copy-agent pool/copy-agent!
                       :remove-agent pool/remove-agent!
                       :to-agent pool/to-agent!}
-               :engine {:q>< (with-agent< engine/q><)
-                        :entity>< (with-agent< engine/entity><)}})
+               :engine {:q>< (flow (with-agent< engine/q><))
+                        :entity>< (flow (with-agent< engine/entity><))
+                        :entity< (with-agent< engine/entity<)}})
 
 (defn prn> [& msg]
   (-post nil :prn msg))
 
 (defn handle-msg [[id cmd args agent]]
   ;; (prn> ::cmd cmd ::args args ::agent agent ::id id)
-  (let [fun (get-in cmd->fun cmd)]
-    (log/trace {::id id ::cmd cmd ::fun? (boolean fun)
-                ::args args ::agent agent})
+  (let [fun (get-in cmd->fun cmd)
+        {:keys [:flow?]} (meta fun)
+        info {::id id ::cmd cmd ::fun? (boolean fun)
+              ::args args ::agent agent ::flow? flow?}]
+    (log/trace info)
     (if-not fun
       (post id :throw ["Unknown Command" {:cmd cmd :msg :msg}])
       (try
-        (if-not agent
-          (let [result (apply fun pool args)]
-            (post id :result result))
+        (cond
+          (and agent flow?)
           (let [<>flow (fun agent args)
                 msg-id (random-uuid)
-                info {:agent agent :id id :cmd cmd :args args :msg-id msg-id}
                 done! (fn [x]
                         (log/trace (assoc info :success? (fn? x)))
                         (when-not (fn? x)
@@ -78,7 +82,17 @@
                                     (done! e))))]
             (swap! !flows assoc msg-id <>flow)
             (post id :flow msg-id)
-            (<drain done! done!)))
+            (<drain done! done!))
+          agent
+          (let [<task (m/sp (let [<result (fun agent args)]
+                              (m/? <result)))]
+            (<task #(post id :result %)
+                   #(post id :result (if (instance? Cancelled  %)
+                                       (ex-info "Cancelled" info)
+                                       %))))
+          :else
+          (let [result (apply fun pool args)]
+            (post id :result result)))
         (catch js/Error e
           (post id :throw [(ex-message e) (ex-data e)]))))))
 

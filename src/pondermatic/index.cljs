@@ -27,7 +27,7 @@
 
 (def entity>< (with-agent< webe/entity><))
 
-(def entity< (with-agent< p/entity<))
+(def entity< (with-agent< webe/entity<))
 
 (defn portal
   ([]
@@ -130,6 +130,7 @@
                   -read-string)
         <entity (entity< id [ident true])
         entity-cb (fn [entity]
+                    (log/trace entity)
                     (let [entity (assoc entity :id (str ident))]
                       (log/trace {:ident ident
                                   :entity' entity})

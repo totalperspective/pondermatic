@@ -61,13 +61,17 @@
                  clone)]
     (pool/contructor cs type create' clone')))
 
-(defn with-local [fun< alias]
+(defn with-local [fun< alias & {:keys [:flow?] :or {flow? false}}]
   (if worker?
     (fn remote-fun< [agent & args]
       (m/sp (let [id (m/? (sh/|!> agent :id))]
-              (client/post> [:engine alias] args id))))
+              (if flow?
+                (client/post> [:engine alias] args id)
+                (m/? (client/post< [:engine alias] args id))))))
     fun<))
 
-(def q>< (with-local p/q>< :q><))
+(def q>< (with-local p/q>< :q>< :flow? true))
 
-(def entity>< (with-local p/entity>< :entity><))
+(def entity>< (with-local p/entity>< :entity>< :flow? true))
+
+(def entity< (with-local p/entity< :entity<))
