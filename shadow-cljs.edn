@@ -1,8 +1,6 @@
 ;; shadow-cljs configuration
 {:deps {:aliases [:cljs :dev]}
  :jvm-opts ["-Dlogging.enabled=false"]
- :dev-http {8081 {:roots ["public"
-                          "dist/browser"]}}
  :builds
  {:dev
   {:target :node-script
@@ -14,8 +12,8 @@
                       :pseudo-names true
                       :reader-features #{:dev}}
    :devtools {:repl-init-ns user
-              :repl-pprint true}}
-
+              :repl-pprint true}} 
+  
   :test
   {:target    :node-test
    :output-to "out/node-tests.js"
@@ -45,7 +43,7 @@
   {:target :node-script
    :main pondermatic.portal.server/-main
    :output-to "dist/portal.js"}
-
+  
   :npm
   {:target :node-library
    :output-to "dist/cjs/index.js"
@@ -67,31 +65,19 @@
                       :output-feature-set :es5
                       :pseudo-names true
                       :pretty-print true}
-   :modules {:shared
-             {:entries []}
-             :index
-             {:exports {default pondermatic.index/exports}
-              :depends-on #{:shared}}
-             :worker
-             {:init-fn pondermatic.web.worker/init
-              :depends-on #{:shared}}}
+   :modules {:index {:exports {default pondermatic.index/exports}}}
    :release {}}
   :browser
   {:target :browser
-   :output-dir "dist/browser/js"
+   :output-dir "dist/browser"
    :asset-path "/js"
-   :prepend-js "js/worker.js"
-   :compiler-options {:reader-features #{:browser}
-                      :source-map true
-                      :output-feature-set :es5
-                      :pseudo-names true
-                      :pretty-print true}
-   :modules {:shared
-             {:entries []}
-             :main
-             {:entries [pondermatic.index]
-              :depends-on #{:shared}}
-             :worker
-             {:init-fn pondermatic.web.worker/init
-              :depends-on #{:shared}
-              :web-worker true}}}}}
+   :modules
+   {:shared
+    {:entries []}
+    :main
+    {:init-fn pondermatic.web.client/init
+     :depends-on #{:shared}}
+    :worker
+    {:init-fn pondermatic.web.worker/init
+     :depends-on #{:shared}
+     :web-worker true}}}}}
