@@ -3,7 +3,7 @@
   "version": "1.5.0",
   "description": "Functional effect system driven rules engine",
   "engines": {
-    "node": ">=18"
+    "node": ">=16"
   },
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
