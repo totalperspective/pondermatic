@@ -14,6 +14,11 @@
      :clj
      (System/exit -1)))
 
+(defn return [emit result]
+  (let [run (m/sp (m/? (emit result)))]
+    (run identity crash)
+    result))
+
 (defn tapper
   [tap]
   (fn tapper
@@ -31,7 +36,8 @@
 (defn tap [prefix]
   (tapper
    (fn [x]
-     (log/info {(or prefix :tap) x}))))
+     (when (keyword? prefix)
+       (log/info {(or prefix :tap) x})))))
 
 (defn run
   ([task]

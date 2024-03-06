@@ -23,9 +23,9 @@
 
 (def with-agent< (partial pool/with-agent< pool))
 
-(def q>< (with-agent< p/q><))
+(def q>< (with-agent< webe/q><))
 
-(def entity>< (with-agent< p/entity><))
+(def entity>< (with-agent< webe/entity><))
 
 (def entity< (with-agent< p/entity<))
 

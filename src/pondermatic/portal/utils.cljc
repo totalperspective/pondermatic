@@ -37,6 +37,9 @@
     (with-meta x {:portal.viewer/default viewer})
     x))
 
+(defn log [x]
+  (with-viewer x :portal.viewer/log))
+
 (defn pprint [x]
   (with-viewer x :portal.viewer/pprint))
 
@@ -76,6 +79,7 @@
 #?(:cljs
    (defn error->data [ex]
      (when ex
+       (js/console.error ex)
        (merge
         (when-let [data (or (ex-data ex)
                             (.-data ex))]

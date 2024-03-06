@@ -3,7 +3,8 @@
             [pondermatic.shell :as sh]
             [portal.console :as log]
             [missionary.core :as m]
-            [pondermatic.web.client :as client])
+            [pondermatic.web.client :as client]
+            [pondermatic.core :as p])
   (:require-macros [portal.console :as log]))
 
 (pondermatic.web.client/init)
@@ -14,15 +15,15 @@
   (let [{:keys [type args id]} agent]
     (log/trace {::agent agent ::msg msg})
     (if (= sh/done msg)
-      (m/sp (m/? (client/post> [:pool :remove-agent] id))
+      (m/sp (m/? (client/post< [:pool :remove-agent] id))
             agent)
       (let [[cmd msg] (if (map? msg)
                         (first msg)
                         msg)]
         (condp = cmd
-          ::create (m/sp (let [id (m/? (apply client/post> [:pool :add-agent] type args))]
+          ::create (m/sp (let [id (m/? (client/post< [:pool :add-agent] (apply vector type args)))]
                            (assoc agent :id id)))
-          :->db (m/sp (let [result (m/? (client/post> [:pool :to-agent] id {cmd msg}))]
+          :->db (m/sp (let [result (m/? (client/post< [:pool :to-agent] [id {cmd msg}]))]
                         (log/trace {:agent agent
                                     cmd msg
                                     :result result})
@@ -59,3 +60,14 @@
                  clone-local
                  clone)]
     (pool/contructor cs type create' clone')))
+
+(defn with-local [fun< alias]
+  (if worker?
+    (fn remote-fun< [agent & args]
+      (m/sp (let [id (m/? (sh/|!> agent :id))]
+              (client/post> [:engine alias] args id))))
+    fun<))
+
+(def q>< (with-local p/q>< :q><))
+
+(def entity>< (with-local p/entity>< :entity><))

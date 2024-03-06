@@ -7,12 +7,12 @@
      (add-tap (fn [{:keys [level] :as entry}]
                 (let [entry (p.util/datafy-value entry)]
                   (condp = level
-                    :trace (js/console.debug entry)
-                    :debug (js/console.debug entry)
-                    :info (js/console.info entry)
-                    :warn (js/console.warn entry)
-                    :error (js/console.error entry)
-                    :fatal (js/console.error entry)))))))
+                    :trace (js/console.debug (prn-str entry) entry)
+                    :debug (js/console.debug (prn-str entry) entry)
+                    :info (js/console.info (prn-str entry) entry)
+                    :warn (js/console.warn (prn-str entry) entry)
+                    :error (js/console.error (prn-str entry) entry)
+                    :fatal (js/console.error (prn-str entry) entry)))))))
 
 (defn log-tap []
   (add-tap (fn [{:keys [level] :as entry}]

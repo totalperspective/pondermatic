@@ -103,6 +103,20 @@
 
                    :else node))
                node)))
+
+(defn ->log-safe [node]
+  (p.util/pprint
+   (w/postwalk (fn [node]
+                 (let [node-str (pr-str node)]
+                   (cond
+                     (p.util/exception? node) node
+                     (uuid? node) node
+                     (record? node) (into {} node)
+                     (fn? node) (pr-str node)
+                     #?@(:cljs [(= \# (first node-str)) node-str])
+                     :else node)))
+               node)))
+
 #?(:cljs
    (do
      (def transit-json-reader (transit/reader :json))
@@ -117,7 +131,7 @@
          (transit/write transit-json-writer msg)
          (catch js/Error e
            (js/console.warn e)
-           (js/console.warn msg)
+           (js/console.warn (pr-str msg))
            (transit/write transit-json-writer (p.util/datafy-value
                                                (cond
                                                  (and (sequential? msg) (map? (last msg)))

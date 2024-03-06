@@ -57,7 +57,7 @@
   (assoc cs type {:create create :clone clone}))
 
 (defn ->pool [contructors]
-  (let [session {::contructors contructors :agents {}}]
+  (let [session {::contructors contructors ::agents {}}]
     (->> session
          (sh/engine pool-process)
          sh/actor)))

@@ -44,37 +44,48 @@
                :engine {:q>< (with-agent< engine/q><)
                         :entity>< (with-agent< engine/entity><)}})
 
+(defn prn> [& msg]
+  (-post nil :prn msg))
+
 (defn handle-msg [[id cmd args agent]]
+  ;; (prn> ::cmd cmd ::args args ::agent agent ::id id)
   (let [fun (get-in cmd->fun cmd)]
-    (if fun
+    (log/trace {::id id ::cmd cmd ::fun? (boolean fun)
+                ::args args ::agent agent})
+    (if-not fun
+      (post id :throw ["Unknown Command" {:cmd cmd :msg :msg}])
       (try
-        (if agent
-          (let [info {:agent agent :id id :cmd cmd :args args}
-                <>flow (apply fun agent args)
-                msg-id (random-uuid)]
-            (post id :flow id)
-            (swap! !flows assoc msg-id <>flow)
-            (flow/drain-using
-             (m/ap (try (let [>flow (m/? <>flow)]
-                          (loop []
-                            (let [item (m/?< >flow)]
-                              (post msg-id :item item)
-                              (recur))))
-                        (catch Cancelled _
-                          (post msg-id :item :done)
-                          (swap! !flows dissoc msg-id))))
-             info
-             (flow/tapper #(log/trace (assoc info :item %)))))
+        (if-not agent
           (let [result (apply fun pool args)]
-            (post id :result result)))
+            (post id :result result))
+          (let [<>flow (fun agent args)
+                msg-id (random-uuid)
+                info {:agent agent :id id :cmd cmd :args args :msg-id msg-id}
+                done! (fn [x]
+                        (log/trace (assoc info :success? (fn? x)))
+                        (when-not (fn? x)
+                          (post msg-id :item :done)
+                          (swap! !flows dissoc msg-id)))
+                <drain (m/sp (try (let [>flow (m/? <>flow)]
+                                    (flow/drain-using
+                                     >flow
+                                     info
+                                     (flow/tapper
+                                      (fn [item]
+                                        (log/trace (assoc info :item item))
+                                        (post msg-id :item item)))))
+                                  (catch Cancelled e
+                                    (done! e))))]
+            (swap! !flows assoc msg-id <>flow)
+            (post id :flow msg-id)
+            (<drain done! done!)))
         (catch js/Error e
-          (post id :throw [(ex-message e) (ex-data e)])))
-      (post id :throw ["Unknown Command" {:cmd cmd :msg :msg}]))))
+          (post id :throw [(ex-message e) (ex-data e)]))))))
 
 (defn init []
   (js/console.log "Web worker startng")
   (p.log/console-tap)
-  (add-tap #(-post nil :tap {:worker (update % :result data/->eql)}))
+  (add-tap #(-post nil :tap (update % :result data/->log-safe)))
   (js/self.addEventListener "message"
                             (fn [^js e]
                               (let [msg (.. e -data)]

@@ -3,11 +3,6 @@
             [pondermatic.flow :as f]
             [portal.console :as log]))
 
-(defn return [emit result]
-  (let [run (m/sp (m/? (emit result)))]
-    (run identity f/crash)
-    result))
-
 (def done ::done)
 
 (defn actor [init]
@@ -25,7 +20,7 @@
         >return (->> >actor
                      (m/eduction (remove nil?))
                      m/stream)]
-    (f/drain >return ::>return)
+    (f/drain >return (str ::>return))
     {::send self
      ::receive >return}))
 
@@ -39,7 +34,7 @@
       ([_ session] (engine session))
       ([cmd]
        (if-let [rdv (get cmd ::rdv)]
-         (do (return rdv session)
+         (do (f/return rdv session)
              (engine session))
          (try
            (-> session

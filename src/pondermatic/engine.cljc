@@ -264,9 +264,7 @@
 (defn export< [engine]
   (m/sp
    (let [conn (m/? (conn> engine))]
-    ;;  (prn conn)
      (m/? (db/export< conn)))))
 
 (defn import [engine data]
-  ;; (prn :import data)
   (sh/|> engine {:!>db {:tx-triples data}}))
