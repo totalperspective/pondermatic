@@ -1,4 +1,4 @@
-(ns pondermatic.flow.bridge
+(ns pondermatic.flow.port
   (:require [missionary.core :as m]
             [pondermatic.flow :as flow]))
 
@@ -8,7 +8,7 @@
   (fn send! [msg]
     (<mbx! msg)))
 
-(defn add-port! [port-id]
+(defn ->>port! [port-id]
   (let [<send! (m/mbx)
         <recv! (m/mbx)]
     (swap! !ports port-id {:send! (sender <send!)
@@ -24,7 +24,7 @@
   (when-not (>port!? >port!)
     (throw (ex-info "Invalid Port" {:>port! >port!}))))
 
-(defn >port! [port-id]
+(defn !use->port! [port-id]
   (let [>port! (get @!ports port-id)]
     (when-not (>port!? >port!)
       (throw (ex-info "Unknown Port" {:id port-id})))
