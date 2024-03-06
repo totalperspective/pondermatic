@@ -104,3 +104,10 @@
 (defn <->! [<task !atom]
   (<task (partial reset! !atom)
          #(throw %)))
+
+(defn await-promise
+  "Returns a task completing with the result of given promise"
+  [p]
+  (let [v (m/dfv)]
+    (.then p #(v (fn [] %)) #(v (fn [] (throw %))))
+    (m/absolve v)))
