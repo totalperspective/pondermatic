@@ -9,8 +9,6 @@
             [zuko.logging :as log])
   (:import [missionary Cancelled]))
 
-(enable-console-print!)
-
 (defn -post [& msg]
   (-> msg data/write-transit js/postMessage))
 
