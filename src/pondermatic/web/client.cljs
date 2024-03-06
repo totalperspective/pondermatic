@@ -1,18 +1,26 @@
 (ns pondermatic.web.client
   (:require [pondermatic.data :as data]
             [promesa.core :as p]
-            [portal.console :as log]))
+            [portal.console :as log]
+            [pondermatic.flow :as flow]))
 
 (def !worker (atom nil))
 
-(def !ids (atom {}))
+(def !ids (atom {nil true}))
 
 (defn post [cmd & msg]
   (when-not @!worker
     (throw (ex-info "No worker registered" {})))
-  (let [id (random-uuid)]
-    (swap! !ids assoc id (p/deferred))
-    (.. @!worker (postMessage (data/write-transit [id cmd msg])))))
+  (let [id (random-uuid)
+        p (p/deferred)]
+    (swap! !ids assoc id p)
+    (let [t-msg (data/write-transit [id cmd msg])]
+      (log/debug {:<-window t-msg})
+      (.. @!worker (postMessage t-msg)))
+    p))
+
+(defn post> [& args]
+  (flow/await-promise (apply post args)))
 
 (defn generator [id]
   (swap! !ids assoc id (p/deferred))
@@ -21,8 +29,10 @@
 
 (defn handle-msg [[id cmd msg]]
   (when-let [p (get @!ids id)]
-    (swap! !ids dissoc id)
+    (when id
+      (swap! !ids dissoc id))
     (condp = cmd
+      :tap (tap> msg)
       :throw (let [[msg data] msg
                    e (ex-info msg data)]
                (p/reject! p e))
@@ -36,10 +46,15 @@
                                {:cmd cmd :msg msg})))))
 
 (defn init []
-  (let [worker (js/Worker. "./worker.js")]
+  (let [location (or (.-location js/globalThis)
+                     (.-__dirname js/globalThis)
+                     js/import.meta.url)
+        worker (js/Worker. "/js/worker.js" location)]
     (reset! !worker worker)
     (set! js/globalThis.pondermaticPost (fn [msg]
                                           (apply post (data/read-transit msg))))
     (.. worker (addEventListener "message"
                                  (fn [^js e]
-                                   (handle-msg (data/read-transit (.. e -data))))))))
+                                   (let [msg (.. e -data)]
+                                     (log/trace {:->window msg})
+                                     (handle-msg (data/read-transit msg))))))))

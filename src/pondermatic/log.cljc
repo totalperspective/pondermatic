@@ -2,7 +2,6 @@
   (:require [pondermatic.portal.utils :as p.util]
             [zuko.logging :as log]))
 
-
 (defn log-tap []
   (add-tap (fn [{:keys [level] :as entry}]
              (let [entry (p.util/datafy-value entry)]

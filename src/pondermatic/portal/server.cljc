@@ -3,6 +3,7 @@
                :default [portal.api :as p])
             [pondermatic.portal.client :as pc]
             [pondermatic.rules.production :as prp]
+            [pondermatic.data :as data]
             [portal.console :as log]))
 
 (defn compile-pattern [& patterns]
@@ -12,6 +13,8 @@
         patterns))
 
 (p/register! #'compile-pattern)
+#?(:cljs
+   (p/register! #'data/read-transit))
 
 (def port 5678)
 

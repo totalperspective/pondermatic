@@ -14,12 +14,13 @@
         >actor (m/ap
                 (loop [process init]
                   (let [cmd (m/? self)
-                        emit (m/rdv)
-                        next (process (partial return emit) cmd)]
+                        next> (process cmd)
+                        session (m/? (next>))
+                        next (next> nil session)]
                     (if (not= done cmd)
-                      (m/amb (m/? emit)
+                      (m/amb session
                              (recur next))
-                      (m/? emit)))))
+                      session))))
         >return (->> >actor
                      (m/eduction (remove nil?))
                      m/stream)]
@@ -31,14 +32,16 @@
   [process session]
   (let [engine (partial engine process)]
     (fn processor
-      ([] session)
-      ([ret cmd]
+      ([] (if (fn? session)
+            session
+            (m/sp session)))
+      ([_ session] (engine session))
+      ([cmd]
        (if-let [rdv (get cmd ::rdv)]
          (do (return rdv session)
-             (-> session ret engine))
+             (engine session))
          (-> session
              (process cmd)
-             ret
              engine))))))
 
 (defn |> [{:keys [::send] :as a} msg]
