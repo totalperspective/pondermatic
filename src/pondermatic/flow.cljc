@@ -117,3 +117,9 @@
   (let [v (m/dfv)]
     (.then p #(v (fn [] %)) #(v (fn [] (throw %))))
     (m/absolve v)))
+
+(defn mbx> [m]
+  (m/stream
+   (m/ap (loop []
+           (m/amb (m/? m)
+                  (recur))))))
