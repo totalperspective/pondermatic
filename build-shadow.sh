@@ -1,7 +1,6 @@
 #!/bin/sh
 rm -rf dist
-npx shadow-cljs $@ release :npm :esm :portal :browser
-
+npx shadow-cljs $@ release portal browser esm npm  || exit $?
 cat >dist/cjs/package.json <<!EOF
 {
     "type": "commonjs"

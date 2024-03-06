@@ -92,6 +92,7 @@
 
 (defn component->entity
   [data]
+  #_{:clj-kondo/ignore [:unresolved-var]}
   (when data
     (let [inc-fn (fnil inc -1)
           kw-fn (fn [ident attr]

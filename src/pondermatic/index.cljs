@@ -11,11 +11,10 @@
             [promesa.core :as pa]
             [pondermatic.eval :as pe]
             [pondermatic.reader :refer [-read-string]]
-            [pondermatic.log :as p.log]
             [pondermatic.web.engine :as webe]
             [pondermatic.pool :as pool]
             [pondermatic.data :refer [uuid-hash] :as data])
-  (:require-macros [pondermatic.macros :refer [|->< |->><]]))
+  (:require-macros [pondermatic.macros :refer [|-><]]))
 
 (defonce pool (-> {}
                   (webe/contructor :engine p/->engine p/clone>)
@@ -303,17 +302,6 @@
        (clj->js res)
        res))))
 
-(defn export [engine cb]
-  (let [<export (p/export< engine)]
-    (|->>< <export
-           data/write-transit
-           cb)))
-
-(defn import-data [engine data]
-  (->> data
-       data/read-transit
-       (p/import engine)))
-
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (def exports
   #js {:createEngine create-engine
@@ -338,10 +326,6 @@
        :addTap (fn
                  ([] (add-tap console-tap))
                  ([tap] (add-tap #(tap %))))
-       :logLevel (fn [level]
-                   (p.log/log-tap)
-                   (let [level (keyword level)]
-                     (p.log/log-level level)))
        :readString -read-string
        :toString pr-str
        :encode data/transit-json-writer
@@ -349,6 +333,4 @@
        :eval eval-string
        :toJS toJS
        :devtoolsFormatter devtoolsFormatter
-       :import (->promise-fn import-data)
-       :export (->promise-fn export)
        :stop stop})

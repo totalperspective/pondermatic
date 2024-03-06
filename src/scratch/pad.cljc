@@ -1,5 +1,6 @@
 (ns scratch.pad)
 
+#_{:clj-kondo/ignore [:unresolved-namespace]}
 (clojure.pprint/pprint
  '(nil :tap {:worker
              {:ns pondermatic.flow, :time #inst "2024-03-05T18:36:31.324-00:00", :file "/Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/flow.cljc", :column 6, :level :info, :line 34, :result

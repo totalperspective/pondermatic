@@ -4,7 +4,6 @@
             [clojure.core.protocols :as ccp]
             [tick.core :as t]
             [incognito.base :as ib]
-            [incognito.transit :refer [incognito-write-handler]]
             [pondermatic.reader :as r]
             [cljc.java-time.period]
             [cljc.java-time.duration]
@@ -112,7 +111,7 @@
                      (p.util/exception? node) node
                      (uuid? node) node
                      (record? node) (into {} node)
-                     (fn? node) (pr-str node)
+                     (fn? node) node-str
                      #?@(:cljs [(= \# (first node-str)) node-str])
                      :else node)))
                node)))
@@ -124,7 +123,7 @@
      (defn read-transit [msg]
        (transit/read transit-json-reader msg))
 
-     (def transit-json-writer (transit/writer :json {:default-handler (incognito-write-handler write-handlers)}))
+     (def transit-json-writer (transit/writer :json))
 
      (defn write-transit [msg]
        (try

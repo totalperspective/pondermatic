@@ -1,5 +1,6 @@
 (ns pondermatic.engine
   (:refer-clojure :exclude [import])
+  #_{:clj-kondo/ignore [:unused-namespace]}
   (:require [pondermatic.shell :as sh]
             [pondermatic.flow :as flow]
             [pondermatic.rules :as rules]
@@ -12,6 +13,7 @@
             [portal.console :as log]
             [pondermatic.eval :as pe]
             [pondermatic.portal.utils :as p.util]
+            #_{:clj-kondo/ignore [:unused-referred-var]}
             [pondermatic.data :refer [uuid-hash]]))
 
 (def type-name ::type)
@@ -102,6 +104,7 @@
                                          production)))
         (sh/|> conn {:tx-data production})))))
 
+#_{:clj-kondo/ignore [:unused-binding]}
 (defn add-base-rules [conn rules env]
   (let [ruleset
         (o/ruleset
