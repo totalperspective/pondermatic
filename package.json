@@ -17,6 +17,7 @@
     },
     "./browser/shared": "./dist/browser/shared.js",
     "./browser/api": "./dist/browser/api.js",
+    "./browser/browser": "./dist/browser/browser.js",
     "./browser/worker": "./dist/browser/worker.js"
   },
   "scripts": {
