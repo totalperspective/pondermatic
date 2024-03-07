@@ -58,10 +58,20 @@
         (map (comp handle-msg
                    data/read-transit)))))
 
-(defn init []
-  (prn "Web worker - handler startng")
+(defn guess-base-path []
+  (cond
+    (.-__NUXT__ js/globalThis) js/__NUXT__.config._app.basePath
+    :else "/"))
+
+(defn guess-location []
   (let [location (or (.-location js/globalThis)
                      (.-__dirname js/globalThis))
+        base-path (guess-base-path)]
+    (js/URL. base-path location)))
+
+(defn init []
+  (prn "Web worker - handler startng")
+  (let [location (guess-location)
         worker (js/Worker. (js/URL. "./worker.js" location))
         port-id ::!/port.worker
         >window! (!/>buffer! 100 (!/->>port! port-id))
