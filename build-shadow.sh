@@ -13,4 +13,10 @@ cat >dist/mjs/package.json <<!EOF
 }
 !EOF
 
+cat >dist/browser/package.json <<!EOF
+{
+    "type": "module"
+}
+!EOF
+
 chmod +x ./dist/portal.js
