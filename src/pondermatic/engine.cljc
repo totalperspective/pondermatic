@@ -104,6 +104,37 @@
                                          production)))
         (sh/|> conn {:tx-data production})))))
 
+(defn- ->rule [?id conn rules env]
+  (let [db (db/db! conn)
+        {:keys [:rule/when :rule/then]} (db/lookup-entity db [:db/ident ?id] :nested? true)
+        what (prp/compile-what when)
+        entity-lvars (->> what
+                          (map first)
+                          (filter symbol?)
+                          distinct)
+        preds (prp/compile-when when {'scope env})
+        pred-l-vars (->> preds
+                         (map flatten)
+                         flatten
+                         (filter symbol?)
+                         distinct
+                         (filter (fn [sym]
+                                   (= \? (-> sym str first)))))
+        when-fn (fn [_session match]
+                  (->> pred-l-vars
+                       (map keyword)
+                       (map match)
+                       (zipmap pred-l-vars)
+                       (prp/unify-pattern preds)
+                       (map pe/eval-string)
+                       (every? identity)))
+        rule-spec {:what what
+                   :when when-fn
+                   :then-finally
+                   (->then-finally ?id entity-lvars then conn rules)}
+        rule (o/->rule ?id rule-spec)]
+    rule))
+
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn add-base-rules [conn rules env]
   (let [ruleset
@@ -148,40 +179,13 @@
           [:what
            [?id ::type ::rule-info]
            [?id ::hash ?hash {:then not=}]
-           :then
+           :then-finally
            (try
-             (log/info {:upsert/rule ?id})
-             (let [db (db/db! conn)
-                   {:keys [:rule/when :rule/then]} (db/lookup-entity db [:db/ident ?id] :nested? true)
-                   what (prp/compile-what when)
-                   entity-lvars (->> what
-                                     (map first)
-                                     (filter symbol?)
-                                     distinct)
-                   preds (prp/compile-when when {'scope env})
-                   pred-l-vars (->> preds
-                                    (map flatten)
-                                    flatten
-                                    (filter symbol?)
-                                    distinct
-                                    (filter (fn [sym]
-                                              (= \? (-> sym str first)))))
-                   when-fn (fn [session match]
-                             (->> pred-l-vars
-                                  (map keyword)
-                                  (map match)
-                                  (zipmap pred-l-vars)
-                                  (prp/unify-pattern preds)
-                                  (map pe/eval-string)
-                                  (every? identity)))
-                   rule-spec {:what what
-                              :when when-fn
-                              :then-finally
-                              (->then-finally ?id entity-lvars then conn rules)}
-                   rule (o/->rule ?id rule-spec)]
-               (log/debug {?id (update rule-spec :what p.util/table)})
-               (sh/|> rules (rules/add-rule rule))
-               rule)
+             (let [matches (o/query-all session ::rules)
+                   rule* (map (fn [{:keys [?id]}]
+                                (->rule ?id conn rules env))
+                              matches)]
+               (sh/|> rules (rules/add-rules rule*)))
              (catch #?(:clj Exception :cljs js/Error) e
                (log/error e)))]})]
     (sh/|> rules (rules/add-rules ruleset))))

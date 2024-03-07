@@ -85,7 +85,7 @@
 (defn process
   [session cmd]
   (when-not (= cmd sh/done)
-    (log/debug {::cmd cmd})
+    ;; (log/debug {::cmd cmd})
     (->> session
          (exec cmd)
          o/fire-rules)))

@@ -7,13 +7,12 @@
   },
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
-  "browser": "dist/browser/shared.js",
+  "browser": "dist/mjs/index.js",
   "exports": {
     ".": {
       "browser": "./dist/mjs/index.js",
       "require": "./dist/cjs/index.js",
-      "default": "./dist/cjs/index.js",
-      "worker": "./dist/browser/worker.js"
+      "default": "./dist/cjs/index.js"
     },
     "./browser/*": "./dist/browser/*.js"
   },

@@ -54,7 +54,7 @@
    (run task (-> task meta :task)))
   ([task m]
    (let [dispose! (task (fn [x]
-                          (log/trace {::success x ::task m})
+                          ;; (log/trace {::success x ::task m})
                           x)
                         #(log/warn (ex-info "Task Cancelled" {::task m
                                                               ::context *dispose-ctx*} %)))]
