@@ -16,7 +16,7 @@
 
 (enable-console-print!)
 
-(def >window! (!/->>port! ::port))
+(def >window! (!/>buffer! 100 (!/->>port! ::port)))
 
 (defn post-message [port t-msg]
   (console/trace "worker->" t-msg)
@@ -115,7 +115,7 @@
   (prn "Web worker startng")
   (p.log/console-tap)
   (add-tap #(post nil :tap (update % :result data/->log-safe)))
-  (let [>worker! (!/!use->port! ::port)
+  (let [>worker! (!/>buffer! 100 (!/!use->port! ::port))
         >post-worker (->>post-message >worker! js/globalThis)
         >recv-message (->>recv-message >window!)]
     (flow/drain >recv-message ::recv-message)

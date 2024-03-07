@@ -67,8 +67,8 @@
                      (.-__dirname js/globalThis))
         worker (js/Worker. "/js/worker.js" location)
         port-id ::!/port.worker
-        >window! (!/->>port! port-id)
-        >worker! (!/!use->port! port-id)
+        >window! (!/>buffer! 100 (!/->>port! port-id))
+        >worker! (!/>buffer! 100 (!/!use->port! port-id))
         >post-worker (->>post-message >window! worker)
         >recv-message (->>recv-message >worker!)]
     (log/info {::worker worker})

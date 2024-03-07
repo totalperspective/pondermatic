@@ -18,8 +18,8 @@
 
 (i/sh engine #js {"->db" (i/dataset #js [#js {"id" "test2" "foo/key" "value2" "foo/nothing" 1}])})
 
-(js/setTimeout
- #(do (q)
-      (e)
-      (i/stop engine))
- 1000)
+;; (js/setTimeout
+;;  #(do (q)
+;;       (e)
+;;       (i/stop engine))
+;;  1000)
