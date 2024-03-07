@@ -5,7 +5,6 @@
             [pondermatic.portal.utils :as p.util]
             [pondermatic.flow.port :as !]
             [missionary.core :as m]
-            [pondermatic.portal.client :as p]
             [pondermatic.browser.console :as console]))
 
 (def !ids (atom {nil true}))
@@ -60,9 +59,7 @@
                    data/read-transit)))))
 
 (defn init []
-  (enable-console-print!)
   (prn "Web worker - handler startng")
-  (p/start)
   (let [location (or (.-location js/globalThis)
                      (.-__dirname js/globalThis))
         worker (js/Worker. "/js/worker.js" location)

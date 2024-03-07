@@ -53,7 +53,7 @@
    :compiler-options {:output-feature-set :es5
                       :source-map false
                       :reader-features #{:npm}}
-   :exports-var pondermatic.index/exports}
+   :exports-fn pondermatic.index/exports}
 
   :esm
   {:target :esm
@@ -78,11 +78,11 @@
    :compiler-options {:reader-features #{:browser}}
    :modules {:shared
              {:entries []}
+             :api
+             {:init-fn pondermatic.index/init
+              :depends-on #{:shared}}
              :browser
-             {:entries [pondermatic.browser.client
-                        pondermatic.browser.handler
-                        pondermatic.index]
-              :init-fn pondermatic.browser.handler/init
+             {:init-fn pondermatic.browser.handler/init
               :depends-on #{:shared}}
              :worker
              {:init-fn pondermatic.browser.worker/init

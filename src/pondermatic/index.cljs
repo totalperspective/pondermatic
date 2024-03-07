@@ -303,37 +303,43 @@
        res))))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-(def exports
-  #js {:createEngine create-engine
-       :ruleset ruleset
-       :dataset dataset
-       :sh sh
-       :addRulesMsg add-rules-msg
-       :q q
-       :qP (->promise-fn q)
+(defn exports []
+  (if (.-pondermatic js/globalThis)
+    (do
+      (js/console.log "Pondematic - Browser version detected")
+      js/globalThis.pondermatic)
+    (do
+      (js/console.log "Pondematic - Initializing API")
+      #js {:createEngine create-engine
+           :ruleset ruleset
+           :dataset dataset
+           :sh sh
+           :addRulesMsg add-rules-msg
+           :q q
+           :qP (->promise-fn q)
       ;;  :queryRule query-rule
       ;;  :queryRuleP (->promise-fn query-rule)
-       :entity entity
-       :entityP (->promise-fn entity)
-       :watchEntity entity*
-       :hashId hash-id
-       :errorInfo error-info
-       :portal portal
-       :dispose dispose!
-       :log log
-       :unify unify
-       :pprint #(-> % js->clj pp/pprint)
-       :addTap (fn
-                 ([] (add-tap console-tap))
-                 ([tap] (add-tap #(tap %))))
-       :readString -read-string
-       :toString pr-str
-       :encode data/transit-json-writer
-       :decode data/read-transit
-       :eval eval-string
-       :toJS toJS
-       :devtoolsFormatter devtoolsFormatter
-       :stop stop})
+           :entity entity
+           :entityP (->promise-fn entity)
+           :watchEntity entity*
+           :hashId hash-id
+           :errorInfo error-info
+           :portal portal
+           :dispose dispose!
+           :log log
+           :unify unify
+           :pprint #(-> % js->clj pp/pprint)
+           :addTap (fn
+                     ([] (add-tap console-tap))
+                     ([tap] (add-tap #(tap %))))
+           :readString -read-string
+           :toString pr-str
+           :encode data/transit-json-writer
+           :decode data/read-transit
+           :eval eval-string
+           :toJS toJS
+           :devtoolsFormatter devtoolsFormatter
+           :stop stop})))
 
 (defn init []
-  (set! js/globalThis.pondermatic exports))
+  (set! js/globalThis.pondermatic (exports)))
