@@ -7,19 +7,15 @@
 
 (def engine (i/create-engine "test" true))
 
-(def q
-  (p.util/with-source-map
-    "/Users/bahulneel/Projects/TotalPerspective/pondermatic/.dev.source-map.edn"
-    (fn []
-      (i/q engine
-           (str '[:find ?id ?key ?value
-                  :where
-                  [?id :data/type :task]
-                  [?id ?k ?v]
-                  [(str ?k) ?key]
-                  [(str ?v) ?value]])
-           []
-           #(.log js/console %)))))
+(def q (i/q engine
+            (str '[:find ?id ?key ?value
+                   :where
+                   [?id :data/type :task]
+                   [?id ?k ?v]
+                   [(str ?k) ?key]
+                   [(str ?v) ?value]])
+            []
+            #(js/console.log %)))
 
 (def rules
   (-> [{"id" "terminate/activate"

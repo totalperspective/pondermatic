@@ -283,8 +283,8 @@
                       (name level)))]
        (if (fn? log)
          (log x)
-         (.log js/console x)))
-     (.log js/console x))))
+         (js/console.log x)))
+     (js/console.log x))))
 
 (defn eval-string
   ([str]

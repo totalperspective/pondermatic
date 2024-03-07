@@ -6,6 +6,8 @@
 
 (def ^:dynamic *dispose-ctx* nil)
 
+(def ^:dynamic *tap-print* false)
+
 (defn crash [e]                                ;; let it crash philosophy
   (println e)
   (println (.-stack e))
@@ -30,17 +32,22 @@
      (tap x)
      x)))
 
+(defn printer [& args]
+  (when *tap-print*
+    (apply prn args)))
+
 (def prn-tap
-  (tapper prn))
+  (tapper printer))
 
 (defn tap [prefix]
   (tapper
    (fn [x]
      (when (and prefix x)
        #?(:cljs
-          (js/console.debug (str prefix) (pr-str x))
+          (when *tap-print*
+            (js/console.debug (str prefix) (pr-str x)))
           :default
-          (prn prefix x))))))
+          (printer prefix x))))))
 
 (defn run
   ([task]
