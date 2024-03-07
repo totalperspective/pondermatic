@@ -113,7 +113,7 @@
   (let [>worker! (!/!use->port! ::port)]
     (flow/drain-using (!/recv> >worker!)
                       ::post-message
-                      (flow/tapper js/postMessage))
+                      (flow/tapper #(js/postMessage %)))
     (js/self.addEventListener "message"
                               (fn [^js e]
                                 (let [msg (.. e -data)]

@@ -80,6 +80,7 @@
              {:entries []}
              :browser
              {:entries [pondermatic.browser.client
+                        pondermatic.browser.handler
                         pondermatic.index]
               :init-fn pondermatic.browser.handler/init
               :depends-on #{:shared}}

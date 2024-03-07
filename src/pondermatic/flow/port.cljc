@@ -32,8 +32,10 @@
       :else nil)))
 
 (defn send! [>port! msg]
+  (prn ::send! msg)
   (guard->port! >port!)
   (let [{:keys [send!]} >port!]
+    (prn ::send! send! msg)
     (send! msg)))
 
 (defn recv> [>port!]
@@ -41,6 +43,6 @@
   (let [{:keys [>recv]} >port!]
     >recv))
 
-(defn >buffer! [>port! size]
+(defn >buffer! [size >port!]
   (guard->port! >port!)
   (update >port! :>recv (partial m/buffer size)))

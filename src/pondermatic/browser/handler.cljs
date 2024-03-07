@@ -9,18 +9,17 @@
 
 (def !ids (atom {nil true}))
 
-(defn poster [worker]
-  (fn [[<return! cmd args & [agent]]]
-    (prn [<return! cmd args [agent]])
-    (try
-      (let [id (random-uuid)]
-        (swap! !ids assoc id <return!)
-        (let [t-msg (data/write-transit (p.util/datafy-value [id cmd args agent]))]
-          (js/console.trace "window->" t-msg)
-          (.. worker (postMessage t-msg))))
-      (catch js/Error e
-        (<return! e)
-        (log/error e)))))
+(defn prepare-msg [msg]
+  (prn ::post! msg)
+  (let [[<return! cmd args & [agent]] msg
+        id (random-uuid)]
+    (swap! !ids assoc id <return!)
+    [id cmd args agent]))
+
+(defn post-message [worker t-msg]
+  (prn ::post-message t-msg)
+  (js/console.trace {:window-> t-msg})
+  (.. worker (postMessage t-msg)))
 
 (defn handle-msg [[id cmd msg]]
   (when-let [<return! (get @!ids id)]
@@ -44,26 +43,41 @@
       (log/warn (ex-info "Couldn't handle message"
                          {:cmd cmd :msg msg})))))
 
+(defn ->>post-worker [>port! worker]
+  (->> >port!
+       !/recv>
+       (m/eduction
+        (map (comp (partial post-message worker)
+                   data/write-transit
+                   p.util/datafy-value
+                   prepare-msg)))))
+
+(defn ->>recv-message [>port!]
+  (->> >port!
+       !/recv>
+       (m/eduction
+        (map (comp handle-msg
+                   data/read-transit)))))
 
 (defn init []
   (enable-console-print!)
   (prn "Web worker - handler startng")
   (p/start)
   (let [location (or (.-location js/globalThis)
-                     (.-__dirname js/globalThis)
-                     js/import.meta.url)
+                     (.-__dirname js/globalThis))
         worker (js/Worker. "/js/worker.js" location)
-        >window! (!/->>port! ::!/worker)
-        >worker! (!/!use->port! ::!/worker)]
+        port-id ::!/port.worker
+        >window! (!/->>port! port-id)
+        >worker! (!/!use->port! port-id)
+        >post-worker (->>post-worker >window! worker)
+        >recv-message (->>recv-message >worker!)]
     (log/info {::worker worker})
-    (flow/drain-using >worker!
-                      ::handle-msg
-                      (flow/tapper handle-msg))
-    (flow/drain-using >window!
-                      ::post-worker
-                      (flow/tapper (poster worker)))
+
+    (flow/drain >recv-message ::recv-message)
+    (flow/drain >post-worker ::post-worker)
+
     (.. worker (addEventListener "message"
                                  (fn [^js e]
                                    (let [msg (.. e -data)]
                                      (js/console.debug "->window" msg)
-                                     (!/send! >window! (data/read-transit msg))))))))
+                                     (!/send! >window! msg)))))))

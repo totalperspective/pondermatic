@@ -3,11 +3,14 @@
             [missionary.core :as m]
             [pondermatic.flow :as flow]))
 
-(def >worker! (delay (!/!use->port! ::!/worker :throw? false)))
+(def >worker! (delay (!/!use->port! ::!/port.worker :throw? false)))
 
 (defn post< [& args]
-  (let [<return! (m/dfv)]
-    (!/send! @>worker! (into [<return!] args))
+  (prn ::post< args)
+  (let [<return! (m/dfv)
+        msg (into [<return!] args)]
+    (prn ::msg msg)
+    (!/send! @>worker! msg)
     <return!))
 
 (defn post [& args]

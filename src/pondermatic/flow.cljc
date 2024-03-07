@@ -120,5 +120,8 @@
 
 (defn mbx> [<m]
   (let [>flow (m/seed (repeat <m))]
-    (m/ap (let [<m (m/?> >flow)]
-            (m/? <m)))))
+    (m/stream
+     (m/ap (let [<m (m/?> >flow)
+                 v (m/? <m)]
+             (prn ::mbv v)
+             v)))))
