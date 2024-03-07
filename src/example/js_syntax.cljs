@@ -1,9 +1,5 @@
 (ns example.js-syntax
-  (:require [pondermatic.index :as i]
-            [portal.console :as log]
-            [pondermatic.portal.utils :as p.util]))
-
-(log/info ::starting)
+  (:require [pondermatic.index :as i]))
 
 (def engine (i/create-engine "test" true))
 
@@ -77,8 +73,8 @@
       clj->js
       i/dataset))
 
-
 (i/sh engine #js {"->db" rules})
+
 (i/sh engine #js {"->db" data})
 
 (q)
