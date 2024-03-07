@@ -15,7 +15,7 @@
       "default": "./dist/cjs/index.js",
       "worker": "./dist/browser/worker.js"
     },
-    "./browser/*": "./dist/browser/js/*.js"
+    "./browser/*": "./dist/browser/*.js"
   },
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",

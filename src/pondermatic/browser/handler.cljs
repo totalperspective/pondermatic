@@ -62,7 +62,7 @@
   (prn "Web worker - handler startng")
   (let [location (or (.-location js/globalThis)
                      (.-__dirname js/globalThis))
-        worker (js/Worker. "/js/worker.js" location)
+        worker (js/Worker. (js/URL. "./worker.js" location))
         port-id ::!/port.worker
         >window! (!/>buffer! 100 (!/->>port! port-id))
         >worker! (!/>buffer! 100 (!/!use->port! port-id))

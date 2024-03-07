@@ -73,8 +73,8 @@
    :release {}}
   :browser
   {:target :browser
-   :output-dir "dist/browser/js"
-   :asset-path "/js"
+   :output-dir "dist/browser"
+   :asset-path "/"
    :compiler-options {:reader-features #{:browser}}
    :modules {:shared
              {:entries []}
