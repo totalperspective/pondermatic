@@ -1,4 +1,5 @@
 (ns scratch.fns
+  #_{:clj-kondo/ignore [:unused-namespace]}
   (:require [pondermatic.eval :refer [eval-string]]
             [clojure.string :as s]))
 

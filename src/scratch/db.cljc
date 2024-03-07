@@ -14,33 +14,6 @@
   (datafy [^asami.datom.Datom datom]
     (asami.datom/as-vec datom)))
 
-(def dbs (atom {}))
-
-#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-(defonce _ (add-watch d/connections ::dbs
-                      (fn [_ _ old-v new-v]
-                        (prn "Connection change" (keys old-v) (keys new-v))
-                        (doall (for [[uri _] (seq old-v)]
-                                 (do (prn "OLD?" uri)
-                                     (when-not (new-v uri)
-                                       (println "Removing" uri)
-                                       (swap! dbs (fn [dbs]
-                                                    (let [<db (get-in dbs [uri :uri])]
-                                                      ;(<db)
-                                                      (dissoc dbs uri))))))))
-                        (doall (for [[uri db] (seq new-v)]
-                                 (do (prn "NEW?" uri)
-                                     (when-not (@dbs uri)
-                                       (println "Adding" uri)
-                                       (swap! dbs (fn [dbs]
-                                                    (let [{!state :state name :name} db
-                                                          <state (m/watch !state)]
-                                                      (-> dbs
-                                                          (assoc-in [name :db] <state)
-                                                          (assoc-in [name :uri] uri))))))))))))
-
-; (defonce >conns (m/signal (m/watch d/connections)))
-
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
 

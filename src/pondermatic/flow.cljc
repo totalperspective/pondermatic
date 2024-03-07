@@ -6,6 +6,8 @@
 
 (def ^:dynamic *dispose-ctx* nil)
 
+(def ^:dynamic *tap-print* false)
+
 (defn crash [e]                                ;; let it crash philosophy
   (println e)
   (println (.-stack e))
@@ -13,6 +15,11 @@
      (.exit js/process -1)
      :clj
      (System/exit -1)))
+
+(defn return [emit result]
+  (let [run (m/sp (m/? (emit result)))]
+    (run identity crash)
+    result))
 
 (defn tapper
   [tap]
@@ -25,13 +32,22 @@
      (tap x)
      x)))
 
+(defn printer [& args]
+  (when *tap-print*
+    (apply prn args)))
+
 (def prn-tap
-  (tapper prn))
+  (tapper printer))
 
 (defn tap [prefix]
   (tapper
    (fn [x]
-     (log/info {(or prefix :tap) x}))))
+     (when (and prefix x)
+       #?(:cljs
+          (when *tap-print*
+            (js/console.debug (str prefix) (pr-str x)))
+          :default
+          (printer prefix x))))))
 
 (defn run
   ([task]
@@ -104,3 +120,17 @@
 (defn <->! [<task !atom]
   (<task (partial reset! !atom)
          #(throw %)))
+
+(defn await-promise
+  "Returns a task completing with the result of given promise"
+  [p]
+  (let [v (m/dfv)]
+    (.then p #(v (fn [] %)) #(v (fn [] (throw %))))
+    (m/absolve v)))
+
+(defn mbx> [<m]
+  (let [>flow (m/seed (repeat <m))]
+    (m/stream
+     (m/ap (let [<m (m/?> >flow)
+                 v (m/? <m)]
+             v)))))

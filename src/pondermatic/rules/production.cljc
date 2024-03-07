@@ -15,6 +15,7 @@
   (instance? #?(:clj java.lang.Exception :cljs js/Error) e))
 
 (defn parse-pattern [pattern opts]
+  #_{:clj-kondo/ignore [:unresolved-var]} 
   (when pattern
     (log/trace {:parse/pattern pattern
                 :parse/opts opts})
@@ -114,6 +115,7 @@
         parsed))))
 
 (defn compile-what [pattern-ast]
+  #_{:clj-kondo/ignore [:unresolved-var]}
   (let [what (m/rewrite
               [pattern-ast {}]
 
@@ -271,6 +273,7 @@
       what)))
 
 (defn compile-when [pattern-ast env]
+  #_{:clj-kondo/ignore [:unresolved-var]}
   (let [what (m/rewrite
               [pattern-ast env]
 
@@ -355,6 +358,7 @@
     (pe/eval-string expr {:bindings vars})))
 
 (defn parse-gen-pattern [pattern]
+  #_{:clj-kondo/ignore [:unresolved-var]}
   (m/rewrite
    [pattern {}]
 
@@ -409,6 +413,7 @@
     ::value ?expr}))
 
 (defn unify-gen-pattern [pattern env]
+  #_{:clj-kondo/ignore [:unresolved-var]}
   (m/rewrite
    [pattern env]
 

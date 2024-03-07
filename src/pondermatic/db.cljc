@@ -9,7 +9,8 @@
             [hyperfiddle.rcf :refer [tests]]
             [clojure.walk :as w]
             [portal.console :as log]
-            [pondermatic.reader :as pr]))
+            [pondermatic.reader :as pr]
+            [missionary.core :as m]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
@@ -28,29 +29,33 @@
     @!idents))
 
 (defn transactor
-  [{:keys [::db-uri]} tx]
-  (when-not (= tx sh/done)
-    (let [tx (update tx :tx-data (partial remove nil?))
-          conn (d/connect db-uri)
-          idents (->> tx
-                      :tx-data
-                      idents
-                      (remove nil?)
-                      (map #(do {:db/ident %})))
-          ident-tx-data (when (seq idents)
-                          (-> conn
-                              (d/transact {:tx-data idents})
-                              deref
-                              :tx-data))
-          ident-datoms (vec ident-tx-data)]
-      (log/debug tx)
-      ;; (log/trace (p.p/table idents))
-      (-> conn
-          (d/transact tx)
-          deref
-          (update :tx-data (partial into ident-datoms))
-          (update :tx-data (partial mapv datom/as-vec))
-          (assoc ::db-uri db-uri)))))
+  [{:keys [::db-uri] :as session} cmd]
+  (when-not (= cmd sh/done)
+    (cond
+      (map? cmd)
+      (let [tx (update cmd :tx-data (partial remove nil?))
+            conn (d/connect db-uri)
+            idents (->> tx
+                        :tx-data
+                        idents
+                        (remove nil?)
+                        (map #(do {:db/ident %})))
+            ident-tx-data (when (seq idents)
+                            (-> conn
+                                (d/transact {:tx-data idents})
+                                deref
+                                :tx-data))
+            ident-datoms (vec ident-tx-data)]
+        (log/debug tx)
+        (-> conn
+            (d/transact tx)
+            deref
+            (update :tx-data (partial into ident-datoms))
+            (update :tx-data (partial mapv datom/as-vec))
+            (assoc ::db-uri db-uri)))
+      :else (do
+              (log/warn (ex-info "Unknown Command" {::cmd cmd}))
+              session))))
 
 (defn ->conn
   ([db-uri]
@@ -63,6 +68,14 @@
                (sh/engine transactor)
                sh/actor)
           ::db-uri db-uri)))
+
+(defn clone> [conn & {:keys [db-uri]}]
+  (let [src-uri (::db-uri conn)
+        db (-> src-uri d/connect d/db)
+        uri (or db-uri (str (gensym (str src-uri "-"))))
+        conn> (m/dfv)]
+    (d/as-connection db uri)
+    (conn> (->conn uri))))
 
 (defn db! [{:keys [::db-uri]}]
   (d/db (d/connect db-uri)))
@@ -131,8 +144,8 @@
      (lookup-entity p lookup-ref not-found))))
 
 (tests
- (let [db-uri (name->mem-uri "test")
-       conn (->conn db-uri)
+ (let [db-uri (name->mem-uri (namespace ::test))
+       conn (->conn db-uri true)
        first-movies [{:db/ident :first
                       :movie/title "Explorers"
                       :movie/genre "adventure/comedy/family"
@@ -153,7 +166,7 @@
    (-> conn
        (|> {:tx-data first-movies})
        (|> sh/done)))
- (let [conn (d/connect (name->mem-uri "test"))
+ (let [conn (d/connect (name->mem-uri (namespace ::test)))
        db (d/db conn)]
    (lookup-entity db [:db/ident :other] :not-found ::not-found) := ::not-found
    (-> (lookup-entity db [:movie/title "Explorers"]) :movie/title) := "Explorers"

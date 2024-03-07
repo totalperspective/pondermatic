@@ -1,22 +1,19 @@
 (ns pondermatic.engine
   (:refer-clojure :exclude [import])
+  #_{:clj-kondo/ignore [:unused-namespace]}
   (:require [pondermatic.shell :as sh]
             [pondermatic.flow :as flow]
             [pondermatic.rules :as rules]
-            [pondermatic.portal.utils :as p]
             [pondermatic.db :as db]
             [pondermatic.rules.production :as prp]
             [odoyle.rules :as o]
-            [hasch.core :as h]
             [missionary.core :as m]
             [asami.core :as d]
-            [pondermatic.flow :as f]
             [clojure.walk :as w]
-            [pondermatic.eval :as pe]
-            [pondermatic.portal.utils :as portal]
-            [pondermatic.portal.utils :as ppu]
             [portal.console :as log]
+            [pondermatic.eval :as pe]
             [pondermatic.portal.utils :as p.util]
+            #_{:clj-kondo/ignore [:unused-referred-var]}
             [pondermatic.data :refer [uuid-hash]]))
 
 (def type-name ::type)
@@ -69,8 +66,8 @@
                 retractions (remove (fn [[e a _]]
                                       (assert-attrs [e a]))
                                     (sort-by first (datums false)))]
-            (log/debug {:assertions (p/table assertions)
-                        :retractions (p/table retractions)})
+            (log/debug {:assertions (p.util/table assertions)
+                        :retractions (p.util/table retractions)})
             (when (seq retractions)
               (sh/|> rule-session (rules/retract* retractions)))
             (when (seq assertions)
@@ -107,6 +104,7 @@
                                          production)))
         (sh/|> conn {:tx-data production})))))
 
+#_{:clj-kondo/ignore [:unused-binding]}
 (defn add-base-rules [conn rules env]
   (let [ruleset
         (o/ruleset
@@ -181,7 +179,7 @@
                               :then-finally
                               (->then-finally ?id entity-lvars then conn rules)}
                    rule (o/->rule ?id rule-spec)]
-               (log/debug {?id (update rule-spec :what ppu/table)})
+               (log/debug {?id (update rule-spec :what p.util/table)})
                (sh/|> rules (rules/add-rule rule))
                rule)
              (catch #?(:clj Exception :cljs js/Error) e
@@ -197,6 +195,17 @@
          (sh/engine engine)
          sh/actor)))
 
+(defn clone> [{:keys [conn rules]}]
+  (m/sp
+   (let [conn (m/? (db/clone> conn))
+         rules (m/? (rules/clone> rules))
+         dispose:db=>rules (db=>rules conn rules)]
+     (->> (hash-map ::conn conn
+                    ::rules rules
+                    ::dispose:db=>rules dispose:db=>rules)
+          (sh/engine engine)
+          sh/actor))))
+
 (defn conn> [engine]
   (sh/|!> engine ::conn))
 
@@ -210,9 +219,9 @@
 
 (defn rule-atom [engine]
   (let [atom (atom nil)]
-    (f/run (m/sp (let [rules (m/? (rules> engine))]
-                   (sh/->atom rules atom)))
-           :rule-atom)
+    (flow/run (m/sp (let [rules (m/? (rules> engine))]
+                      (sh/->atom rules atom)))
+              :rule-atom)
     atom))
 
 (defmethod dispatch :->db [{:keys [::conn] :as e} [_ data]]
@@ -258,9 +267,7 @@
 (defn export< [engine]
   (m/sp
    (let [conn (m/? (conn> engine))]
-    ;;  (prn conn)
      (m/? (db/export< conn)))))
 
 (defn import [engine data]
-  ;; (prn :import data)
   (sh/|> engine {:!>db {:tx-triples data}}))

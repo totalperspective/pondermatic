@@ -1,6 +1,5 @@
 (ns example.js
-  (:require [pondermatic.index :as i]
-            [pondermatic.core :as p]))
+  (:require [pondermatic.index :as i]))
 
 (def engine (i/create-engine (str (gensym "test")) true))
 
@@ -11,10 +10,16 @@
             []
             #(-> % js->clj prn)))
 
-(def e (i/entity* engine ":test" prn))
+(def e (i/entity* engine ":test2" prn))
+
 (i/sh engine #js {"->db" (i/dataset #js [#js {"id" "test" "foo/key" "value" "foo/nothing" nil}])})
+
+(i/entity engine ":test" prn)
+
 (i/sh engine #js {"->db" (i/dataset #js [#js {"id" "test2" "foo/key" "value2" "foo/nothing" 1}])})
 
-(q)
-(e)
-(p/stop engine)
+;; (js/setTimeout
+;;  #(do (q)
+;;       (e)
+;;       (i/stop engine))
+;;  1000)

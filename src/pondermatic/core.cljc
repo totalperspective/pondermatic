@@ -19,6 +19,8 @@
         session (rules/->session)]
     (engine/->engine conn session)))
 
+(def clone> engine/clone>)
+
 (defn kw->qkw
   ([data]
    (kw->qkw data "data"))
@@ -90,6 +92,7 @@
 
 (defn component->entity
   [data]
+  #_{:clj-kondo/ignore [:unresolved-var]}
   (when data
     (let [inc-fn (fnil inc -1)
           kw-fn (fn [ident attr]

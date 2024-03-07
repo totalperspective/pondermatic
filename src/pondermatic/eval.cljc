@@ -1,21 +1,20 @@
 (ns pondermatic.eval
   (:require [sci.core :as sci]
-            [pondermatic.reader :as pr]
             [clojure.string :as str]
             [hasch.core :as h]
-            [tick.core :as t]
+            [tick.core]
             [clojure.walk :as w]
             [tick.locale-en-us]
             [inflections.core :as i]
             [camel-snake-kebab.core :as csk]
             [pondermatic.data :as pd]
-            [pondermatic.reader :refer [-read-string]]
+            [pondermatic.reader :refer [-read-string] :as pr]
             [cljstache.core :as stach]
             [portal.console :as log]
             #?(:clj
-               [clojure.math :as math]
+               [clojure.math]
                :cljs
-               [cljs.math :as math])
+               [cljs.math])
             #?(:cljs
                [java.time :refer [LocalDate LocalDateTime Period Duration]]))
   #?(:clj

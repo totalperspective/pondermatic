@@ -1,6 +1,6 @@
 import pondermatic from '../dist/cjs/index.js'
 
-pondermatic.logLevel("info")
+// pondermatic.logLevel("info")
 // pondermatic.portal()
 
 let engine

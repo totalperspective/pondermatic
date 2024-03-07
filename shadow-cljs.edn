@@ -1,6 +1,8 @@
 ;; shadow-cljs configuration
 {:deps {:aliases [:cljs :dev]}
  :jvm-opts ["-Dlogging.enabled=false"]
+ :dev-http {8081 {:roots ["public"
+                          "dist/browser"]}}
  :builds
  {:dev
   {:target :node-script
@@ -12,8 +14,8 @@
                       :pseudo-names true
                       :reader-features #{:dev}}
    :devtools {:repl-init-ns user
-              :repl-pprint true}} 
-  
+              :repl-pprint true}}
+
   :test
   {:target    :node-test
    :output-to "out/node-tests.js"
@@ -43,7 +45,7 @@
   {:target :node-script
    :main pondermatic.portal.server/-main
    :output-to "dist/portal.js"}
-  
+
   :npm
   {:target :node-library
    :output-to "dist/cjs/index.js"
@@ -51,7 +53,7 @@
    :compiler-options {:output-feature-set :es5
                       :source-map false
                       :reader-features #{:npm}}
-   :exports-var pondermatic.index/exports}
+   :exports-fn pondermatic.index/exports}
 
   :esm
   {:target :esm
@@ -65,5 +67,24 @@
                       :output-feature-set :es5
                       :pseudo-names true
                       :pretty-print true}
-   :modules {:index {:exports {default pondermatic.index/exports}}}
-   :release {}}}}
+   :modules {:index
+             {:exports {default pondermatic.index/exports}
+              :depends-on #{}}}
+   :release {}}
+  :browser
+  {:target :browser
+   :output-dir "dist/browser/js"
+   :asset-path "/js"
+   :compiler-options {:reader-features #{:browser}}
+   :modules {:shared
+             {:entries []}
+             :api
+             {:init-fn pondermatic.index/init
+              :depends-on #{:shared}}
+             :browser
+             {:init-fn pondermatic.browser.handler/init
+              :depends-on #{:shared}}
+             :worker
+             {:init-fn pondermatic.browser.worker/init
+              :depends-on #{:shared}
+              :web-worker true}}}}}

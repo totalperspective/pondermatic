@@ -1,22 +1,26 @@
 {
   "name": "@totalperspective/pondermatic",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Functional effect system driven rules engine",
   "engines": {
     "node": ">=16"
   },
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
+  "browser": "dist/browser/shared.js",
   "exports": {
     ".": {
       "browser": "./dist/mjs/index.js",
       "require": "./dist/cjs/index.js",
-      "default": "./dist/cjs/index.js"
-    }
+      "default": "./dist/cjs/index.js",
+      "worker": "./dist/browser/worker.js"
+    },
+    "./browser/shared": "./dist/browser/shared.js",
+    "./browser/api": "./dist/browser/api.js",
+    "./browser/worker": "./dist/browser/worker.js"
   },
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "prepare": "./build-shadow.sh",
     "dev": "([ -f ./out/dev.js ] || shadow-cljs compile :dev) && node out/dev.js"
   },
   "bin": {
@@ -33,13 +37,13 @@
   },
   "homepage": "https://github.com/totalperspective/pondermatic#readme",
   "devDependencies": {
-    "@babel/preset-env": "^7.23.5",
+    "@babel/preset-env": "^7.24.0",
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
-    "karma": "6.3.17",
-    "karma-chrome-launcher": "3.1.1",
+    "karma": "6.4.3",
+    "karma-chrome-launcher": "3.2.0",
     "karma-cljs-test": "0.1.0",
-    "puppeteer": "13.5.2"
+    "puppeteer": "22.4.0"
   },
   "jest": {
     "verbose": true,
@@ -53,9 +57,10 @@
     "transform": {}
   },
   "dependencies": {
-    "@js-joda/core": "3.2.0",
-    "@js-joda/locale_en-us": "3.1.1",
-    "@js-joda/timezone": "2.5.0",
-    "shadow-cljs": "^2.26.2"
+    "@cljs-oss/module-deps": "^1.1.1",
+    "@js-joda/core": "^3.2.0",
+    "@js-joda/locale_en-us": "^3.1.1",
+    "@js-joda/timezone": "^2.5.0",
+    "shadow-cljs": "^2.27.5"
   }
 }

@@ -3,7 +3,8 @@
             [pondermatic.shell :as sh :refer [|> |< |<=]]
             [pondermatic.flow :as f]
             [pondermatic.portal.utils :as p.utils]
-            [hyperfiddle.rcf :as rcf :refer [tests %]])
+            [hyperfiddle.rcf :as rcf :refer [tests %]]
+            [missionary.core :as m])
   #?(:cljs
      (:require-macros [portal.console :as log])
      :default
@@ -93,6 +94,14 @@
   (->> (o/->session)
        (sh/engine process)
        sh/actor))
+
+(defn clone> [session]
+  (m/sp
+   (->> identity
+        (sh/|!> session)
+        m/?
+        (sh/engine process)
+        sh/actor)))
 
 (tests
  (let [tap (f/tapper #(do (log/trace (p.utils/table %))

@@ -21,13 +21,19 @@
 
 (defn submitter [submit-impl]
   (fn [value]
-    (->> value
-         p.utils/datafy-value
-         submit-impl)))
+    (try
+      (->> value
+           p.utils/datafy-value
+           submit-impl)
+      (catch #?(:cljs js/Error :default Exception) e
+        #?(:cljs
+           (js/console.error e)
+           :default
+           (println e))))))
 
 (def submit (submitter #(submit-impl @!opts %)))
 
-(defn start [launcher]
+(defn start [& [launcher]]
   (when launcher
     (reset! !opts {}))
   (add-tap #'submit)

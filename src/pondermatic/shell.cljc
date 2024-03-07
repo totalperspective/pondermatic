@@ -1,11 +1,7 @@
 (ns pondermatic.shell
   (:require [missionary.core :as m]
-            [pondermatic.flow :as f]))
-
-(defn return [emit result]
-  (let [run (m/sp (m/? (emit result)))]
-    (run identity f/crash)
-    result))
+            [pondermatic.flow :as f]
+            [portal.console :as log]))
 
 (def done ::done)
 
@@ -14,12 +10,13 @@
         >actor (m/ap
                 (loop [process init]
                   (let [cmd (m/? self)
-                        emit (m/rdv)
-                        next (process (partial return emit) cmd)]
+                        next> (process cmd)
+                        session (m/? (next>))
+                        next (next> nil session)]
                     (if (not= done cmd)
-                      (m/amb (m/? emit)
+                      (m/amb session
                              (recur next))
-                      (m/? emit)))))
+                      session))))
         >return (->> >actor
                      (m/eduction (remove nil?))
                      m/stream)]
@@ -31,15 +28,21 @@
   [process session]
   (let [engine (partial engine process)]
     (fn processor
-      ([])
-      ([ret cmd]
+      ([] (if (fn? session)
+            session
+            (m/sp session)))
+      ([_ session] (engine session))
+      ([cmd]
        (if-let [rdv (get cmd ::rdv)]
-         (do (return rdv session)
-             (-> session ret engine))
-         (-> session
-             (process cmd)
-             ret
-             engine))))))
+         (do (f/return rdv session)
+             (engine session))
+         (try
+           (-> session
+               (process cmd)
+               engine)
+           (catch #?(:cljs js/Error :default Exception) e
+             (log/error e)
+             session)))))))
 
 (defn |> [{:keys [::send] :as a} msg]
   (if send
