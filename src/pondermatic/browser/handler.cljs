@@ -5,27 +5,27 @@
             [pondermatic.portal.utils :as p.util]
             [pondermatic.flow.port :as !]
             [missionary.core :as m]
-            [pondermatic.portal.client :as p]))
+            [pondermatic.portal.client :as p]
+            [pondermatic.browser.console :as console]))
 
 (def !ids (atom {nil true}))
 
 (defn prepare-msg [msg]
-  (prn ::post! msg)
   (let [[<return! cmd args & [agent]] msg
         id (random-uuid)]
     (swap! !ids assoc id <return!)
     [id cmd args agent]))
 
 (defn post-message [worker t-msg]
-  (prn ::post-message t-msg)
-  (js/console.trace {:window-> t-msg})
+  (console/trace  "window->" t-msg)
   (.. worker (postMessage t-msg)))
 
 (defn handle-msg [[id cmd msg]]
-  (when-let [<return! (get @!ids id)]
+  (let [<return! (get @!ids id)]
     (when id
-      (swap! !ids dissoc id)
-      (log/trace {::id id ::cmd cmd ::msg msg ::p <return!}))
+      (log/trace {::id id ::cmd cmd ::msg msg ::<return! <return!}))
+    (when <return!
+      (swap! !ids dissoc id))
     (condp = cmd
       :prn (apply prn msg)
       :tap (tap> (p.util/log (assoc msg :runtime :portal)))
@@ -43,7 +43,7 @@
       (log/warn (ex-info "Couldn't handle message"
                          {:cmd cmd :msg msg})))))
 
-(defn ->>post-worker [>port! worker]
+(defn ->>post-message [>port! worker]
   (->> >port!
        !/recv>
        (m/eduction
@@ -69,7 +69,7 @@
         port-id ::!/port.worker
         >window! (!/->>port! port-id)
         >worker! (!/!use->port! port-id)
-        >post-worker (->>post-worker >window! worker)
+        >post-worker (->>post-message >window! worker)
         >recv-message (->>recv-message >worker!)]
     (log/info {::worker worker})
 
@@ -79,5 +79,6 @@
     (.. worker (addEventListener "message"
                                  (fn [^js e]
                                    (let [msg (.. e -data)]
-                                     (js/console.debug "->window" msg)
-                                     (!/send! >window! msg)))))))
+                                     (console/trace "->window" msg)
+                                     (!/send! >window! msg))))))
+  (prn "Web worker - handler started"))

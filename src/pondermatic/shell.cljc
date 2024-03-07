@@ -20,7 +20,7 @@
         >return (->> >actor
                      (m/eduction (remove nil?))
                      m/stream)]
-    (f/drain >return (str ::>return))
+    (f/drain >return ::>return)
     {::send self
      ::receive >return}))
 

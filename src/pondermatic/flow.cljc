@@ -36,8 +36,11 @@
 (defn tap [prefix]
   (tapper
    (fn [x]
-     (when (keyword? prefix)
-       (log/info {(or prefix :tap) x})))))
+     (when (and prefix x)
+       #?(:cljs
+          (js/console.debug (str prefix) (pr-str x))
+          :default
+          (prn prefix x))))))
 
 (defn run
   ([task]
@@ -123,5 +126,4 @@
     (m/stream
      (m/ap (let [<m (m/?> >flow)
                  v (m/? <m)]
-             (prn ::mbv v)
              v)))))

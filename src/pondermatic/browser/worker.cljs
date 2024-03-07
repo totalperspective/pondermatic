@@ -10,25 +10,20 @@
             [pondermatic.core :as p]
             [pondermatic.portal.utils :as p.util]
             [pondermatic.log :as p.log]
-            [pondermatic.flow.port :as !])
+            [pondermatic.flow.port :as !]
+            [pondermatic.browser.console :as console])
   (:import [missionary Cancelled]))
 
 (enable-console-print!)
 
 (def >window! (!/->>port! ::port))
 
-(defn -post [& msg]
-  (try
-    (->> msg
-         p.util/datafy-value
-         data/write-transit
-         (!/send! >window!))
-    (catch js/Error e
-      (js/console.error e))))
+(defn post-message [port t-msg]
+  (console/trace "worker->" t-msg)
+  (.. port (postMessage t-msg)))
 
 (defn post [& msg]
-  (js/console.trace "worker->" (clj->js msg))
-  (apply -post msg))
+  (!/send! >window! msg))
 
 (defonce pool (-> {}
                   (pool/contructor :db db/->conn db/clone>)
@@ -55,10 +50,9 @@
                         :entity< (with-agent< engine/entity<)}})
 
 (defn prn> [& msg]
-  (-post nil :prn msg))
+  (post nil :prn msg))
 
 (defn handle-msg [[id cmd args agent]]
-  ;; (prn> ::cmd cmd ::args args ::agent agent ::id id)
   (let [fun (get-in cmd->fun cmd)
         {:keys [:flow?]} (meta fun)
         info {::id id ::cmd cmd ::fun? (boolean fun)
@@ -72,7 +66,7 @@
           (let [<>flow (fun agent args)
                 msg-id (random-uuid)
                 done! (fn [x]
-                        (log/trace (assoc info :success? (fn? x)))
+                        (log/trace (assoc info ::success? (fn? x)))
                         (when-not (fn? x)
                           (post msg-id :item :done)
                           (swap! !flows dissoc msg-id)))
@@ -82,7 +76,7 @@
                                      info
                                      (flow/tapper
                                       (fn [item]
-                                        (log/trace (assoc info :item item))
+                                        (log/trace (assoc info ::item item))
                                         (post msg-id :item item)))))
                                   (catch Cancelled e
                                     (done! e))))]
@@ -102,20 +96,33 @@
         (catch js/Error e
           (post id :throw [(ex-message e) (ex-data e)]))))))
 
-(flow/drain-using (!/recv> >window!)
-                  ::handle-msg
-                  (flow/tapper handle-msg))
+(defn ->>post-message [>port! window]
+  (->> >port!
+       !/recv>
+       (m/eduction
+        (map (comp (partial post-message window)
+                   data/write-transit
+                   p.util/datafy-value)))))
+
+(defn ->>recv-message [>port!]
+  (->> >port!
+       !/recv>
+       (m/eduction
+        (map (comp handle-msg
+                   data/read-transit)))))
 
 (defn init []
   (prn "Web worker startng")
   (p.log/console-tap)
-  (add-tap #(-post nil :tap (update % :result data/->log-safe)))
-  (let [>worker! (!/!use->port! ::port)]
-    (flow/drain-using (!/recv> >worker!)
-                      ::post-message
-                      (flow/tapper #(js/postMessage %)))
+  (add-tap #(post nil :tap (update % :result data/->log-safe)))
+  (let [>worker! (!/!use->port! ::port)
+        >post-worker (->>post-message >worker! js/globalThis)
+        >recv-message (->>recv-message >window!)]
+    (flow/drain >recv-message ::recv-message)
+    (flow/drain >post-worker ::post-worker)
     (js/self.addEventListener "message"
                               (fn [^js e]
                                 (let [msg (.. e -data)]
-                                  (js/console.debug "->worker" msg)
-                                  (!/send! >worker! (data/read-transit msg)))))))
+                                  (console/trace "->worker" msg)
+                                  (!/send! >worker! msg)))))
+  (prn "Web worker started"))

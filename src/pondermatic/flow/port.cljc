@@ -11,8 +11,10 @@
 (defn ->>port! [port-id]
   (let [<send! (m/mbx)
         <recv! (m/mbx)]
-    (swap! !ports assoc port-id {:send! (sender <send!)
-                                 :>recv (flow/mbx> <recv!)})
+    (swap! !ports assoc port-id (with-meta {:send! (sender <send!)
+                                            :>recv (flow/mbx> <recv!)}
+                                  {:send! <send!
+                                   :>recv <recv!}))
     {:send! (sender <recv!)
      :>recv (flow/mbx> <send!)}))
 
@@ -32,10 +34,8 @@
       :else nil)))
 
 (defn send! [>port! msg]
-  (prn ::send! msg)
   (guard->port! >port!)
   (let [{:keys [send!]} >port!]
-    (prn ::send! send! msg)
     (send! msg)))
 
 (defn recv> [>port!]

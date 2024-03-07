@@ -7,8 +7,6 @@
             [pondermatic.browser.client :as client])
   (:require-macros [portal.console :as log]))
 
-;; (pondermatic.browser.client/init)
-
 (def worker? (delay (boolean @client/>worker!)))
 
 (def post< client/post<)
@@ -56,12 +54,10 @@
 
 (defn contructor [cs type create clone]
   (let [create' (fn create' [& args]
-                  (prn :create type :worker @worker?)
                   (if @worker?
                     (apply create-local type args)
                     (apply create args)))
         clone' (fn clone' [& args]
-                 (prn :clone type :worker @worker?)
                  (if @worker?
                    (apply clone-local args)
                    (apply clone args)))]
@@ -69,7 +65,6 @@
 
 (defn with-local [fun< alias & {:keys [:flow?] :or {flow? false}}]
   (fn remote-fun< [agent & args]
-    (prn alias :worker @worker?)
     (if @worker?
       (m/sp (let [id (m/? (sh/|!> agent :id))]
               (if flow?

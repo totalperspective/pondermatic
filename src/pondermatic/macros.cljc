@@ -23,6 +23,7 @@
         val (sym-name <val)]
     `(flow/run
       (m/sp (let [~val (m/? ~<val)]
-              (->> ~val
-                   ~@body)))
+              (try
+                (->> ~val
+                     ~@body))))
       {:line ~line :column ~column :file ~file})))
