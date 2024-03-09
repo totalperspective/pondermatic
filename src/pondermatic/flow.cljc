@@ -77,9 +77,9 @@
    (drain-using flow (or (meta tap) {}) tap))
   ([flow m tap]
    (let [dispose! (run (m/reduce tap flow) m)]
-     #(try (dispose!)
-           (catch Cancelled e
-             (log/warn (ex-info "Flow Cancelled" m e)))))))
+     (fn []
+       (binding [*dispose-ctx* (ex-info "dispose!" {::drain-usng m})]
+         (dispose!))))))
 
 (defn drain
   ([flow]
@@ -128,9 +128,10 @@
     (.then p #(v (fn [] %)) #(v (fn [] (throw %))))
     (m/absolve v)))
 
-(defn mbx> [<m]
+(defn mbx> [<m & [prefix]]
   (let [>flow (m/seed (repeat <m))]
     (m/stream
      (m/ap (let [<m (m/?> >flow)
                  v (m/? <m)]
+             (printer prefix v)
              v)))))

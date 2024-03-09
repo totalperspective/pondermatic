@@ -75,7 +75,7 @@
 
 (defn to-agent! [pool id cmd]
   (sh/|> pool {:->agent {:id id :cmd cmd}})
-  nil)
+  id)
 
 (defn copy-agent! [pool src]
   (let [tgt (random-uuid)]

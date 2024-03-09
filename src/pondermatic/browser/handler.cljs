@@ -38,7 +38,7 @@
               (<return! mbox))
       :item (let [done? (= :done msg)]
               (when-not done? (swap! !ids assoc id <return!))
-              (<return! (if done? ::done msg)))
+              (<return! {:msg msg :id id :done? done?}))
       (log/warn (ex-info "Couldn't handle message"
                          {:cmd cmd :msg msg})))))
 
@@ -74,7 +74,7 @@
   (let [location (guess-location)
         worker (js/Worker. (js/URL. "./worker.js" location))
         port-id ::!/port.worker
-        >window! (!/>buffer! 100 (!/->>port! port-id))
+        >window! (!/>buffer! 100 (!/id->>port! port-id))
         >worker! (!/>buffer! 100 (!/!use->port! port-id))
         >post-worker (->>post-message >window! worker)
         >recv-message (->>recv-message >worker!)]

@@ -2,21 +2,11 @@
   (:require [missionary.core :as m]
             [pondermatic.flow :as flow]))
 
-(def !ports (atom {}))
+(def !id->duplex (atom {}))
 
 (defn sender [<mbx!]
   (fn send! [msg]
     (<mbx! msg)))
-
-(defn ->>port! [port-id]
-  (let [<send! (m/mbx)
-        <recv! (m/mbx)]
-    (swap! !ports assoc port-id (with-meta {:send! (sender <send!)
-                                            :>recv (flow/mbx> <recv!)}
-                                  {:send! <send!
-                                   :>recv <recv!}))
-    {:send! (sender <recv!)
-     :>recv (flow/mbx> <send!)}))
 
 (defn >port!? [>port!]
   (and (contains? >port! :send!)
@@ -26,8 +16,23 @@
   (when-not (>port!? >port!)
     (throw (ex-info "Invalid Port" {:>port! >port!}))))
 
+(defn duplex->>port! [{:keys [::<a! ::<b! ::id] :as duplex} & {:keys [reverse?] :or {reverse? false}}]
+  (when duplex
+    {:send! (sender (if reverse? <b! <a!))
+     :>recv (flow/mbx> (if reverse? <a! <b!) [id reverse?])}))
+
+(defn id->>port! [port-id]
+  (let [<mbx-a! (m/mbx)
+        <mbx-b! (m/mbx)
+        duplex {::id port-id
+                ::<a! <mbx-a!
+                ::<b! <mbx-b!}]
+    (swap! !id->duplex assoc port-id duplex)
+    (duplex->>port! duplex)))
+
 (defn !use->port! [port-id & {:keys [throw?] :or {throw? true}}]
-  (let [>port! (get @!ports port-id)]
+  (let [>port! (duplex->>port! (get @!id->duplex port-id)
+                               :reverse? true)]
     (cond
       (>port!? >port!) >port!
       throw? (throw (ex-info "Unknown Port" {:id port-id}))

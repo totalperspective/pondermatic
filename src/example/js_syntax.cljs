@@ -1,7 +1,11 @@
 (ns example.js-syntax
-  (:require [pondermatic.index :as i]))
+  (:require [pondermatic.index :as i]
+            [taoensso.tufte :as tufte])
+  (:require-macros [taoensso.tufte :refer [profile]]))
 
-(def engine (i/create-engine "test" true))
+(tufte/add-basic-println-handler! {})
+
+(def engine (i/create-engine (str (gensym "test")) true))
 
 (def q (i/q engine
             (str '[:find ?id ?key ?value
@@ -73,8 +77,11 @@
       clj->js
       i/dataset))
 
-(i/sh engine #js {"->db" rules})
+(profile
+ {}
+ (do
+   (i/sh engine #js {"->db" rules})
 
-(i/sh engine #js {"->db" data})
-
-(q)
+   (i/sh engine #js {"->db" data})))
+;; (q)
+;; (i/stop engine)

@@ -10,7 +10,8 @@
             [clojure.walk :as w]
             [portal.console :as log]
             [pondermatic.reader :as pr]
-            [missionary.core :as m]))
+            [missionary.core :as m]
+            [taoensso.tufte :as tufte :refer [p]]))
 
 (defn name->mem-uri [db-name]
   (str "asami:mem://" db-name))
@@ -30,32 +31,33 @@
 
 (defn transactor
   [{:keys [::db-uri] :as session} cmd]
-  (when-not (= cmd sh/done)
-    (cond
-      (map? cmd)
-      (let [tx (update cmd :tx-data (partial remove nil?))
-            conn (d/connect db-uri)
-            idents (->> tx
-                        :tx-data
-                        idents
-                        (remove nil?)
-                        (map #(do {:db/ident %})))
-            ident-tx-data (when (seq idents)
-                            (-> conn
-                                (d/transact {:tx-data idents})
-                                deref
-                                :tx-data))
-            ident-datoms (vec ident-tx-data)]
-        (log/debug tx)
-        (-> conn
-            (d/transact tx)
-            deref
-            (update :tx-data (partial into ident-datoms))
-            (update :tx-data (partial mapv datom/as-vec))
-            (assoc ::db-uri db-uri)))
-      :else (do
-              (log/warn (ex-info "Unknown Command" {::cmd cmd}))
-              session))))
+  (p ::transactor
+     (when-not (= cmd sh/done)
+       (log/trace cmd)
+       (cond
+         (map? cmd)
+         (let [tx (update cmd :tx-data (partial remove nil?))
+               conn (d/connect db-uri)
+               idents (->> tx
+                           :tx-data
+                           idents
+                           (remove nil?)
+                           (map #(do {:db/ident %})))
+               ident-tx-data (when (seq idents)
+                               (-> conn
+                                   (d/transact {:tx-data idents})
+                                   deref
+                                   :tx-data))
+               ident-datoms (vec ident-tx-data)]
+           (-> conn
+               (d/transact tx)
+               deref
+               (update :tx-data (partial into ident-datoms))
+               (update :tx-data (partial mapv datom/as-vec))
+               (assoc ::db-uri db-uri)))
+         :else (do
+                 (log/warn (ex-info "Unknown Command" {::cmd cmd}))
+                 session)))))
 
 (defn ->conn
   ([db-uri]
@@ -83,19 +85,21 @@
 (defn db< [conn]
   (sh/|!> conn :db-after))
 
-(defn ^:private -q [q db args]
-  (when db
-    (let [result (apply d/q q db args)]
-      (log/trace {:db db :q q :args args :result result})
-      result)))
+(defn -q [q db args]
+  (p ::q
+     (when db
+       (let [result (apply d/q q db args)]
+         (log/trace {:db db :q q :args args :result result})
+         result))))
 
 (defn q> [query & args]
   (|<= (map :db-after)
        (map #(-q query % args))))
 
-(defn ^:private -entity [db id nested?]
-  (when db
-    (d/entity db id nested?)))
+(defn -entity [db id nested?]
+  (p ::entity
+     (when db
+       (d/entity db id nested?))))
 
 (defn entity> [id & {:keys [nested?] :or {nested? false}}]
   (|<= (map :db-after)
