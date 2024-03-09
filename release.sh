@@ -4,3 +4,4 @@ git flow release start $1
 ./deploy.sh
 git commit -am "Build artefacts"
 git flow release finish
+git push --all
