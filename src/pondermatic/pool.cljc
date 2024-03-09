@@ -8,7 +8,7 @@
   [session cmd]
   (log/trace {::cmd cmd ::session session})
   (if-not (= cmd sh/done)
-    (let [[[cmd msg]] cmd]
+    (let [[[cmd msg]] (seq cmd)]
       (condp = cmd
         :agents (let [{:keys [cb]} msg
                       {:keys [agents]} session
