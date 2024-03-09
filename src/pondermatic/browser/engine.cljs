@@ -9,6 +9,7 @@
 
 (def worker? (delay (boolean @client/>worker!)))
 
+(def post client/post)
 (def post< client/post<)
 (def post> client/post>)
 
@@ -51,7 +52,7 @@
 (defn clone-local [source-agent]
   (m/sp
    (let [agent (m/? (agent> source-agent))
-         id (random-uuid)]
+         id (str (random-uuid))]
      (sh/|> source-agent {:clone-to id})
      (->agent (assoc agent :remote id)))))
 
@@ -74,6 +75,11 @@
                 (post> [:engine alias] args id)
                 (m/? (post< [:engine alias] args id)))))
       (apply fun< agent args))))
+
+(def to-pool! (fn [pool & args]
+                (if @worker?
+                  (post [:to-pool!] args)
+                  (apply pool/to-pool! pool args))))
 
 (def q>< (with-local p/q>< :q>< :flow? true))
 

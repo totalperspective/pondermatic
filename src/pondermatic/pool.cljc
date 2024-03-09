@@ -9,13 +9,14 @@
   (log/trace {::cmd cmd ::session session})
   (if-not (= cmd sh/done)
     (let [[[cmd msg]] (seq cmd)]
+      (prn cmd msg)
       (condp = cmd
         :agents (let [{:keys [cb]} msg
-                      {:keys [agents]} session
+                      {:keys [::agents]} session
                       info (reduce-kv (fn [m id {:keys [type]}]
                                         (assoc m id type))
                                       {} agents)]
-                  (console/trace "Agents" info)
+                  (log/trace {:agents info})
                   (when (fn? cb)
                     (cb info))
                   session)
@@ -78,7 +79,7 @@
          sh/actor)))
 
 (defn add-agent! [pool agent & args]
-  (let [id (random-uuid)
+  (let [id (str (random-uuid))
         cmd {:+agent {:id id :agent agent :args args}}]
     (log/debug cmd)
     (sh/|> pool cmd)
@@ -96,7 +97,7 @@
   (sh/|> pool msg))
 
 (defn copy-agent! [pool src]
-  (let [tgt (random-uuid)]
+  (let [tgt (str (random-uuid))]
     (sh/|> pool {:=agent {:souce src :target tgt}})
     tgt))
 

@@ -109,13 +109,13 @@
        (m/eduction (remove (fn [[n-1 n]] (= n n-1)))
                    (map second))))
 
-(defn split [flow]
-  (m/eduction (remove nil?)
-              (m/ap (let [items (m/?< flow)]
-                      (loop [items items]
-                        (when-some [item (first items)]
-                          (m/amb item
-                                 (recur (rest items)))))))))
+;; (defn split [flow]
+;;   (m/eduction (remove nil?)
+;;               (m/ap (let [items (m/?< flow)]
+;;                       (loop [items items]
+;;                         (when-some [item (first items)]
+;;                           (m/amb item
+;;                                  (recur (rest items)))))))))
 
 (defn <->! [<task !atom]
   (<task (partial reset! !atom)
