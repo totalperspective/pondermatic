@@ -322,45 +322,49 @@
        (clj->js res)
        res))))
 
+(defn ^:private -exports
+  #js {:createEngine create-engine
+       :ruleset ruleset
+       :dataset dataset
+       :sh sh
+       :cmd cmd
+       :addRulesMsg add-rules-msg
+       :q q
+       :qP (->promise-fn q)
+        ;;  :queryRule query-rule
+        ;;  :queryRuleP (->promise-fn query-rule)
+       :entity entity
+       :entityP (->promise-fn entity)
+       :watchEntity entity*
+       :hashId hash-id
+       :errorInfo error-info
+       :portal portal
+       :dispose dispose!
+       :log log
+       :unify unify
+       :pprint #(-> % js->clj pp/pprint)
+       :addTap (fn
+                 ([] (add-tap console-tap))
+                 ([tap] (add-tap #(tap %))))
+       :readString -read-string
+       :toString pr-str
+       :encode data/transit-json-writer
+       :decode data/read-transit
+       :eval eval-string
+       :toJS toJS
+       :devtoolsFormatter devtoolsFormatter
+       :stop stop})
+
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn exports []
-  (if js/globalThis.pondermatic.api
-    (do
-      (js/console.log "Pondematic - Browser version detected")
-      js/globalThis.pondermatic.api)
-    (do
-      (js/console.log "Pondematic - Initializing API")
-      #js {:createEngine create-engine
-           :ruleset ruleset
-           :dataset dataset
-           :sh sh
-           :cmd cmd
-           :addRulesMsg add-rules-msg
-           :q q
-           :qP (->promise-fn q)
-      ;;  :queryRule query-rule
-      ;;  :queryRuleP (->promise-fn query-rule)
-           :entity entity
-           :entityP (->promise-fn entity)
-           :watchEntity entity*
-           :hashId hash-id
-           :errorInfo error-info
-           :portal portal
-           :dispose dispose!
-           :log log
-           :unify unify
-           :pprint #(-> % js->clj pp/pprint)
-           :addTap (fn
-                     ([] (add-tap console-tap))
-                     ([tap] (add-tap #(tap %))))
-           :readString -read-string
-           :toString pr-str
-           :encode data/transit-json-writer
-           :decode data/read-transit
-           :eval eval-string
-           :toJS toJS
-           :devtoolsFormatter devtoolsFormatter
-           :stop stop})))
+  (try
+    (js/console.log "Pondematic - Detecting Browser version")
+    (if js/globalThis.pondermatic.api
+      js/globalThis.pondermatic.api
+      -exports)
+    (catch js/Error _
+      (js/console.log "Pondematic - Failed. Initializing API")
+      -exports)))
 
 (defn init []
   (set! js/globalThis.pondermatic.api (exports)))
