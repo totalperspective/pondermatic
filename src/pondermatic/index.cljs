@@ -95,6 +95,12 @@
                       (js->clj :keywordize-keys true)
                       (p.util/trace 'sh))))
 
+(defn cmd [msg]
+  (pool/to-pool! pool
+                 (-> msg
+                     (js->clj :keywordize-keys true)
+                     (p.util/trace 'cmd))))
+
 (defn add-rules-msg [rules]
   (r/add-rules (-> rules
                    (js->clj :keywordize-keys true)
@@ -314,6 +320,7 @@
            :ruleset ruleset
            :dataset dataset
            :sh sh
+           :cmd cmd
            :addRulesMsg add-rules-msg
            :q q
            :qP (->promise-fn q)
