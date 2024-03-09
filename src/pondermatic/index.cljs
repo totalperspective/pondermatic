@@ -20,6 +20,8 @@
                   (webe/contructor :engine p/->engine p/clone>)
                   pool/->pool))
 
+(def to-pool! (partial webe/to-pool! pool))
+
 (def with-agent< (partial pool/with-agent< pool))
 
 (def q>< (with-agent< webe/q><))
@@ -95,11 +97,23 @@
                       (js->clj :keywordize-keys true)
                       (p.util/trace 'sh))))
 
+(defn wrap-callbacks [msg]
+  (w/postwalk (fn [node]
+                (if (fn? node)
+                  (fn [x]
+                    (-> x clj->js node))
+                  node))
+              msg))
+
 (defn cmd [msg]
-  (pool/to-pool! pool
-                 (-> msg
-                     (js->clj :keywordize-keys true)
-                     (p.util/trace 'cmd))))
+  (to-pool! (-> msg
+                (js->clj :keywordize-keys true)
+                wrap-callbacks
+                (p.util/trace 'cmd)))
+  nil)
+
+(defn copy [engine]
+  (pool/copy-agent! pool engine))
 
 (defn add-rules-msg [rules]
   (r/add-rules (-> rules
@@ -310,10 +324,10 @@
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn exports []
-  (if (.-pondermatic js/globalThis)
+  (if js/globalThis.pondermatic.api
     (do
       (js/console.log "Pondematic - Browser version detected")
-      js/globalThis.pondermatic)
+      js/globalThis.pondermatic.api)
     (do
       (js/console.log "Pondematic - Initializing API")
       #js {:createEngine create-engine
@@ -349,4 +363,4 @@
            :stop stop})))
 
 (defn init []
-  (set! js/globalThis.pondermatic (exports)))
+  (set! js/globalThis.pondermatic.api (exports)))

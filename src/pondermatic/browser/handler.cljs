@@ -5,9 +5,19 @@
             [pondermatic.portal.utils :as p.util]
             [pondermatic.flow.port :as !]
             [missionary.core :as m]
-            [pondermatic.browser.console :as console]))
+            [pondermatic.browser.console :as console]
+            [clojure.walk :as w]))
 
 (def !ids (atom {nil true}))
+
+(defn extern-callbacks [msg]
+  (w/postwalk (fn [node]
+                (if (fn? node)
+                  (let [id (random-uuid)]
+                    (swap! !ids assoc id node)
+                    {::!/fn id})
+                  node))
+              msg))
 
 (defn prepare-msg [msg]
   (let [[<return! cmd args & [agent]] msg
@@ -49,7 +59,8 @@
         (map (comp (partial post-message worker)
                    data/write-transit
                    p.util/datafy-value
-                   prepare-msg)))))
+                   prepare-msg
+                   extern-callbacks)))))
 
 (defn ->>recv-message [>port!]
   (->> >port!

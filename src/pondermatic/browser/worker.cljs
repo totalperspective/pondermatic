@@ -11,7 +11,8 @@
             [pondermatic.portal.utils :as p.util]
             [pondermatic.log :as p.log]
             [pondermatic.flow.port :as !]
-            [pondermatic.browser.console :as console])
+            [pondermatic.browser.console :as console]
+            [clojure.walk :as w])
   (:import [missionary Cancelled]))
 
 (enable-console-print!)
@@ -38,7 +39,10 @@
 (defn flow [flow><]
   (with-meta flow>< {:flow? true}))
 
-(def cmd->fun {:dispose (fn [id]
+(def cmd->fun {:to-pool! (fn [& args]
+                           (apply pool/to-pool! args)
+                           nil)
+               :dispose (fn [id]
                           (let [dispose! (get @!flows id)]
                             (dispose!)))
                :pool {:add-agent pool/add-agent!
@@ -97,6 +101,15 @@
         (catch js/Error e
           (post id :throw [(ex-message e) (ex-data e)]))))))
 
+(defn intern-callbacks [msg]
+  (w/postwalk (fn [node]
+                (if (and (map? node) (::!/fn node))
+                  (let [id (::!/fn node)]
+                    (fn [msg]
+                      (post id :result msg)))
+                  node))
+              msg))
+
 (defn ->>post-message [>port! window]
   (->> >port!
        !/recv>
@@ -110,6 +123,7 @@
        !/recv>
        (m/eduction
         (map (comp handle-msg
+                   intern-callbacks
                    data/read-transit)))))
 
 (defn init []
