@@ -16,7 +16,7 @@
 
 (enable-console-print!)
 
-(def >window! (!/>buffer! 100 (!/->>port! ::port)))
+(def >window! (!/>buffer! 100 (!/id->>port! ::port)))
 
 (defn post-message [port t-msg]
   (console/trace "worker->" t-msg)
@@ -28,7 +28,7 @@
 (defonce pool (-> {}
                   (pool/contructor :db db/->conn db/clone>)
                   (pool/contructor :rules rules/->session rules/clone>)
-                  (pool/contructor :engine p/->engine engine/conn>)
+                  (pool/contructor :engine p/->engine p/clone>)
                   pool/->pool))
 
 (def !flows (atom {}))
@@ -79,6 +79,7 @@
                                         (log/trace (assoc info ::item item))
                                         (post msg-id :item item)))))
                                   (catch Cancelled e
+                                    (log/warn (ex-info "Cmd fkow cancelled" info))
                                     (done! e))))]
             (swap! !flows assoc msg-id <>flow)
             (post id :flow msg-id)

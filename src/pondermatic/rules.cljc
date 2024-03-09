@@ -4,7 +4,8 @@
             [pondermatic.flow :as f]
             [pondermatic.portal.utils :as p.utils]
             [hyperfiddle.rcf :as rcf :refer [tests %]]
-            [missionary.core :as m])
+            [missionary.core :as m]
+            [taoensso.tufte :as tufte :refer [p]])
   #?(:cljs
      (:require-macros [portal.console :as log])
      :default
@@ -17,13 +18,14 @@
 (defmulti exec cmd-type)
 
 (defn upsert-rule [session rule]
-  (try
-    (o/add-rule session rule)
-    (catch #?(:clj Exception :cljs js/Error) e
-      (log/warn e)
-      (-> session
-          (o/remove-rule (:name rule))
-          (o/add-rule rule)))))
+  (p ::upsert-rule
+     (try
+       (o/add-rule session rule)
+       (catch #?(:clj Exception :cljs js/Error) _e
+      ;; (log/warn e)
+         (-> session
+             (o/remove-rule (:name rule))
+             (o/add-rule rule))))))
 
 (defmethod exec 'add-rule
   [[_ rule] session]
@@ -84,11 +86,12 @@
 
 (defn process
   [session cmd]
-  (when-not (= cmd sh/done)
-    ;; (log/debug {::cmd cmd})
-    (->> session
-         (exec cmd)
-         o/fire-rules)))
+  (p ::process
+     (when-not (= cmd sh/done)
+       (log/debug {::cmd cmd})
+       (->> session
+            (exec cmd)
+            o/fire-rules))))
 
 (defn ->session []
   (->> (o/->session)

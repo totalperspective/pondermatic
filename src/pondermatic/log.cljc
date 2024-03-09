@@ -1,5 +1,6 @@
 (ns pondermatic.log
   (:require [pondermatic.portal.utils :as p.util]
+            #?(:cljs [pondermatic.browser.console :as console])
             #?(:node [zuko.logging :as log])))
 
 #?(:cljs
@@ -7,7 +8,7 @@
      (add-tap (fn [{:keys [level] :as entry}]
                 (let [entry (p.util/datafy-value entry)]
                   (condp = level
-                    :trace (js/console.debug (prn-str entry) entry)
+                    :trace (console/trace (prn-str entry) entry)
                     :debug (js/console.debug (prn-str entry) entry)
                     :info (js/console.info (prn-str entry) entry)
                     :warn (js/console.warn (prn-str entry) entry)

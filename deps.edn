@@ -20,10 +20,14 @@
         cheshire/cheshire {:mvn/version "5.12.0"}
         inflections/inflections {:mvn/version "0.14.1"}
         tick/tick {:mvn/version "0.7.5"}
-        cljstache/cljstache {:mvn/version "2.0.6"}}
+        cljstache/cljstache {:mvn/version "2.0.6"}
+        com.taoensso/tufte {:mvn/version "2.6.3"}
+        com.cognitect/transit-clj {:mvn/version "1.0.333"}}
  :aliases
  {:dev
-  {:extra-paths ["dev"]}
+  {:extra-paths ["dev"]
+   :extra-deps {com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.2.0"}}
+   :jvm-opts ["-Djdk.attach.allowAttachSelf" "-Dtaoensso.elide-deprecated=true"]}
   :cljs
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.132"}
                 thheller/shadow-cljs {:mvn/version "2.27.5"}

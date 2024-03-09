@@ -3,13 +3,16 @@
   (:require #?(:browser [pondermatic.portal.client :as p]
                :default [pondermatic.portal.server :as p])
             [hyperfiddle.rcf :refer [tests]]
+            #?(:clj [clj-async-profiler.core :as prof])
             #?(:cljs
                [cljs.repl :as repl]
                :default
                [clojure.repl :as repl])))
 
-;; #?(:cljs
-;;    (enable-console-print!))
+#?(:cljs
+   (enable-console-print!))
+
+#?(:clj (prof/serve-ui 7778))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defonce _portal #?(:browser

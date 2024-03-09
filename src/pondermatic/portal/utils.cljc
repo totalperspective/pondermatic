@@ -64,20 +64,22 @@
 (defn exception? [e]
   (instance? #?(:cljs js/Error :default Exception) e))
 
-(defn datafy-value [value]
-  (let [{:keys [trace?]} (meta value)]
-    (->> value
-         (w/postwalk (fn [value]
-                       (when trace?
-                         (println (exception? value)
-                                  value))
-                       (cond
-                         (exception? value)
-                         (error->data value)
+(def datafy-value
+  (memoize (fn [value]
+             (let [{:keys [trace?]} (meta value)]
+               (->> value
+                    (w/postwalk (fn [value]
+                                  (when trace?
+                                    (println (exception? value)
+                                             value))
+                                  (cond
+                                    (exception? value)
+                                    (error->data value)
 
-                         (fn? value)
-                         (pr-str value)
+                                    (fn? value)
+                                    (pr-str value)
 
-                         :else
-                         value)))
-         datafy/datafy)))
+                                    :else
+                                    value)))
+                    datafy/datafy)))))
+

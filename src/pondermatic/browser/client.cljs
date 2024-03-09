@@ -1,7 +1,9 @@
 (ns pondermatic.browser.client
   (:require [pondermatic.flow.port :as !]
             [missionary.core :as m]
-            [pondermatic.flow :as flow])
+            [portal.console :as log]
+            [pondermatic.flow :as flow]
+            [pondermatic.browser.console :as console])
   (:import [missionary Cancelled]))
 
 (def >worker! (delay (!/!use->port! ::!/port.worker :throw? false)))
@@ -19,12 +21,17 @@
 
 (defn post> [& args]
   (m/ap (let [<next (m/? (apply post< args))
-              {:keys [id]} (meta <next)]
+              ><next (m/seed (repeat <next))
+              !id (atom nil)]
           (try
-            (prn ::id id)
-            (loop []
-              (let [value (m/? <next)]
-                (when-not (= value ::done)
-                  (m/amb value (recur)))))
+            (let [<next (m/?> ><next)
+                  {:keys [msg id done?] :as item} (m/? <next)]
+              (console/trace ::item item)
+              (reset! !id id)
+              (when done?
+                (throw Cancelled))
+              msg)
             (catch Cancelled _
-              (post [:dispose!] [id]))))))
+              (log/warn (ex-info "Post> cancelled" {:args args}))
+              (when @!id
+                (post [:dispose!] [@!id])))))))
