@@ -20,17 +20,20 @@
             agent)
       (let [[cmd msg] (if (map? msg)
                         (first msg)
-                        msg)]
-        (condp = cmd
-          ::create (m/sp (let [id (m/? (post< [:pool :add-agent] (apply vector type args)))]
-                           (assoc agent :id id)))
-          :->db (m/sp (let [result (m/? (post< [:pool :to-agent] [id {cmd msg}]))]
+                        msg)
+            <tx (m/sp (let [result (m/? (post< [:pool :to-agent] [id {cmd msg}]))]
                         (log/trace {:agent agent
                                     cmd msg
                                     :result result})
-                        agent))
+                        agent))]
+        (condp = cmd
+          ::create (m/sp (let [id (m/? (post< [:pool :add-agent] (apply vector type args)))]
+                           (assoc agent :id id)))
+          :->db <tx
+          :+>db <tx
+          :!>db <tx
 
-          (do (log/warn (ex-info "Unknown Command" {:cmd cmd}))
+          (do (log/warn (ex-info "Unknown Command" {::cmd cmd}))
               agent))))))
 
 (defn ->agent [agent]
