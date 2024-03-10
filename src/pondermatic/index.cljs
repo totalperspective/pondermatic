@@ -292,7 +292,7 @@
 (defn console-tap
   ([x]
    (if (and (map? x) (:level x))
-     (let [{:keys [level]} x
+     (let [{:keys [level result]} x
            level (condp = level
                    :trace :debug
                    :fatal :error
@@ -303,7 +303,7 @@
                       (name level)))]
        (if (fn? log)
          (log x)
-         (js/console.log x)))
+         (js/console.log (dissoc x :result) result)))
      (js/console.log x))))
 
 (defn eval-string
@@ -359,12 +359,12 @@
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn exports []
   (cond
-    (and js/globalThis.pondermatic js/globalThis.pondermatic.api)
+    (and (.-pondermatic js/globalThis) (.-api js/globalThis.pondermatic))
     (do
       (js/console.log "Pondematic - Browser version detected")
       js/globalThis.pondermatic.api)
 
-    js/globalThis.pondermatic
+    (.-pondermatic js/globalThis)
     (do
       (js/console.log "Pondematic - Initialising Browser version")
       (set! js/globalThis.pondermatic.api api)
