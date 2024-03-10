@@ -89,7 +89,7 @@
   ([flow]
    (drain flow (-> flow meta :flow)))
   ([flow prefix]
-   (drain-using flow {::flow prefix} (tap prefix data/->eql))))
+   (drain-using flow {::flow prefix} (tap prefix keys))))
 
 (def pairs
   (partial m/reductions

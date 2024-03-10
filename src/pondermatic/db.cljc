@@ -100,7 +100,7 @@
   (p ::q
      (when db
        (let [result (apply d/q q db args)]
-         (log/trace {:db db :q q :args args :result result})
+         (log/trace {:q q :args args :result result})
          result))))
 
 (defn q> [query & args]

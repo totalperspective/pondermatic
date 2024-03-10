@@ -3,7 +3,7 @@
                [portal.client.jvm :as p]
                :cljs
                [portal.client.node :as p])
-            #?(:cljs/browser
+            #?(:cljs
                [portal.client.web :as pw])
             [portal.console :as log]
             [pondermatic.portal.utils :as p.utils]))
@@ -14,13 +14,15 @@
 (def !opts (atom {:port port :host host}))
 
 (def submit-impl
-  #?(:cljs/browser (if js/window
-                     pw/submit
-                     p/submit)
+  #?(:cljs (if js/window
+             pw/submit
+             p/submit)
      :default p/submit))
 
 (defn submitter [submit-impl]
   (fn [value]
+    #?(:cljs
+       (js/console.debug value))
     (try
       (->> value
            p.utils/datafy-value
