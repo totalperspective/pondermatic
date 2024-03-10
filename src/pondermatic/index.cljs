@@ -112,8 +112,8 @@
                 (p.util/trace 'cmd)))
   nil)
 
-(defn copy [engine]
-  (pool/copy-agent! pool engine))
+(defn copy [{:keys [::id]}]
+  (pool/copy-agent! pool id))
 
 (defn add-rules-msg [rules]
   (r/add-rules (-> rules
@@ -324,6 +324,7 @@
 
 (def ^:private api
   #js {:createEngine create-engine
+       :copy copy
        :ruleset ruleset
        :dataset dataset
        :sh sh
