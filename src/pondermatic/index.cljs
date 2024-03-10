@@ -322,7 +322,7 @@
        (clj->js res)
        res))))
 
-(def ^:private -exports
+(def ^:private api
   #js {:createEngine create-engine
        :ruleset ruleset
        :dataset dataset
@@ -357,14 +357,22 @@
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn exports []
-  (try
-    (js/console.log "Pondematic - Detecting Browser version")
-    (if js/globalThis.pondermatic.api
-      js/globalThis.pondermatic.api
-      -exports)
-    (catch js/Error _
-      (js/console.log "Pondematic - Failed. Initializing API")
-      -exports)))
+  (cond
+    (and js/globalThis.pondermatic js/globalThis.pondermatic.api)
+    (do
+      (js/console.log "Pondematic - Browser version detected")
+      js/globalThis.pondermatic.api)
+
+    js/globalThis.pondermatic
+    (do
+      (js/console.log "Pondematic - Initialising Browser version")
+      (set! js/globalThis.pondermatic.api api)
+      api)
+
+    :else
+    (do
+      (js/console.log "Pondematic - Initializing API")
+      api)))
 
 (defn init []
-  (set! js/globalThis.pondermatic.api (exports)))
+  (exports))
