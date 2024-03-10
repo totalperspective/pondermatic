@@ -3,7 +3,7 @@
                [portal.client.jvm :as p]
                :cljs
                [portal.client.node :as p])
-            #?(:browser
+            #?(:cljs/browser
                [portal.client.web :as pw])
             [portal.console :as log]
             [pondermatic.portal.utils :as p.utils]))
@@ -14,9 +14,9 @@
 (def !opts (atom {:port port :host host}))
 
 (def submit-impl
-  #?(:browser (if js/window
-                pw/submit
-                p/submit)
+  #?(:cljs/browser (if js/window
+                     pw/submit
+                     p/submit)
      :default p/submit))
 
 (defn submitter [submit-impl]

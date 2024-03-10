@@ -96,7 +96,7 @@
 (defn ->session []
   (->> (o/->session)
        (sh/engine process)
-       sh/actor))
+       (sh/actor ::prefix)))
 
 (defn clone> [session]
   (m/sp
@@ -104,7 +104,7 @@
         (sh/|!> session)
         m/?
         (sh/engine process)
-        sh/actor)))
+        (sh/actor ::prefix))))
 
 (tests
  (let [tap (f/tapper #(do (log/trace (p.utils/table %))

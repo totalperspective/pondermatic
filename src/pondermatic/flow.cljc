@@ -1,7 +1,8 @@
 (ns pondermatic.flow
   (:require [missionary.core :as m]
             [editscript.core :as es]
-            [portal.console :as log])
+            [portal.console :as log]
+            [pondermatic.data :as data])
   (:import [missionary Cancelled]))
 
 (def ^:dynamic *dispose-ctx* nil)
@@ -39,15 +40,18 @@
 (def prn-tap
   (tapper printer))
 
-(defn tap [prefix]
-  (tapper
-   (fn [x]
-     (when (and prefix x)
-       #?(:cljs
-          (when *tap-print*
-            (js/console.debug (str prefix) (pr-str x)))
-          :default
-          (printer prefix x))))))
+(defn tap
+  ([prefix]
+   (tap prefix identity))
+  ([prefix format]
+   (tapper
+    (fn [x]
+      (when (and prefix x)
+        #?(:cljs
+           (when *tap-print*
+             (js/console.debug (str prefix) (pr-str (format x))))
+           :default
+           (printer prefix x)))))))
 
 (defn run
   ([task]
@@ -85,7 +89,7 @@
   ([flow]
    (drain flow (-> flow meta :flow)))
   ([flow prefix]
-   (drain-using flow {::flow prefix} (tap prefix))))
+   (drain-using flow {::flow prefix} (tap prefix data/->eql))))
 
 (def pairs
   (partial m/reductions

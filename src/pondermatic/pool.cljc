@@ -2,14 +2,15 @@
   (:require [pondermatic.shell :as sh]
             [portal.console :as log]
             [missionary.core :as m]
-            [pondermatic.browser.console :as console]))
+            [pondermatic.browser.console :as console]
+            [pondermatic.flow :as flow]))
 
 (defn pool-process
   [session cmd]
   (log/trace {::cmd cmd ::session session})
   (if-not (= cmd sh/done)
     (let [[[cmd msg]] (seq cmd)]
-      (prn cmd msg)
+      ((flow/tap cmd) msg)
       (condp = cmd
         :agents (let [{:keys [cb]} msg
                       {:keys [::agents]} session
@@ -47,13 +48,13 @@
                      (log/warn (ex-info "Unkown agent" {:id id})))
                    session)
         :=agent (let [{:keys [source target]} msg
-                      {:keys [agent clone]} (get-in session [::agents source])]
+                      {:keys [agent clone type]} (get-in session [::agents source])]
                   (if (and agent clone)
                     (m/sp
                      (->> agent
                           clone
                           m/?
-                          (assoc {:clone clone} :agent)
+                          (assoc {:clone clone :type type} :agent)
                           (assoc-in session [::agents target])))
                     (do
                       (log/warn (ex-info "Unkown agent or not cloneable" {:id source}))
@@ -76,7 +77,7 @@
   (let [session {::contructors contructors ::agents {}}]
     (->> session
          (sh/engine pool-process)
-         sh/actor)))
+         (sh/actor ::prefix))))
 
 (defn add-agent! [pool agent & args]
   (let [id (str (random-uuid))

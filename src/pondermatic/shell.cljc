@@ -5,24 +5,28 @@
 
 (def done ::done)
 
-(defn actor [init]
-  (let [self (m/mbx)
-        >actor (m/ap
-                (loop [process init]
-                  (let [cmd (m/? self)
-                        next> (process cmd)
-                        session (m/? (next>))
-                        next (next> nil session)]
-                    (if (not= done cmd)
-                      (m/amb session
-                             (recur next))
-                      session))))
-        >return (->> >actor
-                     (m/eduction (remove nil?))
-                     m/stream)]
-    (f/drain >return ::>return)
-    {::send self
-     ::receive >return}))
+(defn actor
+  ([init]
+   (actor ::>return init))
+  ([prefix init]
+   (let [prefix (keyword (or (namespace prefix) (name prefix)) ">return")
+         self (m/mbx)
+         >actor (m/ap
+                 (loop [process init]
+                   (let [cmd (m/? self)
+                         next> (process cmd)
+                         session (m/? (next>))
+                         next (next> nil session)]
+                     (if (not= done cmd)
+                       (m/amb session
+                              (recur next))
+                       session))))
+         >return (->> >actor
+                      (m/eduction (remove nil?))
+                      m/stream)]
+     (f/drain >return prefix)
+     {::send self
+      ::receive >return})))
 
 (defn engine
   [process session]
@@ -42,7 +46,7 @@
                engine)
            (catch #?(:cljs js/Error :default Exception) e
              (log/error e)
-             session)))))))
+             (engine session))))))))
 
 (defn |> [{:keys [::send] :as a} msg]
   (if send
