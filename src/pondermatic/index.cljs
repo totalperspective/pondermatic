@@ -113,7 +113,7 @@
   nil)
 
 (defn copy [{:keys [::id]}]
-  (pool/copy-agent! pool engine))
+  (pool/copy-agent! pool id))
 
 (defn add-rules-msg [rules]
   (r/add-rules (-> rules
