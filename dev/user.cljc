@@ -1,6 +1,6 @@
 (ns user
   #_{:clj-kondo/ignore [:unused-namespace]}
-  (:require #?(:browser [pondermatic.portal.client :as p]
+  (:require #?(:cljs/browser [pondermatic.portal.client :as p]
                :default [pondermatic.portal.server :as p])
             [hyperfiddle.rcf :refer [tests]]
             #?(:clj [clj-async-profiler.core :as prof])
@@ -15,7 +15,7 @@
 #?(:clj (prof/serve-ui 7778))
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-(defonce _portal #?(:browser
+(defonce _portal #?(:cljs/browser
                     (p/start nil)
                     :default
                     (p/-main :vs-code)))

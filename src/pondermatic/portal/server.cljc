@@ -1,5 +1,5 @@
 (ns pondermatic.portal.server
-  (:require #?(:browser [portal.web :as p]
+  (:require #?(:cljs/browser [portal.web :as p]
                :default [portal.api :as p])
             [pondermatic.portal.client :as pc]
             [pondermatic.rules.production :as prp]

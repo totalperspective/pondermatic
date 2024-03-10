@@ -30,7 +30,7 @@
     @!idents))
 
 (defn transactor
-  [{:keys [::db-uri] :as session} cmd]
+  [{:keys [:db-uri] :as session} cmd]
   (p ::transactor
      (when-not (= cmd sh/done)
        (log/trace cmd)
@@ -54,7 +54,7 @@
                deref
                (update :tx-data (partial into ident-datoms))
                (update :tx-data (partial mapv datom/as-vec))
-               (assoc ::db-uri db-uri)))
+               (assoc :db-uri db-uri)))
          :else (do
                  (log/warn (ex-info "Unknown Command" {::cmd cmd}))
                  session)))))
@@ -65,21 +65,32 @@
   ([db-uri delete-old?]
    (when delete-old?
      (d/delete-database db-uri))
+   (d/connect db-uri)
    (assoc (->> db-uri
-               (assoc {} ::db-uri)
+               (assoc {} :db-uri)
                (sh/engine transactor)
-               sh/actor)
-          ::db-uri db-uri)))
+               (sh/actor ::prefix))
+          :db-uri db-uri)))
+
+(defn copy-connection! [conn new-url]
+  (let [[_ _ db-name] (re-find #"asami:([^:]+)://(.+)" new-url)
+        new-conn (-> conn
+                     (assoc :name db-name)
+                     (update :state #(-> % deref atom)))]
+    (swap! d/connections assoc new-url new-conn)
+    (d/connect new-url)))
 
 (defn clone> [conn & {:keys [db-uri]}]
-  (let [src-uri (::db-uri conn)
-        db (-> src-uri d/connect d/db)
-        uri (or db-uri (str (gensym (str src-uri "-"))))
-        conn> (m/dfv)]
-    (d/as-connection db uri)
-    (conn> (->conn uri))))
+  (let [src-uri (:db-uri conn)
+        uri (or db-uri (str (gensym (str src-uri "-"))))]
+    (log/debug {:src-uri src-uri :dst-url uri})
+    (let [conn (-> src-uri d/connect)
+          <conn (m/dfv)]
+      (copy-connection! conn uri)
+      (<conn (->conn uri))
+      <conn)))
 
-(defn db! [{:keys [::db-uri]}]
+(defn db! [{:keys [:db-uri]}]
   (d/db (d/connect db-uri)))
 
 (defn db< [conn]
@@ -137,7 +148,7 @@
   (p/pull db eql))
 
 (defn export< [db]
-  (sh/|!> db #(-> % ::db-uri d/connect d/export-data)))
+  (sh/|!> db #(-> % :db-uri d/connect d/export-data)))
 
 (extend-protocol pp/IPullable
   asami.memory.MemoryDatabase

@@ -33,7 +33,7 @@
 
 (defmulti dispatch msg-type)
 
-(defn engine [{:keys [::conn ::rules ::dispose:db=>rules] :as env} msg]
+(defn engine-process [{:keys [::conn ::rules ::dispose:db=>rules] :as env} msg]
   (log/debug msg)
   (if (= msg sh/done)
     (do
@@ -192,29 +192,34 @@
 
 (defn ->engine [conn rules]
   (add-base-rules conn rules '{!= not=})
-  (let [dispose:db=>rules (db=>rules conn rules)]
-    (->> (hash-map ::conn conn
-                   ::rules rules
-                   ::dispose:db=>rules dispose:db=>rules)
-         (sh/engine engine)
-         sh/actor)))
-
-(defn clone> [{:keys [conn rules]}]
-  (m/sp
-   (let [conn (m/? (db/clone> conn))
-         rules (m/? (rules/clone> rules))
-         dispose:db=>rules (db=>rules conn rules)]
-     (->> (hash-map ::conn conn
-                    ::rules rules
-                    ::dispose:db=>rules dispose:db=>rules)
-          (sh/engine engine)
-          sh/actor))))
+  (let [dispose:db=>rules (db=>rules conn rules)
+        session {::conn conn
+                 ::rules rules
+                 ::dispose:db=>rules dispose:db=>rules}]
+    (->> session
+         (sh/engine engine-process)
+         (sh/actor ::prefix))))
 
 (defn conn> [engine]
   (sh/|!> engine ::conn))
 
 (defn rules> [engine]
   (sh/|!> engine ::rules))
+
+(defn clone> [engine]
+  (m/sp
+   (let [conn (m/? (conn> engine))
+         rules (m/? (rules> engine))
+         conn' (m/? (db/clone> conn))
+         rules' (m/? (rules/clone> rules))
+         dispose:db=>rules (db=>rules conn' rules')
+         session {::conn conn'
+                  ::rules rules'
+                  ::dispose:db=>rules dispose:db=>rules}]
+     (log/trace session)
+     (->> session
+          (sh/engine engine-process)
+          (sh/actor ::prefix)))))
 
 (defn db-uri> [engine]
   (m/sp (let [conn (conn> engine)

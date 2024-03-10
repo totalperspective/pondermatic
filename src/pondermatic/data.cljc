@@ -13,8 +13,11 @@
             #?(:cljs
                [java.time :refer [LocalDate LocalDateTime Period Duration]])
             #?(:cljs [cognitect.transit :as transit]))
-  #?(:clj
-     (:import [java.time LocalDate LocalDateTime Period Duration])))
+  #?(:cljs
+     (:require [cljs.core :refer [IDeref]])
+     :clj
+     (:import [clojure.lang IDeref]
+              [java.time LocalDate LocalDateTime Period Duration])))
 
 (defn ->type-sym [x]
   (-> x type pr-str symbol))
@@ -99,6 +102,12 @@
                                           k)))
                               []
                               node)
+
+                   (instance? IDeref node)
+                   (->eql @node)
+
+                   (sequential? node)
+                   []
 
                    :else node))
                node)))

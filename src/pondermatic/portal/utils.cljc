@@ -22,7 +22,7 @@
 
 (defn text [x]
   (with-meta
-    [:portal.viewer/markdown x]
+    [:portal.viewer/markdown (str "```\n" x "\n```")]
     {:portal.viewer/default :portal.viewer/hiccup}))
 
 (defn trace

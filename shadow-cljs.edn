@@ -51,7 +51,6 @@
    :output-to "dist/cjs/index.js"
    :build-hooks [(build/hook)]
    :compiler-options {:output-feature-set :es5
-                      :source-map false
                       :reader-features #{:npm}}
    :exports-fn pondermatic.index/exports}
 
@@ -62,8 +61,7 @@
   ;;  :js-options {:js-provider :import}
   ;;  :js-options {:entry-keys ["module" "browser" "main"]}
    :build-hooks [(build/hook)]
-   :compiler-options {:reader-features #{:browser :esm}
-                      :source-map false
+   :compiler-options {:reader-features #{:cljs/esm :cljs/browser}
                       :output-feature-set :es5
                       :pseudo-names true
                       :pretty-print true}
@@ -75,7 +73,7 @@
   {:target :browser
    :output-dir "dist/worker"
    :asset-path "/"
-   :compiler-options {:reader-features #{:browser}}
+   :compiler-options {:reader-features #{:cljs/browser}}
    :modules {:index
              {:init-fn pondermatic.browser.worker/init
               :web-worker true}}}
@@ -83,7 +81,7 @@
   {:target :browser
    :output-dir "dist/browser"
    :asset-path "/"
-   :compiler-options {:reader-features #{:browser}}
+   :compiler-options {:reader-features #{:cljs/browser}}
    :modules {:shared
              {:entries []}
              :api

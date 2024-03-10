@@ -40,7 +40,7 @@
 (defn ->agent [agent]
   (->> agent
        (sh/engine forwarder)
-       sh/actor))
+       (sh/actor ::prefix)))
 
 (defn create-local [type & args]
   (let [engine (->agent {:type type :args args})]
