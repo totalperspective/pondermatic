@@ -113,7 +113,7 @@
   nil)
 
 (defn copy [{:keys [::id]}]
-  (pool/copy-agent! pool id))
+  {::id (pool/copy-agent! pool id)})
 
 (defn add-rules-msg [rules]
   (r/add-rules (-> rules
@@ -292,7 +292,7 @@
 (defn console-tap
   ([x]
    (if (and (map? x) (:level x))
-     (let [{:keys [level]} x
+     (let [{:keys [level result]} x
            level (condp = level
                    :trace :debug
                    :fatal :error
@@ -303,7 +303,10 @@
                       (name level)))]
        (if (fn? log)
          (log x)
-         (js/console.log x)))
+         (js/console.log x))
+       (js/console.groupCollapsed (pr-str (dissoc x :result)))
+       (js/trace (pr-str result))
+       (js/console.groupEnd))
      (js/console.log x))))
 
 (defn eval-string
