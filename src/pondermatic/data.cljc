@@ -115,14 +115,13 @@
 (defn ->log-safe [node]
   (p.util/pprint
    (w/postwalk (fn [node]
-                 (let [node-str (pr-str node)]
-                   (cond
-                     (p.util/exception? node) node
-                     (uuid? node) node
-                     (record? node) (into {} node)
-                     (fn? node) node-str
-                     #?@(:cljs [(= \# (first node-str)) node-str])
-                     :else node)))
+                 (cond
+                   (p.util/exception? node) node
+                   (uuid? node) node
+                   (record? node) (into {} node)
+                   (fn? node) (pr-str node)
+                   #?@(:cljs [(= \# (first (pr-str node))) (pr-str node)])
+                   :else node))
                node)))
 
 #?(:cljs

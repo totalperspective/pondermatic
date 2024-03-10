@@ -49,7 +49,7 @@
       (when (and prefix x)
         #?(:cljs
            (when *tap-print*
-             (js/console.debug (str prefix) (pr-str (format x))))
+             (js/console.debug (str prefix) (format x)))
            :default
            (printer prefix x)))))))
 

@@ -292,7 +292,7 @@
 (defn console-tap
   ([x]
    (if (and (map? x) (:level x))
-     (let [{:keys [level result]} x
+     (let [{:keys [level]} x
            level (condp = level
                    :trace :debug
                    :fatal :error
@@ -301,11 +301,11 @@
                     (if (string? level)
                       level
                       (name level)))]
+
+       (js/console.groupCollapsed (pr-str (dissoc x :result)))
        (if (fn? log)
          (log x)
          (js/console.log x))
-       (js/console.groupCollapsed (pr-str (dissoc x :result)))
-       (js/trace (pr-str result))
        (js/console.groupEnd))
      (js/console.log x))))
 
