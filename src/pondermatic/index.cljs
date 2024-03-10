@@ -366,6 +366,7 @@
     js/globalThis.pondermatic
     (do
       (js/console.log "Pondematic - Initialising Browser version")
+      (set! js/globalThis.pondermatic.api api)
       api)
 
     :else
@@ -374,4 +375,4 @@
       api)))
 
 (defn init []
-  (set! js/globalThis.pondermatic.api (exports)))
+  (exports))
