@@ -322,7 +322,7 @@
        (clj->js res)
        res))))
 
-(defn ^:private -exports
+(def ^:private -exports
   #js {:createEngine create-engine
        :ruleset ruleset
        :dataset dataset
