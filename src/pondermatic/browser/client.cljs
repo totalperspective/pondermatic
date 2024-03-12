@@ -6,6 +6,8 @@
             [pondermatic.browser.console :as console])
   (:import [missionary Cancelled]))
 
+(def !agents (atom nil))
+
 (def >worker! (delay (!/!use->port! ::!/port.worker :throw? false)))
 
 (defn post< [& args]

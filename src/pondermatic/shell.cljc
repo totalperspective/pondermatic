@@ -9,25 +9,29 @@
   ([init]
    (actor ::>return init))
   ([prefix init]
-   (let [prefix (keyword (or (namespace prefix) (name prefix)) ">return")
+   (let [!quiescent? (atom true)
+         prefix (keyword (or (namespace prefix) (name prefix)) ">return")
          self (m/mbx)
          >actor (m/ap
-                 (loop [process init]
-                   (let [cmd (m/? self)
-                         next> (process cmd)
-                         session (m/? (next>))
-                         next (next> nil session)]
-                     (if (not= done cmd)
-                       (m/amb session
-                              (recur next))
-                       session))))
+                 (loop [process init last-session nil]
+                   (let [cmd (m/? self)]
+                     (reset! !quiescent? false)
+                     (let [next> (process cmd)
+                           session (m/? (next>))
+                           next (next> nil session)]
+                       (reset! !quiescent? (= session last-session))
+                       (if (not= done cmd)
+                         (m/amb  session
+                                 (recur next session))
+                         session)))))
          >return (->> >actor
                       (m/eduction (remove nil?))
                       m/stream)]
      (f/drain >return prefix)
      {::prefix prefix
       ::send self
-      ::receive >return})))
+      ::receive >return
+      ::!quiescent? !quiescent?})))
 
 (defn engine
   [process session]
@@ -75,6 +79,15 @@
 
 (defn flow [{:keys [::receive]}]
   receive)
+
+(defn quiescent?< [a]
+  (->> a
+       flow
+       (m/reductions = nil)
+       (m/eduction (take 1))))
+
+(defn quiescent?> [a]
+  (m/sp (m/? (quiescent?< a))))
 
 (defn |<->< [a flow & {:keys [signal?] :or {signal? false}}]
   (>->< (|< a flow :signal? signal?)))

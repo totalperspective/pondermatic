@@ -25,5 +25,4 @@
 
 (-> engine
     (|> {:->db rules})
-    (|> {:->db data})
-    p/stop)
+    (|> {:->db data}))

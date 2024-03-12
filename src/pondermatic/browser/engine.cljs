@@ -29,8 +29,10 @@
                                       :result result}))
                         agent))]
         (condp = cmd
-          ::create (m/sp (let [id (m/? (post< [:pool :add-agent] (apply vector type args)))]
-                           (assoc agent :id id)))
+          ::create (m/sp (if-let [id (get-in @client/!agents [type args])]
+                           (assoc agent :id id)
+                           (let [id (m/? (post< [:pool :add-agent] (apply vector type args)))]
+                             (assoc agent :id id))))
           ::clone-to (m/sp (m/? (post< [:pool :copy-agent] [id msg]))
                            agent)
           :->db <tx

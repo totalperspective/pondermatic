@@ -9,6 +9,7 @@
             [pondermatic.portal.client :as portal]
             [portal.console :as log]
             [promesa.core :as pa]
+            [pondermatic.browser.client :as webc]
             [pondermatic.eval :as pe]
             [pondermatic.reader :refer [-read-string]]
             [pondermatic.browser.engine :as webe]
@@ -29,6 +30,15 @@
 (def entity>< (with-agent< webe/entity><))
 
 (def entity< (with-agent< webe/entity<))
+
+(defn watch-agents [cb]
+  (let [id (str (random-uuid))]
+    (add-watch webc/!agents id (fn [_ new _]
+                                 (cb (clj->js new))))
+    id))
+
+(defn remove-agents-watch [id]
+  (remove-watch webc/!agents id))
 
 (defn portal
   ([]
@@ -357,7 +367,9 @@
        :eval eval-string
        :toJS toJS
        :devtoolsFormatter devtoolsFormatter
-       :stop stop})
+       :stop stop
+       :watchAgents watch-agents
+       :removeAgentsWatch remove-agents-watch})
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn exports []

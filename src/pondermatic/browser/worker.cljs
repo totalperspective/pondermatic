@@ -46,7 +46,9 @@
                           (let [dispose! (get @!flows id)]
                             (dispose!)))
                :pool {:add-agent pool/add-agent!
-                      :copy-agent pool/copy-agent!
+                      :copy-agent (fn [pool src tgt]
+                                    (log/trace [pool src tgt])
+                                    (pool src tgt))
                       :remove-agent pool/remove-agent!
                       :to-agent pool/to-agent!}
                :engine {:q>< (flow (with-agent< engine/q><))
@@ -135,6 +137,8 @@
         >recv-message (->>recv-message >window!)]
     (flow/drain >recv-message ::recv-message)
     (flow/drain >post-worker ::post-worker)
+    (add-watch (:!agents pool) :agents (fn [_ as _]
+                                         (post nil :agents as)))
     (js/self.addEventListener "message"
                               (fn [^js e]
                                 (let [msg (.. e -data)]

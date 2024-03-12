@@ -56,4 +56,9 @@
      (|> {:->db data}))
  % := []
  % := [["Apple" "Large" "Red"]]
+
+ (pool/to-pool! pool {:agents {:cb prn}})
+
  (pool/remove-agent! pool engine))
+
+(pool/to-pool! pool {:agents {:cb prn}})

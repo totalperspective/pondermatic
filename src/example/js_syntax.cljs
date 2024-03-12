@@ -3,9 +3,13 @@
             [taoensso.tufte :as tufte])
   (:require-macros [taoensso.tufte :refer [profile]]))
 
+(i/portal)
+
 (tufte/add-basic-println-handler! {})
 
-(def engine (i/create-engine (str (gensym "test")) true))
+(def engine-name (str (gensym "test")))
+
+(def engine (i/create-engine engine-name true))
 
 (def q (i/q engine
             (str '[:find ?id ?key ?value

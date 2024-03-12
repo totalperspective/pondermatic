@@ -42,9 +42,14 @@
       (sh/|> conn sh/done)
       (sh/|> rules sh/done)
       (dispose:db=>rules))
-    (if (map? msg)
-      (reduce dispatch env (seq msg))
-      (dispatch env msg))))
+    (let [q-conn? @(::!quiescent? conn)
+          q-rules? @(::!quiescent? rules)]
+      (assoc
+       (if (map? msg)
+         (reduce dispatch env (seq msg))
+         (dispatch env msg))
+       ::quiescent? {::conn? q-conn?
+                     ::rules? q-rules?}))))
 
 (defn kw->ds [data]
   (w/postwalk (fn [node]
@@ -219,6 +224,13 @@
 
 (defn rules> [engine]
   (sh/|!> engine ::rules))
+
+(defn quiescent?> [engine]
+  (m/sp (let [conn (m/? (conn> engine))
+              rules (m/? (rules> engine))
+              qConn? (m/? (sh/quiescent?> conn))
+              qRules? (m/? (sh/quiescent?> rules))]
+          (and qConn? qRules?))))
 
 (defn clone> [engine]
   (m/sp
