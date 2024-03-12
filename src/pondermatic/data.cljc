@@ -10,6 +10,7 @@
             [odoyle.rules :as o]
             [pondermatic.portal.utils :as p.util]
             [clojure.walk :as w]
+            #?(:cljs [com.cognitect.transit.types :as tt])
             #?(:cljs
                [java.time :refer [LocalDate LocalDateTime Period Duration]])
             #?(:cljs [cognitect.transit :as transit]))
@@ -61,6 +62,13 @@
   LocalDateTime
   (-coerce [this md-create-fn write-handlers]
     (--coerce this md-create-fn write-handlers)))
+
+#?(:cljs
+   (extend-protocol
+    hb/PHashCoercion
+     tt/UUID
+     (-coerce [this md-create-fn write-handlers]
+       (--coerce (uuid (str this)) md-create-fn write-handlers))))
 
 (defn uuid-hash [x]
   (h/uuid x :write-handlers write-handlers))
