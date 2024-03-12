@@ -19,6 +19,8 @@
 (def type-name ::type)
 (def rule-type ::rule)
 
+(def !conns (atom {}))
+
 (defn datum->eav [[e a v]]
   [e a v])
 
@@ -73,9 +75,11 @@
             (when (seq assertions)
               (sh/|> rule-session (rules/insert* assertions)))))))))
 
-(defn ->then-finally [?id entity-lvars then conn rules]
+(defn ->then-finally [?id entity-lvars then rules]
   (fn then-finally [session]
-    (let [matches (o/query-all session ?id)
+    (let [[{:keys [db-uri]}] (o/query-all session ::db-uri)
+          conn (get @!conns db-uri)
+          matches (o/query-all session ?id)
           bindings (map (partial reduce-kv (fn [m k v]
                                              (assoc m (symbol k) v))
                                  {})
@@ -131,7 +135,7 @@
         rule-spec {:what what
                    :when when-fn
                    :then-finally
-                   (->then-finally ?id entity-lvars then conn rules)}
+                   (->then-finally ?id entity-lvars then rules)}
         rule (o/->rule ?id rule-spec)]
     rule))
 
@@ -139,7 +143,10 @@
 (defn add-base-rules [conn rules env]
   (let [ruleset
         (o/ruleset
-         {::collection-head
+         {::db-uri
+          [:what
+           [::db ::db-uri db-uri]]
+          ::collection-head
           [:what
            [?first-node :a/first ?first-id]
            [?entity-id ?attr ?first-node]
@@ -190,8 +197,15 @@
                (log/error e)))]})]
     (sh/|> rules (rules/add-rules ruleset))))
 
+(defn register-conn! [conn rules]
+  (let [{:keys [db-uri]} conn]
+    (log/trace {::register-conn! db-uri})
+    (sh/|> rules (rules/insert ::db {::db-uri db-uri}))
+    (swap! !conns assoc db-uri conn)))
+
 (defn ->engine [conn rules]
   (add-base-rules conn rules '{!= not=})
+  (register-conn! conn rules)
   (let [dispose:db=>rules (db=>rules conn rules)
         session {::conn conn
                  ::rules rules
@@ -216,6 +230,7 @@
          session {::conn conn'
                   ::rules rules'
                   ::dispose:db=>rules dispose:db=>rules}]
+     (register-conn! conn' rules')
      (log/trace session)
      (->> session
           (sh/engine engine-process)
