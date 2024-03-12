@@ -8,7 +8,7 @@
   {:target :node-script
    :main user/-main
    :output-to "out/dev.js"
-   :build-hooks [(build/hook)]
+  ;;  :build-hooks [(build/hook)]
    :compiler-options {:source-map true
                       :pretty-print true
                       :pseudo-names true
@@ -20,7 +20,7 @@
   {:target    :node-test
    :output-to "out/node-tests.js"
    :ns-regexp "^(example.*|pondermatic.*)$"
-   :build-hooks [(build/hook)]
+  ;;  :build-hooks [(build/hook)]
    :release {:compiler-options {:source-map true
                                 :pretty-print true
                                 :pseudo-names true}
@@ -28,7 +28,7 @@
   :browser-test
   {:target    :karma
    :output-to "out/karma-tests.js"
-   :build-hooks [(build/hook)]
+  ;;  :build-hooks [(build/hook)]
    :compiler-options {:pretty-print true
                       :pseudo-names true
                       :reader-features #{:cljs/browser :cljs/browser-test}}
@@ -37,7 +37,7 @@
   :node
   {:target :npm-module
    :output-dir "dist/module"
-   :build-hooks [(build/hook)]
+  ;;  :build-hooks [(build/hook)]
    :compiler-options {:reader-features #{:cljs/node}}
    :entries [pondermatic.index]}
 
@@ -49,7 +49,7 @@
   :npm
   {:target :node-library
    :output-to "dist/cjs/index.js"
-   :build-hooks [(build/hook)]
+  ;;  :build-hooks [(build/hook)]
    :compiler-options {:output-feature-set :es5
                       :reader-features #{:cljs/npm}}
    :exports-fn pondermatic.index/exports}
@@ -60,7 +60,7 @@
    :runtime :browser
   ;;  :js-options {:js-provider :import}
   ;;  :js-options {:entry-keys ["module" "browser" "main"]}
-   :build-hooks [(build/hook)]
+  ;;  :build-hooks [(build/hook)]
    :compiler-options {:reader-features #{:cljs/esm :cljs/browser}
                       :output-feature-set :es5
                       :pseudo-names true

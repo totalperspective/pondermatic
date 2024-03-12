@@ -367,10 +367,16 @@
       (js/console.log "Pondematic - Browser version detected")
       js/globalThis.pondermatic.api)
 
-    (.-pondermatic js/globalThis)
+    (and webe/worker? (.-pondermatic js/globalThis))
     (do
-      (js/console.log "Pondematic - Initialising Browser version")
+      (js/console.log "Pondematic - Global Detected - Initialising Browser version")
       (set! js/globalThis.pondermatic.api api)
+      api)
+
+    webe/worker?
+    (do
+      (js/console.log "Pondematic - Worker Detected - Initialising Browser version")
+      (set! js/globalThis.pondermatic #js {:api api})
       api)
 
     :else
