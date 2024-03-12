@@ -14,7 +14,7 @@
 (def !opts (atom {:port port :host host}))
 
 (def submit-impl
-  #?(:cljs (if js/window
+  #?(:cljs (if (.-window js/globalThis)
              pw/submit
              p/submit)
      :default p/submit))

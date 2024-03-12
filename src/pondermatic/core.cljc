@@ -161,7 +161,6 @@
         ruleset))
 
 (defn ruleset [rules]
-  (log/debug rules)
   (-> (map #(assoc % type-name rule-type) rules)
       id->ident
       kw->qkw
