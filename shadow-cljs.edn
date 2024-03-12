@@ -74,7 +74,9 @@
   {:target :browser
    :output-dir "dist/worker"
    :asset-path "/"
-   :compiler-options {:reader-features #{:cljs/browser}}
+   :compiler-options {:reader-features #{:cljs/browser}
+                      :pseudo-names true
+                      :pretty-print true}
    :modules {:index
              {:init-fn pondermatic.browser.worker/init
               :web-worker true}}}
@@ -82,7 +84,9 @@
   {:target :browser
    :output-dir "dist/browser"
    :asset-path "/"
-   :compiler-options {:reader-features #{:cljs/browser}}
+   :compiler-options {:reader-features #{:cljs/browser}
+                      :pseudo-names true
+                      :pretty-print true}
    :modules {:shared
              {:entries []}
              :api
