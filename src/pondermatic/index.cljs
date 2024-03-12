@@ -301,9 +301,12 @@
                     (if (string? level)
                       level
                       (name level)))]
+       (js/console.groupCollapsed)
        (if (fn? log)
-         (log x)
-         (js/console.log (dissoc x :result) result)))
+         (log (dissoc x :result))
+         (js/console.log (dissoc x :result)))
+       (js/console.trace result)
+       (js/console.groupEnd))
      (js/console.log x))))
 
 (defn eval-string

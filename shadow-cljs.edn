@@ -12,7 +12,7 @@
    :compiler-options {:source-map true
                       :pretty-print true
                       :pseudo-names true
-                      :reader-features #{:dev}}
+                      :reader-features #{:cljs/dev}}
    :devtools {:repl-init-ns user
               :repl-pprint true}}
 
@@ -31,14 +31,14 @@
    :build-hooks [(build/hook)]
    :compiler-options {:pretty-print true
                       :pseudo-names true
-                      :reader-features #{:browser :browser-test}}
+                      :reader-features #{:cljs/browser :cljs/browser-test}}
    :ns-regexp "^(example.*|pondermatic.*)$"}
 
   :node
   {:target :npm-module
    :output-dir "dist/module"
    :build-hooks [(build/hook)]
-   :compiler-options {:reader-features #{:node}}
+   :compiler-options {:reader-features #{:cljs/node}}
    :entries [pondermatic.index]}
 
   :portal
@@ -51,7 +51,7 @@
    :output-to "dist/cjs/index.js"
    :build-hooks [(build/hook)]
    :compiler-options {:output-feature-set :es5
-                      :reader-features #{:npm}}
+                      :reader-features #{:cljs/npm}}
    :exports-fn pondermatic.index/exports}
 
   :esm
@@ -69,14 +69,6 @@
              {:exports {default pondermatic.index/exports}
               :depends-on #{}}}
    :release {}}
-  :worker
-  {:target :browser
-   :output-dir "dist/worker"
-   :asset-path "/"
-   :compiler-options {:reader-features #{:cljs/browser}}
-   :modules {:index
-             {:init-fn pondermatic.browser.worker/init
-              :web-worker true}}}
   :browser
   {:target :browser
    :output-dir "dist/browser"
