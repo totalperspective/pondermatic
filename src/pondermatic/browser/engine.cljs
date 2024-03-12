@@ -23,13 +23,16 @@
                         (first msg)
                         msg)
             <tx (m/sp (let [result (m/? (post< [:pool :to-agent] [id {cmd msg}]))]
-                        (log/trace {:agent agent
-                                    cmd msg
-                                    :result result})
+                        (when (seq msg)
+                          (log/trace {:agent agent
+                                      cmd msg
+                                      :result result}))
                         agent))]
         (condp = cmd
           ::create (m/sp (let [id (m/? (post< [:pool :add-agent] (apply vector type args)))]
                            (assoc agent :id id)))
+          ::clone-to (m/sp (m/? (post< [:pool :copy-agent] [id msg]))
+                           agent)
           :->db <tx
           :+>db <tx
           :!>db <tx
@@ -53,8 +56,8 @@
   (m/sp
    (let [agent (m/? (agent> source-agent))
          id (str (random-uuid))]
-     (sh/|> source-agent {:clone-to id})
-     (->agent (assoc agent :remote id)))))
+     (sh/|> source-agent {::clone-to id})
+     (->agent (assoc agent :id id)))))
 
 (defn contructor [cs type create clone]
   (let [create' (fn create' [& args]

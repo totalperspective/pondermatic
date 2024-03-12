@@ -68,7 +68,7 @@
         (cond
           (and agent flow?)
           (let [<>flow (fun agent args)
-                msg-id (random-uuid)
+                msg-id (str (random-uuid))
                 done! (fn [x]
                         (log/trace (assoc info ::success? (fn? x)))
                         (when-not (fn? x)

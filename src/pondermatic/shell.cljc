@@ -25,7 +25,8 @@
                       (m/eduction (remove nil?))
                       m/stream)]
      (f/drain >return prefix)
-     {::send self
+     {::prefix prefix
+      ::send self
       ::receive >return})))
 
 (defn engine

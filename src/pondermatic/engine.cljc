@@ -249,11 +249,13 @@
     atom))
 
 (defmethod dispatch :->db [{:keys [::conn] :as e} [_ data]]
-  (sh/|> conn {:tx-data data})
+  (when (seq data)
+    (sh/|> conn {:tx-data data}))
   e)
 
 (defmethod dispatch :+>db [{:keys [::conn] :as e} [_ data]]
-  (sh/|> conn {:tx-data (db/upsert data)})
+  (when (seq data)
+    (sh/|> conn {:tx-data (db/upsert data)}))
   e)
 
 (defmethod dispatch :!>db [{:keys [::conn] :as e} [_ data]]

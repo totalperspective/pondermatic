@@ -13,7 +13,7 @@
 (defn extern-callbacks [msg]
   (w/postwalk (fn [node]
                 (if (fn? node)
-                  (let [id (random-uuid)]
+                  (let [id (str (random-uuid))]
                     (swap! !ids assoc id node)
                     {::!/fn id})
                   node))
@@ -21,7 +21,7 @@
 
 (defn prepare-msg [msg]
   (let [[<return! cmd args & [agent]] msg
-        id (random-uuid)]
+        id (str (random-uuid))]
     (swap! !ids assoc id <return!)
     [id cmd args agent]))
 
