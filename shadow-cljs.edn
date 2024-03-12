@@ -75,7 +75,7 @@
    :output-dir "dist/worker"
    :asset-path "/"
    :compiler-options {:reader-features #{:cljs/browser}}
-   :modules {:worker
+   :modules {:index
              {:init-fn pondermatic.browser.worker/init
               :web-worker true}}}
   :browser
