@@ -46,7 +46,7 @@
                (process cmd)
                engine)
            (catch #?(:cljs js/Error :default Exception) e
-             (log/error e)
+             (log/error (ex-info "Engin process failed" {::cmd cmd} e))
              (engine session))))))))
 
 (defn |> [{:keys [::send] :as a} msg]
