@@ -97,10 +97,12 @@
 (defn to-pool! [pool msg]
   (sh/|> pool msg))
 
-(defn copy-agent! [pool src]
-  (let [tgt (str (random-uuid))]
-    (sh/|> pool {:=agent {:source src :target tgt}})
-    tgt))
+(defn copy-agent!
+  ([pool src]
+   (copy-agent! pool src (str (random-uuid))))
+  ([pool src tgt]
+   (sh/|> pool {:=agent {:source src :target tgt}})
+   tgt))
 
 (defn with-agent< [pool task<]
   (fn [agent args]
