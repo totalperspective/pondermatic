@@ -69,6 +69,15 @@
              {:exports {default pondermatic.index/exports}
               :depends-on #{}}}
    :release {}}
+  
+  :worker
+  {:target :browser
+   :output-dir "dist/worker"
+   :asset-path "/"
+   :compiler-options {:reader-features #{:cljs/browser}}
+   :modules {:worker
+             {:init-fn pondermatic.browser.worker/init
+              :web-worker true}}}
   :browser
   {:target :browser
    :output-dir "dist/browser"
