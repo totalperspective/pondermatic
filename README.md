@@ -7,14 +7,32 @@ Functional effect system-driven rules engine for Clojure/ClojureScript & Javascr
 
 ## Overview
 
-Pondermatic is a functional effect system-driven rules engine designed for use with Clojure, ClojureScript, and JavaScript. It provides a robust framework for defining and executing rules in a declarative manner.
+Pondermatic is a functional effect system-driven rules engine designed for use with Clojure, ClojureScript, and JavaScript. It provides a robust framework for defining and executing rules in a declarative manner. Pondermatic helps manage side effects in a predictable and composable way, making it easier to integrate with various data sources and build complex rule-based systems.
 
 ## Features
 
-- Functional effect system
-- Supports Clojure, ClojureScript, and JavaScript
-- Declarative rule definitions
-- Integration with various data sources
+- Functional effect system for managing side effects in a predictable and composable way
+- Seamless integration with Clojure, ClojureScript, and JavaScript projects
+- Declarative rule definitions for clear and concise rule management
+- Integration with various data sources for flexible data handling
+
+## Architecture
+Pondermatic's architecture consists of the following key components:
+- Ruleset: Defines the rules to be executed.
+- Dataset: Contains the data to be processed by the rules.
+- Engine: Executes the rules on the dataset and manages the state.
+
+## Documentation
+
+- [Introduction](docs/introduction.md)
+- [Getting Started](docs/getting_started.md)
+- [Installation](docs/installation.md)
+- [Examples](docs/examples.md)
+- [API Reference](docs/api_reference.md)
+- [API Reference (JavaScript)](docs/api_reference_js.md)
+- [Features](docs/features.md)
+- [Rules](docs/rules/overview.md)
+  - [Syntax](docs/rules/syntax.md)
 
 ## Installation
 
@@ -65,8 +83,10 @@ npm install @totalperspective/pondermatic
 ```javascript
 import pondermatic from '@totalperspective/pondermatic';
 
+// Create a new engine instance
 const engine = pondermatic.createEngine('example', true);
 
+// Define a ruleset
 const rules = pondermatic.ruleset([
   {
     id: 'example-rule',
@@ -75,17 +95,32 @@ const rules = pondermatic.ruleset([
   }
 ]);
 
+// Define a dataset
 const data = pondermatic.dataset([{ key: 'value' }]);
 
+// Load the ruleset into the engine
 pondermatic.sh(engine, { '->db': rules });
+
+// Load the dataset into the engine
 pondermatic.sh(engine, { '->db': data });
+
+// Stop the engine
 pondermatic.stop(engine);
 ```
 
+## Community
+- [GitHub Issues](https://github.com/totalperspective/pondermatic/issues)
+- [Discussion Forums](https://github.com/totalperspective/pondermatic/discussions)
+- [Slack Channel](https://join.slack.com/t/pondermatic/shared_invite/...)
+
+## Roadmap
+- Improved performance optimizations
+- Enhanced data source integrations
+- Additional rule definition capabilities
+- Expanded documentation and examples
+
 ## Contributing
+Contributions are welcome! Please read the [Contributing Guidelines](CONTRIBUTING.md) for more information.
 
-Contributions are welcome! Please read the [contributing guidelines](CONTRIBUTING.md) for more information.
-
-## License
-
-This project is licensed under the Eclipse Public License - v 2.0. See the [LICENSE](LICENSE) file for details.
+## Code of Conduct
+This project is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.

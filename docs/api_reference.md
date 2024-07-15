@@ -1,113 +1,77 @@
 # API Reference
 
-## Overview
+## Public Functions and Macros
 
-The `pondermatic` library provides a functional effect system driven rules engine. This document serves as a reference for the API provided by the library.
-
-## Table of Contents
-
-- [Engine](#engine)
-- [Rules](#rules)
-- [Dataset](#dataset)
-- [Commands](#commands)
-- [Query](#query)
-- [Utilities](#utilities)
-
-## Engine
-
-### `createEngine`
-
-Creates a new engine instance.
-
-```
-(def engine (pondermatic.createEngine "example" true))
-```
-
-### `stop`
-
-Stops the engine.
-
-```
-pondermatic.stop(engine)
-```
-
-## Rules
+### `create-engine`
+- **Description**: Creates a new engine instance.
+- **Parameters**:
+  - `name` (string): The name of the engine.
+  - `reset-db?` (boolean): Whether to reset the database.
+- **Returns**: An engine instance.
+- **Example**:
+  \`\`\`clojure
+  (def engine (create-engine "example" true))
+  \`\`\`
 
 ### `ruleset`
-
-Defines a set of rules.
-
-```
-(def rules (pondermatic.ruleset [
-  {
-    :id "example-rule",
-    :rule/when {:data/key "?value"},
-    :rule/then {:data/new-key "?value"}
-  }
-]))
-```
-
-## Dataset
+- **Description**: Defines a set of rules.
+- **Parameters**:
+  - `rules` (vector): A vector of rule definitions.
+- **Returns**: A ruleset.
+- **Example**:
+  \`\`\`clojure
+  (def rules
+    (ruleset
+     [{:id :example-rule
+       :rule/when {:data/key ?value}
+       :rule/then {:data/new-key ?value}}]))
+  \`\`\`
 
 ### `dataset`
-
-Defines a dataset.
-
-```
-(def data (pondermatic.dataset [
-  {:key "value"}
-]))
-```
-
-## Commands
+- **Description**: Defines a dataset.
+- **Parameters**:
+  - `data` (vector): A vector of data entries.
+- **Returns**: A dataset.
+- **Example**:
+  \`\`\`clojure
+  (def data
+    (dataset
+     [{:key "value"}]))
+  \`\`\`
 
 ### `sh`
+- **Description**: Executes a command on the engine.
+- **Parameters**:
+  - `engine` (engine): The engine instance.
+  - `command` (map): The command to execute.
+- **Returns**: The result of the command.
+- **Example**:
+  \`\`\`clojure
+  (sh engine {:->db rules})
+  \`\`\`
 
-Executes a command on the engine.
+### `stop`
+- **Description**: Stops the engine.
+- **Parameters**:
+  - `engine` (engine): The engine instance.
+- **Returns**: None.
+- **Example**:
+  \`\`\`clojure
+  (stop engine)
+  \`\`\`
 
-```
-pondermatic.sh(engine, {:->db rules})
-pondermatic.sh(engine, {:->db data})
-```
+## Table of Contents
+- [Public Functions and Macros](#public-functions-and-macros)
+  - [`create-engine`](#create-engine)
+  - [`ruleset`](#ruleset)
+  - [`dataset`](#dataset)
+  - [`sh`](#sh)
+  - [`stop`](#stop)
 
-## Query
-
-### `q`
-
-Executes a query on the engine.
-
-```
-(def q (pondermatic.q engine
-  "[:find ?v . :where [?id :data/new-key ?v]]"
-  []
-  (fn [result]
-    (js/console.log result))))
-```
-
-## Utilities
-
-### `uuid-hash`
-
-Generates a UUID hash.
-
-```
-(def uuid (pondermatic.uuid-hash "example"))
-```
-
-### `log`
-
-Logs a message.
-
-```
-pondermatic.log(:info "This is an info message")
-```
-
-### `eval-string`
-
-Evaluates a string as code.
-
-```
-(def result (pondermatic.eval-string "(+ 1 2 3)"))
-```
-
-For more detailed examples and usage, refer to the [Examples](examples.md) and [Getting Started](getting_started.md) documentation.
+## Changelog
+### Version 1.11.10
+- Added support for JavaScript.
+- Improved performance optimizations.
+- Enhanced data source integrations.
+- Additional rule definition capabilities.
+- Expanded documentation and examples.

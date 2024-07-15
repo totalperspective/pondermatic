@@ -1,184 +1,83 @@
-# Rule Syntax
+# Pondermatic Rule Syntax Reference
 
-The rule syntax in our system is defined using Clojure data structures and follows a specific pattern. Below is an example of how rules are defined and used within the codebase.
+Rules in Pondermatic are defined using a map structure with specific keys. Here's a breakdown of the syntax based on the examples:
 
-## Example Rule Definition
+## Rule Structure
 
-```clojure:src/example/production_rules.cljc
-(def rules
-  (p/ruleset
-   [{:id ::combinations
-     :rule/name "Combinations"
-     :rule/when '{:batters [{":db/ident" ?batter-id
-                             :batter ?batter}]
-                  :toppings [{":db/ident" ?topping-id
-                              :type "topping"
-                              :topping ?topping}]}
-     :rule/then '{":db/ident" [?batter-id ?topping-id]
-                  :type "combination"
-                  :batter-id ?batter-id
-                  :topping-id ?topping-id}}
-    {:id ::regular-glazed-offer
-     :rule/name "Regular glazed offer"
-     :rule/when '{":db/ident" ?donut-id
-                  :type "donut"
-                  :name ?name
-                  :ppu ?ppu
-                  :batters [{":db/ident" ?batter-id
-                             :batter "Regular"}]
-                  :toppings [{":db/ident" ?topping-id
-                              :topping "Glazed"}]}
-     :rule/then {:type "offer"
-                 :ppu (str '[$ (* 0.7 ?ppu)])
-                 :name (str '[$ (str ?name " - Regular Glazed")])
-                 :donut-id '?donut-id
-                 :batter-id '?batter-id
-                 :topping-id '?topping-id}}]))
+```clojure
+{:id ::rule-id
+ :rule/name "Rule Name"
+ :rule/when condition-map
+ :rule/then result-map}
 ```
 
-## Rule Components
+### Key Components:
 
-Each rule consists of the following components:
+1. `:id`: A unique identifier for the rule, typically a namespaced keyword.
+2. `:rule/name`: A human-readable name for the rule (string).
+3. `:rule/when`: The condition part of the rule (map).
+4. `:rule/then`: The consequence or action part of the rule (map).
 
-- **id**: A unique identifier for the rule.
-- **rule/when**: A condition that must be met for the rule to be triggered.
-- **rule/then**: The action to be taken when the condition is met.
+## Condition Syntax (`:rule/when`)
 
-### Example Breakdown
+The `:rule/when` key contains a map that defines the pattern to match in the data.
 
-1. **Combinations Rule**
-   - **id**: `::combinations`
-   - **rule/when**: The condition checks for combinations of batters and toppings.
-   - **rule/then**: Creates a combination entity with the batter and topping IDs.
+### Variable Binding:
+- Use `?` prefix for variables: `?variable-name`
+- Example: `?batter`, `?topping`, `?ppu`
 
-2. **Regular Glazed Offer Rule**
-   - **id**: `::regular-glazed-offer`
-   - **rule/when**: The condition checks for donuts with a regular batter and glazed topping.
-   - **rule/then**: Creates an offer with a discounted price and a new name.
-
-## Rule Parsing
-
-The rules are parsed and converted into a format that the engine can understand using the `ruleset` function.
-
-```clojure:src/pondermatic/core.cljc
-startLine: 64
-endLine: 70
-```
-
-This function performs several transformations:
-- **id->ident**: Converts IDs to a specific format.
-- **kw->qkw**: Converts keywords to qualified keywords.
-- **parse-strings**: Parses string values.
-- **parse-patterns**: Parses rule patterns.
-- **component->entity**: Converts components to entities.
-
-## JavaScript Support
-
-In addition to the pure Clojure syntax, our system also supports JavaScript integration. The following example demonstrates how rules can be defined in a JavaScript-compatible format.
-
-```javascript:src/example/js_syntax.cljs
-const rules = pondermatic.ruleset([
-  {
-    "id": "terminate/activate",
-    "rule/when": "{terminate/reason ?reason}",
-    "rule/then": {
-      "id": "terminate/task",
-      "type": "task",
-      "task/active?": true,
-      "task/priority": 100
-    }
-  },
-  {
-    "id": "other/activate",
-    "rule/when": "{some/var ?val} (> ?val 0)",
-    "rule/then": {
-      "id": "other/task",
-      "type": "task",
-      "task/active?": true,
-      "task/priority": 100
-    }
-  }
-]);
-```
-
-### Example Breakdown
-
-1. **Terminate/Activate Rule**
-   - **id**: "terminate/activate"
-   - **rule/when**: The condition checks for the presence of `terminate/reason`.
-   - **rule/then**: Activates the task with a priority of 100.
-
-2. **Other/Activate Rule**
-   - **id**: "other/activate"
-   - **rule/when**: The condition checks if `some/var` is greater than 0.
-   - **rule/then**: Activates the task with a priority of 100.
-
-## Syntax Reference
-
-### Pattern Parsing
-
-The `parse-pattern` function is used to parse patterns into a structured format. Here are some examples:
-
-```clojure:src/pondermatic/rules/production.cljc
-startLine: 17
-endLine: 70
-```
-
-- **Simple Attribute Matching**:
+### Data Structure Matching:
+- Use nested maps and vectors to match complex data structures.
+- Example:
   ```clojure
-  (parse-pattern '{:attr :val} {})
-  ; => {::tag :join
-  ;     ::id ?id
-  ;     ::select [{::tag :project
-  ;                ::attr {::tag :attribute
-  ;                        ::attribute :attr}
-  ;                ::val {::tag :value
-  ;                       ::value :val}}]}
+  {:batters [{":db/ident" ?batter-id
+              :batter ?batter}]
+   :toppings [{":db/ident" ?topping-id
+               :type "topping"
+               :topping ?topping}]}
   ```
 
-- **Nested Attribute Matching**:
-  ```clojure
-  (parse-pattern '{:id :id1
-                   :attr {:id :id2
-                          :attr2 :val}} {})
-  ; => {::tag :join
-  ;     ::id :id1
-  ;     ::select [{::tag :project
-  ;                ::attr {::tag :attribute
-  ;                        ::attribute :attr}
-  ;                ::val {::tag :join
-  ;                       ::id :id2
-  ;                       ::select [{::tag :project
-  ;                                  ::attr {::tag :attribute
-  ;                                          ::attribute :attr2}
-  ;                                  ::val {::tag :value
-  ;                                         ::value :val}}]}}]}
-  ```
+### Specific Value Matching:
+- Use strings or other literal values to match exact values.
+- Example: `:type "donut"`, `:batter "Regular"`
 
-### Pattern to What Conversion
+## Result Syntax (`:rule/then`)
 
-The `pattern->what` function converts parsed patterns into a "what" format. Here are some examples:
+The `:rule/then` key contains a map that defines the action to take when the condition is met.
 
-```clojure:src/pondermatic/rules/production.cljc
-startLine: 648
-endLine: 782
+### Simple Value Assignment:
+- Directly assign values or use bound variables.
+- Example: `:type "combination"`, `:batter-id ?batter-id`
+
+### Computed Values:
+- Use a vector starting with `$` to indicate a computed value.
+- Example: `:ppu (str '[$ (* 0.7 ?ppu)])`
+
+### String Interpolation:
+- Use `str` function with a vector starting with `$` for string interpolation.
+- Example: `:name (str '[$ (str ?name " - Regular Glazed")])`
+
+### Quoted Variables:
+- Use single quote `'` to refer to bound variables without evaluation.
+- Example: `:donut-id '?donut-id`
+
+## Complete Rule Example
+
+```clojure
+{:id ::regular-glazed-offer
+ :rule/name "Regular glazed offer"
+ :rule/when '{":db/ident" ?donut-id
+              :type "donut"
+              :name ?name
+              :ppu ?ppu
+              :batters [{":db/ident" ?batter-id
+                         :batter "Regular"}]
+              :toppings [{":db/ident" ?topping-id
+                          :topping "Glazed"}]}
+ :rule/then {:type "offer"
+             :ppu (str '[$ (* 0.7 ?ppu)])
+             :name (str '[$ (str ?name " - Regular Glazed")])
+             :donut-id '?donut-id
+             :batter-id '?batter-id
+             :topping-id '?topping-id}}
 ```
-
-- **Simple Attribute**:
-  ```clojure
-  (pattern->what '{:attr ?val})
-  ; => [[_ :attr '?val]]
-  ```
-
-- **Nested Attribute**:
-  ```clojure
-  (pattern->what '{:attr [{:attr2 ?val}]})
-  ; => [[?b :p/contained-by ?a]
-  ;     [?b :p/attr :attr]
-  ;     [?b :a/first ?c]
-  ;     [?c :attr2 '?val]]
-  ```
-
-## Conclusion
-
-Understanding the rule syntax and its components is crucial for defining and managing rules within the system. The provided examples and parsing functions illustrate how rules are structured and processed. The system supports both pure Clojure syntax and JavaScript-compatible syntax, enabling flexibility in rule definition and integration.

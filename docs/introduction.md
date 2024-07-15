@@ -4,7 +4,7 @@ Welcome to the Pondermatic documentation! This guide will help you understand th
 
 ## What is Pondermatic?
 
-Pondermatic is a robust framework for defining and executing rules in a declarative manner. It supports integration with various data sources and provides a functional effect system to manage side effects in a predictable way.
+Pondermatic is a robust framework for defining and executing rules in a declarative manner. It supports integration with various data sources and provides a functional effect system to manage side effects in a predictable way. By using Pondermatic, developers can build complex rule-based systems with ease, ensuring that side effects are handled in a consistent and composable manner.
 
 ## Key Features
 
@@ -12,6 +12,13 @@ Pondermatic is a robust framework for defining and executing rules in a declarat
 - **Multi-language Support**: Works seamlessly with Clojure, ClojureScript, and JavaScript.
 - **Declarative Rule Definitions**: Define rules in a clear and concise way.
 - **Data Integration**: Easily integrate with various data sources.
+
+## When to use Pondermatic
+- **Business Rule Management**: Use Pondermatic to define and manage business rules that need to be applied consistently across different parts of your application.
+- **Data Transformation**: Leverage Pondermatic to transform and process data from various sources, ensuring that the transformations are applied in a predictable manner.
+- **Event-driven Systems**: Implement event-driven systems where rules are triggered based on specific events or conditions, allowing for flexible and dynamic behavior.
+
+![Sample Rule Definition](images/sample_rule_definition.png)
 
 ## Getting Started
 

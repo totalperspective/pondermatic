@@ -16,124 +16,93 @@ npm install @totalperspective/pondermatic
 
 ### Creating an Engine
 
-To create an engine, use the `createEngine` function:
-
-```javascript
-import pondermatic from '@totalperspective/pondermatic';
-
-const engine = pondermatic.createEngine('example', true);
-```
+- **Description**: Creates a new engine instance.
+- **Parameters**:
+  - `name` (string): The name of the engine.
+  - `resetDb` (boolean): Whether to reset the database.
+- **Returns**: An engine instance.
+- **Example**:
+  ```javascript
+  import pondermatic from '@totalperspective/pondermatic';
+  const engine = pondermatic.createEngine('example', true);
+  ```
 
 ### Defining Rules
 
-Rules can be defined using the `ruleset` function:
-
-```javascript
-const rules = pondermatic.ruleset([
-  {
-    id: 'example-rule',
-    'rule/when': { 'data/key': '?value' },
-    'rule/then': { 'data/new-key': '?value' }
-  }
-]);
-```
+- **Description**: Defines a set of rules.
+- **Parameters**:
+  - `rules` (Array<Object>): An array of rule definitions.
+- **Returns**: A ruleset.
+- **Example**:
+  ```javascript
+  const rules = pondermatic.ruleset([
+    {
+      id: 'example-rule',
+      'rule/when': { 'data/key': '?value' },
+      'rule/then': { 'data/new-key': '?value' }
+    }
+  ]);
+  ```
 
 ### Adding Data
 
-Data can be added to the engine using the `dataset` function and the `sh` function:
-
-```javascript
-const data = pondermatic.dataset([{ key: 'value' }]);
-
-pondermatic.sh(engine, { '->db': rules });
-pondermatic.sh(engine, { '->db': data });
-```
+- **Description**: Creates a dataset from an array of data objects.
+- **Parameters**:
+  - `data` (Array<Object>): An array of data objects.
+- **Returns**: A dataset.
+- **Example**:
+  ```javascript
+  const data = pondermatic.dataset([{ key: 'value' }]);
+  pondermatic.sh(engine, { '->db': rules });
+  pondermatic.sh(engine, { '->db': data });
+  ```
 
 ### Querying Data
 
-To query data, use the `q` function:
-
-```javascript
-const q = pondermatic.q(
-  engine,
-  "[:find ?v . :where [?id :data/key ?v]]",
-  [],
-  r => {
-    if (!r) {
-      return;
+- **Description**: Executes a query on the engine.
+- **Parameters**:
+  - `engine` (Engine): The engine instance.
+  - `query` (string): The query string.
+  - `args` (Array<any>): An array of arguments for the query.
+  - `callback` (Function): A callback function to handle the query results.
+- **Returns**: Query results.
+- **Example**:
+  ```javascript
+  const q = pondermatic.q(
+    engine,
+    "[:find ?v . :where [?id :data/key ?v]]",
+    [],
+    r => {
+      if (!r) {
+        return;
+      }
+      console.log(r);
     }
-    console.log(r);
-  }
-);
-```
+  );
+  ```
 
 ### Stopping the Engine
 
-To stop the engine, use the `stop` function:
+- **Description**: Stops the engine.
+- **Parameters**:
+  - `engine` (Engine): The engine instance.
+- **Returns**: None.
+- **Example**:
+  ```javascript
+  pondermatic.stop(engine);
+  ```
 
-```javascript
-pondermatic.stop(engine);
-```
+## Table of Contents
+- [Creating an Engine](#creating-an-engine)
+- [Defining Rules](#defining-rules)
+- [Adding Data](#adding-data)
+- [Querying Data](#querying-data)
+- [Stopping the Engine](#stopping-the-engine)
 
-## API Reference
-
-### `createEngine(name: string, resetDb: boolean): Engine`
-
-Creates a new engine instance.
-
-- `name`: The name of the engine.
-- `resetDb`: A boolean indicating whether to reset the database.
-
-### `ruleset(rules: Array<Object>): Ruleset`
-
-Defines a set of rules.
-
-- `rules`: An array of rule objects.
-
-### `dataset(data: Array<Object>): Dataset`
-
-Creates a dataset from an array of data objects.
-
-- `data`: An array of data objects.
-
-### `sh(engine: Engine, msg: Object): void`
-
-Sends a message to the engine.
-
-- `engine`: The engine instance.
-- `msg`: The message object.
-
-### `q(engine: Engine, query: string, args: Array<any>, callback: Function): Query`
-
-Executes a query on the engine.
-
-- `engine`: The engine instance.
-- `query`: The query string.
-- `args`: An array of arguments for the query.
-- `callback`: A callback function to handle the query results.
-
-### `stop(engine: Engine): void`
-
-Stops the engine.
-
-- `engine`: The engine instance.
-
-## Examples
-
-For more examples, refer to the [Examples](docs/examples.md) section.
-
-## Getting Started
-
-To get started with Pondermatic, refer to the [Getting Started](docs/getting_started.md) guide.
-
-## Features
-
-For a list of features, refer to the [Features](docs/features.md) section.
-
-## Installation
-
-For installation instructions, refer to the [Installation](docs/installation.md) guide.
-
-## Introduction
-
-For an introduction to Pondermatic, refer to the [Introduction](docs/introduction.md) section.
+## Changelog
+### Version 1.11.10
+- Added support for JavaScript.
+- Improved performance optimizations.
+- Enhanced data source integrations.
+- Additional rule definition capabilities.
+- Expanded documentation and examples.

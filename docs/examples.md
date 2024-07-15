@@ -2,27 +2,37 @@
 
 This document provides examples of how to use various features of the project. Below are some code samples and their explanations.
 
-## Example 1: Basic Usage
-
-Here is a basic example of how to use the `pondermatic` library to create an engine and add data to it.
+## Example 1: Basic Rule Definition
+This example demonstrates how to define a basic rule in Pondermatic. It shows the structure of a rule and how to use it to process data.
 
 ```clojure
-(ns example.basic
+(ns example.core
   (:require [pondermatic.core :as p]))
 
-(def engine (p/create-engine "example" true))
+;; Define a ruleset with a single rule
+(def rules
+  (p/ruleset
+   [{:id :example-rule
+     :rule/when {:data/key ?value}
+     :rule/then {:data/new-key ?value}}]))
 
-(def rules (p/ruleset
-  [{:id "example-rule"
-    :rule/when {:data/key "?value"}
-    :rule/then {:data/new-key "?value"}}]))
+;; Define a dataset with a single data entry
+(def data
+  (p/dataset
+   [{:key "value"}]))
 
-(def data (p/dataset [{:key "value"}]))
+;; Create an engine instance and load the ruleset and dataset
+(def engine (p/->engine "example" :reset-db? true))
 
-(p/sh engine {:->db rules})
-(p/sh engine {:->db data})
-(p/stop engine)
+(-> engine
+    (p/|> {:->db rules})
+    (p/|> {:->db data})
+    p/stop)
 ```
+
+![Example 1 Output](images/example_1_output.png)
+
+For more information on rule definitions, refer to the [Rule Syntax](rules/syntax.md) documentation.
 
 ## Example 2: Advanced Query
 
@@ -137,4 +147,4 @@ This example demonstrates how to integrate `pondermatic` with other libraries.
 (p/stop engine)
 ```
 
-These examples should help you get started with using the `pondermatic` library in various scenarios. For more detailed information, refer to the [API Reference](api_reference_js.md).
+These examples should help you get started with using the `pondermatic` library in various scenarios. For more detailed information, refer to the [API Reference](api_reference.md).
