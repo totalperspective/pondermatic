@@ -1,5 +1,12 @@
 - Never `import ide`. When making changes using ide.*, don't try to import the library because you'll get and error, it should already exist in the repl in the context of the current namespace.
-- Escape any nested codeblocks
+- escape nested codeblocks e.g.
+```
+Markdown
+\```
+code
+\```
+more markdown
+```
 - When using jupyter execute shell commands using either:
   - The `!` operator,
   - The `%` operator, or
