@@ -1,0 +1,9 @@
+- Never `import ide`. When making changes using ide.*, don't try to import the library because you'll get and error, it should already exist in the repl in the context of the current namespace.
+- Escape any nested codeblocks
+- When using jupyter execute shell commands using either:
+  - The `!` operator,
+  - The `%` operator, or
+  - `os.subprocess` from the `os` library
+
+Chat Commands:
+- `/commit` - Commit the current working state, using the git cli, use a variable for the commit message
