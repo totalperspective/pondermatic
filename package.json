@@ -1,6 +1,6 @@
 {
   "name": "@totalperspective/pondermatic",
-  "version": "1.11.10",
+  "version": "1.12.0",
   "description": "Functional effect system driven rules engine",
   "engines": {
     "node": ">=16"
@@ -8,6 +8,7 @@
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
   "browser": "dist/mjs/index.js",
+  "types": "index.d.ts",
   "exports": {
     ".": {
       "browser": "./dist/mjs/index.js",

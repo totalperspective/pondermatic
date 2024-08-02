@@ -6,6 +6,7 @@
             [pondermatic.flow.port :as !]
             [missionary.core :as m]
             [pondermatic.browser.console :as console]
+            [pondermatic.browser.client :as client]
             [clojure.walk :as w]))
 
 (def !ids (atom {nil true}))
@@ -36,6 +37,7 @@
     (when <return!
       (swap! !ids dissoc id))
     (condp = cmd
+      :agents (partial reset! client/!agents)
       :prn (apply prn msg)
       :tap (tap> (p.util/log (assoc msg :runtime :portal)))
       :error (log/error msg)

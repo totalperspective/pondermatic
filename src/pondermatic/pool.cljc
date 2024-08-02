@@ -2,7 +2,6 @@
   (:require [pondermatic.shell :as sh]
             [portal.console :as log]
             [missionary.core :as m]
-            [pondermatic.browser.console :as console]
             [pondermatic.flow :as flow]))
 
 (defn pool-process
@@ -14,8 +13,10 @@
       (condp = cmd
         :agents (let [{:keys [cb]} msg
                       {:keys [::agents]} session
-                      info (reduce-kv (fn [m id {:keys [type]}]
-                                        (assoc m id type))
+                      info (reduce-kv (fn [m id {:keys [type agent]}]
+                                        (let [{:keys [::sh/!quiescent?]} agent]
+                                          (assoc m id {:type type
+                                                       :quiescent? @!quiescent?})))
                                       {} agents)]
                   (log/trace {:agents info})
                   (when (fn? cb)
@@ -29,11 +30,21 @@
         :+agent (let [{:keys [id agent args]} msg
                       {:keys [create clone]} (get-in session [::contructors agent])]
                   (if create
-                    (assoc-in session [::agents id] {:type agent :agent (apply create args) :clone clone})
+                    (let [agent (apply create args)
+                          {:keys [::sh/!quiescent?]} agent]
+                      (add-watch !quiescent? id (fn [_ q? _]
+                                                  (swap! (:!agents session)
+                                                         #(assoc-in %
+                                                                    [agent args]
+                                                                    {:id id :type type :quiescent? q?}))))
+                      (assoc-in session [::agents id] {:type agent :agent agent :clone clone}))
                     (do (log/warn (ex-info "Unkown agent type" {:agent agent :id id}))
                         session)))
         :-agent (let [{:keys [id]} msg
-                      agent (get-in session [::agents id :agent])]
+                      agent (get-in session [::agents id :agent])
+                      {:keys [!quiescent?]} agent]
+                  (remove-watch !quiescent? id)
+                  (swap! (:!agents session) dissoc id)
                   (if agent
                     (do
                       (sh/stop agent)
@@ -74,10 +85,13 @@
   (assoc cs type {:create create :clone clone}))
 
 (defn ->pool [contructors]
-  (let [session {::contructors contructors ::agents {}}]
-    (->> session
-         (sh/engine pool-process)
-         (sh/actor ::prefix))))
+  (let [!agents (atom {})
+        session {::contructors contructors ::agents {} :!agents !agents}]
+    (assoc
+     (->> session
+          (sh/engine pool-process)
+          (sh/actor ::prefix))
+     :!agents !agents)))
 
 (defn add-agent! [pool agent & args]
   (let [id (str (random-uuid))
