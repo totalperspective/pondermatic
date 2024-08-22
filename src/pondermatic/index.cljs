@@ -50,7 +50,8 @@
 (defn hash-id [js-obj]
   (-> js-obj
       (js->clj :keywordize-keys true)
-      uuid-hash))
+      uuid-hash
+      str))
 
 (defn create-engine
   ([name]
