@@ -13,7 +13,8 @@
     ".": {
       "browser": "./dist/mjs/index.js",
       "require": "./dist/cjs/index.js",
-      "default": "./dist/cjs/index.js"
+      "default": "./dist/cjs/index.js",
+      "types": "./index.d.ts"
     },
     "./browser/*": "./dist/browser/*.js"
   },
