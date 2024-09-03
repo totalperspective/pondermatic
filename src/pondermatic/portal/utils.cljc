@@ -50,12 +50,13 @@
         (when-let [data (or (ex-data ex)
                             (.-data ex))]
           (datafy-value {:data data}))
-        {:runtime :cljs
-         :cause   (.-message ex)
-         :via     (error->data (ex-cause ex))
-         :stack   (-> ex
-                      .-stack
-                      map-stack)})))
+        (let [stack (.-stack ex)
+              mapped (map-stack stack)]
+          {:runtime :cljs
+           :cause   (.-message ex)
+           :via     (error->data (ex-cause ex))
+           :stack   (text stack)
+           :mapped-stack mapped}))))
    :default
    (defn error->data [ex]
      (assoc (datafy/datafy ex) :runtime :clj)))

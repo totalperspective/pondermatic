@@ -36,10 +36,10 @@
 
 (def -q>< (with-agent< webe/q><))
 
-(defn q>< [{:keys [::id ::engine]} & args]
+(defn q>< [{:keys [::id ::engine]} args]
   (cond
     engine (apply p/q>< engine args)
-    id (apply -q>< id args)
+    id (-q>< id args)
     :else (throw (ex-info "No engine or id provided" {:args args}))))
 
 (def -entity>< (with-agent< webe/entity><))

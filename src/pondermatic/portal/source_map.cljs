@@ -1,9 +1,11 @@
 (ns pondermatic.portal.source-map
   (:require ["source-map" :refer [SourceMapConsumer]]
-            ["node:fs" :as fs]
             [clojure.string :as str]
             [kitchen-async.promise :as p]
             #_[clojure.pprint :refer [pprint]]))
+
+(def fs (try (js/require "fs")
+             (catch js/Error _ nil)))
 
 (def source-files! (atom {}))
 (def source-maps! (atom {}))
@@ -20,51 +22,58 @@
   ([source-file]
    (find-source-file source-file source-file))
   ([source-file root-file]
-   (if (contains? @source-files! source-file)
-     (get @source-files! source-file)
-     (if (fs/existsSync source-file)
-       (do
-         #_(pprint {:phase "find-source-file"
-                    :step "found source file"
-                    :root-file root-file
-                    :source-file source-file})
-         (swap! source-files! assoc root-file source-file)
-         source-file)
-       (let [path-elements (str/split source-file #"/")
-             source-path (str/join "/" (butlast path-elements))
-             source-file (str source-path "." (last path-elements))]
-         #_(pprint {:phase "find-source-file"
-                    :step "source-path"
-                    :source-file source-file
-                    :source-path source-path})
-         (if (seq source-path)
-           (find-source-file source-file root-file)
-           (do
-             #_(pprint {:phase "find-source-file"
-                        :step "no source path"
-                        :source-file source-file
-                        :root-file root-file})
-             (swap! source-files! assoc root-file nil)
-             nil)))))))
+   (if-not fs
+     root-file
+     (if (contains? @source-files! source-file)
+       (get @source-files! source-file)
+       (if (fs.existsSync source-file)
+         (do
+           #_(pprint {:phase "find-source-file"
+                      :step "found source file"
+                      :root-file root-file
+                      :source-file source-file})
+           (swap! source-files! assoc root-file source-file)
+           source-file)
+         (let [path-elements (str/split source-file #"/")
+               source-path (str/join "/" (butlast path-elements))
+               source-file (str source-path "." (last path-elements))]
+           #_(pprint {:phase "find-source-file"
+                      :step "source-path"
+                      :source-file source-file
+                      :source-path source-path})
+           (if (seq source-path)
+             (find-source-file source-file root-file)
+             (do
+               #_(pprint {:phase "find-source-file"
+                          :step "no source path"
+                          :source-file source-file
+                          :root-file root-file})
+               (swap! source-files! assoc root-file nil)
+               nil))))))))
+
+(defn async-load-file [file]
+  (if-not fs
+    (js/fetch file)
+    (fs.promise.readFile file "utf8")))
 
 (defn fetch-source-map [source-file]
   (if-not source-file
     true
     (if-let [source-map (get @source-maps! source-file)]
-      source-map
+      (p/do source-map)
       (when-let [source-file (find-source-file source-file)]
         (let [map-file (str source-file ".map")]
-          (try
-            (let [data (.readFileSync fs map-file "utf8")
-                  source-map (js/JSON.parse data)
-                  consumer (SourceMapConsumer. source-map)]
+          (p/try
+            (p/let [data (async-load-file map-file)
+                    source-map (js/JSON.parse data)
+                    consumer (SourceMapConsumer. source-map)]
               #_(pprint {:phase "fetch-source-map"
                          :step "load map file"
                          :map-file map-file
                          :data-size (count data)})
               (swap! source-maps! assoc source-file consumer)
               consumer)
-            (catch js/Error e
+            (p/catch js/Error e
               (if (str/includes? (.-message e) "no such file")
                 (do
                   #_(pprint {:phase "fetch-source-map"

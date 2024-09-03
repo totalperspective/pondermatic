@@ -35,6 +35,13 @@
 
 (defmulti dispatch msg-type)
 
+(defn quiescent? [x]
+  (if-let [!quiescent? (::sh/!quiescent? x)]
+    @!quiescent?
+    (do (log/warn {:message "no quiescent?"
+                   :x x})
+        true)))
+
 (defn engine-process [{:keys [::conn ::rules ::dispose:db=>rules] :as env} msg]
   (log/debug msg)
   (if (= msg sh/done)
@@ -42,8 +49,8 @@
       (sh/|> conn sh/done)
       (sh/|> rules sh/done)
       (dispose:db=>rules))
-    (let [q-conn? @(::!quiescent? conn)
-          q-rules? @(::!quiescent? rules)]
+    (let [q-conn? (quiescent? conn)
+          q-rules? (quiescent? rules)]
       (assoc
        (if (map? msg)
          (reduce dispatch env (seq msg))
