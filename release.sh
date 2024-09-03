@@ -1,4 +1,8 @@
 #!/bin/sh
+if [ -f .env ]; then
+  source .env
+fi
+
 if [ -z "$CLOJARS_USERNAME" ]; then
   echo "CLOJARS_USERNAME is not set"
   exit 1
