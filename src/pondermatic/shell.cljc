@@ -50,7 +50,7 @@
                (process cmd)
                engine)
            (catch #?(:cljs js/Error :default Exception) e
-             (log/error (ex-info "Engin process failed" {::cmd cmd} e))
+             (log/error (ex-info "Engine process failed" {::cmd cmd} e))
              (engine session))))))))
 
 (defn |> [{:keys [::send] :as a} msg]
@@ -112,3 +112,7 @@
    (f/drain (|< actor (|<= (map (partial reset! atom))))
             ::->atom)
    atom))
+
+(defn actor? [a]
+  (and (map? a)
+       (contains? a ::send)))

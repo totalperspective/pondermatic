@@ -8,7 +8,6 @@
   {:target :node-script
    :main user/-main
    :output-to "out/dev.js"
-  ;;  :build-hooks [(build/hook)]
    :compiler-options {:source-map true
                       :pretty-print true
                       :pseudo-names true
@@ -51,6 +50,8 @@
    :output-to "dist/cjs/index.js"
   ;;  :build-hooks [(build/hook)]
    :compiler-options {:output-feature-set :es5
+                      :source-map true
+                      :pretty-print true
                       :reader-features #{:cljs/npm}}
    :exports-fn pondermatic.index/exports}
 

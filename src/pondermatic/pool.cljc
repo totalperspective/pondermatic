@@ -15,8 +15,12 @@
                       {:keys [::agents]} session
                       info (reduce-kv (fn [m id {:keys [type agent]}]
                                         (let [{:keys [::sh/!quiescent?]} agent]
+                                          (when-not !quiescent?
+                                            (log/fatal (ex-info "Agent not quiescent" {:agent agent})))
                                           (assoc m id {:type type
-                                                       :quiescent? @!quiescent?})))
+                                                       :quiescent? (if !quiescent?
+                                                                     @!quiescent?
+                                                                     true)})))
                                       {} agents)]
                   (log/trace {:agents info})
                   (when (fn? cb)
@@ -43,7 +47,10 @@
         :-agent (let [{:keys [id]} msg
                       agent (get-in session [::agents id :agent])
                       {:keys [!quiescent?]} agent]
-                  (remove-watch !quiescent? id)
+                  (try
+                    (remove-watch !quiescent? id)
+                    (catch #?(:clj Exception :cljs js/Error) e
+                      (log/warn (ex-info "Error removing watch" {:id id} e))))
                   (swap! (:!agents session) dissoc id)
                   (if agent
                     (do

@@ -1,7 +1,9 @@
 (ns pondermatic.portal.utils
   (:require [portal.console :as log]
             [clojure.datafy :as datafy]
-            [clojure.walk :as w]))
+            [clojure.walk :as w]
+            #?(:cljs [pondermatic.portal.source-map :as source-map])
+            #?(:cljs [kitchen-async.promise :as p])))
 
 (defn with-viewer [x viewer]
   (if #?(:clj (instance? clojure.lang.IMeta x) :cljs (implements? cljs.core.IWithMeta x))
@@ -33,6 +35,11 @@
    (log/trace {label x})
    x))
 
+#?(:cljs
+   (defn map-stack [stack-trace]
+     (p/let [result (source-map/apply-source-maps stack-trace)]
+       (text result))))
+
 (declare datafy-value)
 
 #?(:cljs
@@ -48,7 +55,7 @@
          :via     (error->data (ex-cause ex))
          :stack   (-> ex
                       .-stack
-                      text)})))
+                      map-stack)})))
    :default
    (defn error->data [ex]
      (assoc (datafy/datafy ex) :runtime :clj)))
@@ -71,7 +78,9 @@
                                     (fn? value)
                                     (pr-str value)
 
+                                    (re-find #"^#object" (pr-str value))
+                                    (pr-str value)
+
                                     :else
                                     value)))
                     datafy/datafy)))))
-

@@ -6,7 +6,8 @@
             #?(:cljs
                [portal.client.web :as pw])
             [portal.console :as log]
-            [pondermatic.portal.utils :as p.utils]))
+            [pondermatic.portal.utils :as p.utils]
+            #?(:cljs [pondermatic.env :as env])))
 
 (def port 5678)
 (def host "localhost")
@@ -14,7 +15,7 @@
 (def !opts (atom {:port port :host host}))
 
 (def submit-impl
-  #?(:cljs (if (.-window js/globalThis)
+  #?(:cljs (if env/browser?
              pw/submit
              p/submit)
      :default p/submit))
@@ -22,14 +23,17 @@
 (defn submitter [submit-impl]
   (fn [value]
     #?(:cljs
-       (js/console.debug value))
+       (when env/browser?
+         (js/console.debug value)))
     (try
       (->> value
            p.utils/datafy-value
            submit-impl)
       (catch #?(:cljs js/Error :default Exception) e
         #?(:cljs
-           (js/console.error e)
+           (if env/browser?
+             (js/console.error e)
+             (println e))
            :default
            (println e))))))
 

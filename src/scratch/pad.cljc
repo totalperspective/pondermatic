@@ -1,7 +1,8 @@
-(ns scratch.pad)
+(ns scratch.pad
+  (:require [clojure.pprint :as pprint]))
 
 #_{:clj-kondo/ignore [:unresolved-namespace]}
-(clojure.pprint/pprint
+(pprint/pprint
  '(nil :tap {:worker
              {:ns pondermatic.flow, :time #inst "2024-03-05T18:36:31.324-00:00", :file "/Users/bahulneel/Projects/TotalPerspective/pondermatic/src/pondermatic/flow.cljc", :column 6, :level :info, :line 34, :result
               {:pondermatic.shell/>return
@@ -13,3 +14,9 @@
                 , :agents {}, :pondermatic.pool/agents
                 {#uuid "6fe3597c-1443-49e5-ac95-e2105b550bf0"
                  {:agent {:pondermatic.shell/send #object[missionary.impl.Mailbox.Port], :pondermatic.shell/receive #object[missionary.impl.Propagator.Publisher]}, :clone "#object[pondermatic$engine$conn_GT_]"}}}}, :runtime :cljs, :form {(or prefix :tap) x}}}))
+
+(pprint/pprint
+ '{:pondermatic.shell/prefix :pondermatic.engine/>return,
+   :pondermatic.shell/send #object [$missionary$impl$Mailbox$Port$$ [object Object]],
+   :pondermatic.shell/receive #object [$missionary$impl$Propagator$Publisher$$ [object Object]],
+   :pondermatic.shell/!quiescent? #object [cljs.core.Atom {:val true}]})

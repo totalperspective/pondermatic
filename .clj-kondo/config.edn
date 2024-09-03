@@ -5,7 +5,11 @@
            pondermatic.macros/|->< clojure.core/->
            pondermatic.macros/|->>< clojure.core/->>
            shadow.cljs.modern/js-await clojure.core/let
-           taoensso.tufte/defnp clojure.core/defn}
+           taoensso.tufte/defnp clojure.core/defn
+           kitchen-async.promise/let clojure.core/let
+           kitchen-async.promise/try clojure.core/try
+           kitchen-async.promise/catch clojure.core/catch
+           kitchen-async.promise/finally clojure.core/finally}
  :linters {:redundant-expression {:level :off}
            :redundant-do {:level :off}}
  :config-in-call {meander.epsilon/rewrite
