@@ -24,3 +24,4 @@ node_modules/
 src/pondermatic/flow.cljc
 .calva/
 *.pom.asc
+.env
