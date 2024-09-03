@@ -62,7 +62,6 @@
     "@js-joda/timezone": "^2.21.1",
     "shadow-cljs": "^2.28.14",
     "source-map": "^0.7.4",
-    "source-map-support": "^0.5.21",
     "winston": "^3.14.2"
   }
 }
