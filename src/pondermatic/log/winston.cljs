@@ -1,10 +1,7 @@
 (ns pondermatic.log.winston
   (:require ["winston" :as winston]
             ["winston-transport" :as winston-transport]
-            ["source-map-support" :as source-map-support]
             [cljs.pprint :as pp]))
-
-(source-map-support/install)
 
 (defn format-log-message [message]
   (cond
