@@ -22,7 +22,8 @@
         tick/tick {:mvn/version "0.7.5"}
         cljstache/cljstache {:mvn/version "2.0.6"}
         com.taoensso/tufte {:mvn/version "2.6.3"}
-        com.cognitect/transit-clj {:mvn/version "1.0.333"}}
+        com.cognitect/transit-clj {:mvn/version "1.0.333"}
+        kitchen-async/kitchen-async {:mvn/version "0.1.0-SNAPSHOT"}}
  :aliases
  {:dev
   {:extra-paths ["dev"]

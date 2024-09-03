@@ -14,22 +14,49 @@
             [pondermatic.reader :refer [-read-string]]
             [pondermatic.browser.engine :as webe]
             [pondermatic.pool :as pool]
-            [pondermatic.data :refer [uuid-hash] :as data])
+            [pondermatic.data :refer [uuid-hash] :as data]
+            [pondermatic.env :as env]
+            [pondermatic.shell :as sh]
+            [pondermatic.log.winston :as winston-logger])
   (:require-macros [pondermatic.macros :refer [|-><]]))
 
 (defonce pool (-> {}
                   (webe/contructor :engine p/->engine p/clone>)
                   pool/->pool))
 
-(def to-pool! (partial webe/to-pool! pool))
+(def -to-pool! (partial webe/to-pool! pool))
+
+(defn to-pool! [{:keys [::id ::engine]} & args]
+  (cond
+    engine (apply sh/|> engine args)
+    id (apply -to-pool! id args)
+    :else (throw (ex-info "No engine or id provided" {:args args}))))
 
 (def with-agent< (partial pool/with-agent< pool))
 
-(def q>< (with-agent< webe/q><))
+(def -q>< (with-agent< webe/q><))
 
-(def entity>< (with-agent< webe/entity><))
+(defn q>< [{:keys [::id ::engine]} args]
+  (cond
+    engine (apply p/q>< engine args)
+    id (-q>< id args)
+    :else (throw (ex-info "No engine or id provided" {:args args}))))
 
-(def entity< (with-agent< webe/entity<))
+(def -entity>< (with-agent< webe/entity><))
+
+(defn entity>< [{:keys [::id ::engine]} & args]
+  (cond
+    engine (apply p/entity>< engine args)
+    id (apply -entity>< id args)
+    :else (throw (ex-info "No engine or id provided" {:args args}))))
+
+(def -entity< (with-agent< webe/entity<))
+
+(defn entity< [{:keys [::id ::engine]} & args]
+  (cond
+    engine (apply p/entity< engine args)
+    id (apply -entity< id args)
+    :else (throw (ex-info "No engine or id provided" {:args args}))))
 
 (defn watch-agents [cb]
   (let [id (str (random-uuid))]
@@ -57,11 +84,18 @@
   ([name]
    (create-engine name false))
   ([name reset-db?]
-   (let [id (pool/add-agent! pool :engine name :reset-db? reset-db?)]
-     {::id id})))
+   (create-engine name reset-db? false))
+  ([name reset-db? pool?]
+   (if pool?
+     (let [id (pool/add-agent! pool :engine name :reset-db? reset-db?)]
+       {::id id})
+     {::engine (p/->engine name :reset-db? reset-db?)})))
 
-(defn stop [{:keys [::id]}]
-  (pool/remove-agent! pool id))
+(defn stop [{::keys [::id ::engine]}]
+  (cond
+    engine (p/stop engine)
+    id (pool/remove-agent! pool id)
+    :else (throw (ex-info "No engine or id provided" {}))))
 
 (defn ->edn [form]
   (let [visit-node (fn [node]
@@ -101,12 +135,15 @@
       p/dataset
       (p.util/trace 'dataset)))
 
-(defn sh [{:keys [::id]} msg]
-  (pool/to-agent! pool
-                  id
-                  (-> msg
-                      (js->clj :keywordize-keys true)
-                      (p.util/trace 'sh))))
+(defn sh [{:keys [::id ::engine] :as agent} msg]
+  (log/info {:agent agent :msg msg})
+  (let [msg (-> msg
+                (js->clj :keywordize-keys true)
+                (p.util/trace 'sh))]
+    (cond
+      engine (sh/|> engine msg)
+      id (pool/to-agent! pool id msg)
+      :else (throw (ex-info "No engine or id provided" {:msg msg})))))
 
 (defn wrap-callbacks [msg]
   (w/postwalk (fn [node]
@@ -124,6 +161,8 @@
   nil)
 
 (defn copy [{:keys [::id]}]
+  (when-not id
+    (throw (ex-info "Not a pooled engine" {})))
   {::id (pool/copy-agent! pool id)})
 
 (defn add-rules-msg [rules]
@@ -131,34 +170,31 @@
                    (js->clj :keywordize-keys true)
                    (p.util/trace 'add-rules-msg))))
 
-(defn q [{:keys [::id]} q args cb]
+(defn q [engine q args cb]
+  (log/info {:msg "Executing query"
+             :args {:id (::id engine) :q q :args args}})
   (let [args (js->clj args)
         q-args (-> q
                    -read-string
                    vector
                    (into args)
                    (p.util/trace ::parsed-query))
-        <>q (q>< id q-args)
-        query-cb #(cb (clj->js %))]
+        <>q (q>< engine q-args)
+        query-cb #(do
+                    (log/info {:msg "Query result"
+                               :result %})
+                    (cb (clj->js %)))]
     (|->< <>q
           (flow/drain-using {::flow :query ::query q}
                             (flow/tapper query-cb)))))
 
-;; (defn query-rule [engine id cb]
-;;   (let [id (-read-string id)
-;;         <>query-rule (p/query-rule>< engine id)
-;;         query-cb #(cb (clj->js %))]
-;;     (|->< <>query-rule
-;;           (flow/drain-using {::flow :query-rule ::id id}
-;;                             (flow/tapper query-cb)))))
-
-(defn entity [{:keys [::id]} ident cb]
+(defn entity [engine ident cb]
   (log/trace {:entity/ident ident})
   (let [ident (-> ident
                   js->clj
                   str
                   -read-string)
-        <entity (entity< id [ident true])
+        <entity (entity< engine [ident true])
         entity-cb (fn [entity]
                     (log/trace entity)
                     (let [entity (assoc entity :id (str ident))]
@@ -167,13 +203,13 @@
                       (cb (clj->js entity))))]
     (<entity entity-cb #(cb nil %))))
 
-(defn entity* [{:keys [::id] :as engine} ident cb]
+(defn entity* [engine ident cb]
   (entity engine ident cb)
   (let [ident (-> ident
                   js->clj
                   str
                   -read-string)
-        <>entity (entity>< id [ident true])
+        <>entity (entity>< engine [ident true])
         entity-cb (fn [entity']
                     (let [entity (when entity' (assoc entity' :id (str ident)))]
                       (log/trace {:ident ident
@@ -300,25 +336,8 @@
                        node)))
        clj->js))
 
-(defn console-tap
-  ([x]
-   (if (and (map? x) (:level x))
-     (let [{:keys [level result]} x
-           level (condp = level
-                   :trace :debug
-                   :fatal :error
-                   level)
-           log (get (js->clj js/console)
-                    (if (string? level)
-                      level
-                      (name level)))]
-       (js/console.groupCollapsed)
-       (if (fn? log)
-         (log (dissoc x :result))
-         (js/console.log (dissoc x :result)))
-       (js/console.trace result)
-       (js/console.groupEnd))
-     (js/console.log x))))
+(defn console-tap [x]
+  (winston-logger/winston-tap x))
 
 (defn eval-string
   ([str]
@@ -346,8 +365,6 @@
        :addRulesMsg add-rules-msg
        :q q
        :qP (->promise-fn q)
-        ;;  :queryRule query-rule
-        ;;  :queryRuleP (->promise-fn query-rule)
        :entity entity
        :entityP (->promise-fn entity)
        :watchEntity entity*
@@ -372,30 +389,33 @@
        :watchAgents watch-agents
        :removeAgentsWatch remove-agents-watch})
 
+(defn- init-api [api]
+  (if env/web-worker?
+    (do
+      (js/console.log "Pondermatic - Web Worker detected - Initializing")
+      (set! js/self.pondermatic #js {:api api})
+      api)
+    (do
+      (js/console.log "Pondermatic - Initializing API")
+      api)))
+
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 (defn exports []
   (cond
-    (and (.-pondermatic js/globalThis) (.-api js/globalThis.pondermatic))
+    ;; Browser environment with Pondermatic already initialized
+    (and env/browser?
+         (.-pondermatic js/window)
+         (.-api js/window.pondermatic))
     (do
-      (js/console.log "Pondematic - Browser version detected")
-      js/globalThis.pondermatic.api)
+      (js/console.log "Pondermatic - Browser version detected")
+      js/window.pondermatic.api)
 
-    (and webe/worker? (.-pondermatic js/globalThis))
+    ;; Node.js environment
+    env/node?
     (do
-      (js/console.log "Pondematic - Global Detected - Initialising Browser version")
-      (set! js/globalThis.pondermatic.api api)
-      api)
+      (js/console.log "Pondermatic - Node.js environment detected")
+      (init-api api))
 
-    webe/worker?
-    (do
-      (js/console.log "Pondematic - Worker Detected - Initialising Browser version")
-      (set! js/globalThis.pondermatic #js {:api api})
-      api)
-
+    ;; Web Worker or other environment
     :else
-    (do
-      (js/console.log "Pondematic - Initializing API")
-      api)))
-
-(defn init []
-  (exports))
+    (init-api api)))

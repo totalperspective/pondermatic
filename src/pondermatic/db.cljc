@@ -99,9 +99,13 @@
 (defn -q [q db args]
   (p ::q
      (when db
-       (let [result (apply d/q q db args)]
-         (log/trace {:q q :args args :result result})
-         result))))
+       (try
+         (let [result (apply d/q q db args)]
+           (log/trace {:q q :args args :result result})
+           result)
+         (catch #?(:clj Exception :cljs js/Error) e
+           (log/error {:q q :args args :e e})
+           (throw e))))))
 
 (defn q> [query & args]
   (|<= (map :db-after)

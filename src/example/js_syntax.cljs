@@ -3,7 +3,7 @@
             [taoensso.tufte :as tufte])
   (:require-macros [taoensso.tufte :refer [profile]]))
 
-(i/portal)
+;; (i/portal)
 
 (tufte/add-basic-println-handler! {})
 

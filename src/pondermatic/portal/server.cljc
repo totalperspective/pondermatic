@@ -3,6 +3,7 @@
                :default [portal.api :as p])
             [pondermatic.portal.client :as pc]
             [pondermatic.rules.production :as prp]
+            #?(:cljs [pondermatic.portal.utils :as utils])
             #?(:cljs [pondermatic.data :as data])
             [portal.console :as log]))
 
@@ -15,6 +16,8 @@
 (p/register! #'compile-pattern)
 #?(:cljs
    (p/register! #'data/read-transit))
+#?(:cljs
+   (p/register! #'utils/map-stack))
 
 (def port 5678)
 
