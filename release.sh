@@ -11,6 +11,9 @@ if [ -z "$CLOJARS_PASSWORD" ]; then
   echo "CLOJARS_PASSWORD is not set"
   exit 1
 fi
+export CLOJARS_USERNAME=$CLOJARS_USERNAME
+export CLOJARS_PASSWORD=$CLOJARS_PASSWORD
+
 CURRENT_VERSION=$(cat VERSION)
 git flow release start $1 || exit $?
 VERSION=$(cat VERSION)
