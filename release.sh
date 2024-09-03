@@ -12,7 +12,7 @@ if [ -z "$CLOJARS_PASSWORD" ]; then
   exit 1
 fi
 CURRENT_VERSION=$(cat VERSION)
-git flow release start $1
+git flow release start $1 || exit $?
 VERSION=$(cat VERSION)
 
 if [ "$CURRENT_VERSION" = "$VERSION" ]; then
