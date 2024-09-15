@@ -49,7 +49,7 @@
   {:target :node-library
    :output-to "dist/cjs/index.js"
   ;;  :build-hooks [(build/hook)]
-   :compiler-options {:output-feature-set :es5
+   :compiler-options {:output-feature-set :es2020
                       :source-map true
                       :pretty-print true
                       :reader-features #{:cljs/npm}}
@@ -58,12 +58,8 @@
   :esm
   {:target :esm
    :output-dir "dist/mjs"
-   :runtime :browser
-  ;;  :js-options {:js-provider :import}
-  ;;  :js-options {:entry-keys ["module" "browser" "main"]}
-  ;;  :build-hooks [(build/hook)]
    :compiler-options {:reader-features #{:cljs/esm :cljs/browser}
-                      :output-feature-set :es5
+                      :output-feature-set :es-next
                       :pseudo-names true
                       :pretty-print true}
    :modules {:index
@@ -76,16 +72,32 @@
    :output-dir "dist/worker"
    :asset-path "/"
    :compiler-options {:reader-features #{:cljs/browser}
+                      :output-feature-set :browser-2020
                       :pseudo-names true
                       :pretty-print true}
    :modules {:index
              {:init-fn pondermatic.browser.worker/init
               :web-worker true}}}
+  
   :browser
-  {:target :browser
+  {:target :esm
+   :runtime :browser
    :output-dir "dist/browser"
+   :compiler-options {:reader-features #{:cljs/esm :cljs/browser}
+                      :output-feature-set :browser-2020
+                      :pseudo-names true
+                      :pretty-print true}
+   :modules {:index
+             {:exports {default pondermatic.index/exports}
+              :depends-on #{}}}
+   :release {}}
+  
+  :ilff
+  {:target :browser
+   :output-dir "dist/ilff"
    :asset-path "/"
    :compiler-options {:reader-features #{:cljs/browser}
+                      :output-feature-set :browser-2020
                       :pseudo-names true
                       :pretty-print true}
    :modules {:shared

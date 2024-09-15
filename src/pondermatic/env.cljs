@@ -1,9 +1,12 @@
-(ns pondermatic.env)
+(ns pondermatic.env
+  (:require ["detect-node" :as is-node]))
 
 (def node?
   "Check if we're in a Node.js environment"
-  (and (exists? js/process)
-       (-> js/process .-release .-name (= "node"))))
+  (try
+    (is-node)
+    (catch js/Error e
+      false)))
 
 (def browser?
   "Check if we're in a browser environment"

@@ -14,17 +14,23 @@
 
 (def !opts (atom {:port port :host host}))
 
+#?(:cljs
+   (defn async-submit [opts value]
+     (let [submit-impl (if env/browser?
+                         pw/submit
+                         p/submit)]
+       (if-not (instance? js/Promise value)
+         (submit-impl opts value)
+         (-> value
+             (.then #(submit-impl opts %))
+             (.catch #(submit-impl opts %)))))))
+
 (def submit-impl
-  #?(:cljs (if env/browser?
-             pw/submit
-             p/submit)
+  #?(:cljs async-submit
      :default p/submit))
 
 (defn submitter [submit-impl]
   (fn [value]
-    #?(:cljs
-       (when env/browser?
-         (js/console.debug value)))
     (try
       (->> value
            p.utils/datafy-value

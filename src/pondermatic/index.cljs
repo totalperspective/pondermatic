@@ -16,8 +16,7 @@
             [pondermatic.pool :as pool]
             [pondermatic.data :refer [uuid-hash] :as data]
             [pondermatic.env :as env]
-            [pondermatic.shell :as sh]
-            [pondermatic.log.winston :as winston-logger])
+            [pondermatic.shell :as sh])
   (:require-macros [pondermatic.macros :refer [|-><]]))
 
 (defonce pool (-> {}
@@ -52,7 +51,7 @@
 
 (def -entity< (with-agent< webe/entity<))
 
-(defn entity< [{:keys [::id ::engine]} & args]
+(defn entity< [{:keys [::id ::engine]} args]
   (cond
     engine (apply p/entity< engine args)
     id (apply -entity< id args)
@@ -337,7 +336,7 @@
        clj->js))
 
 (defn console-tap [x]
-  (winston-logger/winston-tap x))
+  (js/console.log (pr-str x)))
 
 (defn eval-string
   ([str]

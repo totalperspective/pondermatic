@@ -9,7 +9,9 @@
            kitchen-async.promise/let clojure.core/let
            kitchen-async.promise/try clojure.core/try
            kitchen-async.promise/catch clojure.core/catch
-           kitchen-async.promise/finally clojure.core/finally}
+           kitchen-async.promise/finally clojure.core/finally
+           kitchen-async.promise/-> clojure.core/->
+           kitchen-async.promise/->> clojure.core/->>}
  :linters {:redundant-expression {:level :off}
            :redundant-do {:level :off}}
  :config-in-call {meander.epsilon/rewrite

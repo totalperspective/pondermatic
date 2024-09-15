@@ -1,5 +1,5 @@
 (ns pondermatic.log
-  (:require [pondermatic.portal.utils :as p.util]
+  (:require #?(:cljs [pondermatic.portal.utils :as p.util])
             #?(:cljs [pondermatic.browser.console :as console])
             #?(:node [zuko.logging :as log])))
 
