@@ -338,6 +338,9 @@
 (defn console-tap [x]
   (js/console.log (pr-str x)))
 
+(defn raw-tap [x]
+  (js/console.log x))
+
 (defn eval-string
   ([str]
    (eval-string str false))
@@ -376,7 +379,8 @@
        :pprint #(-> % js->clj pp/pprint)
        :addTap (fn
                  ([] (add-tap console-tap))
-                 ([tap] (add-tap #(tap %))))
+                 ([tap] (cond (fn? tap) (add-tap #(tap %))
+                              :else (add-tap raw-tap))))
        :readString -read-string
        :toString pr-str
        :encode data/transit-json-writer
