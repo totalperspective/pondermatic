@@ -93,6 +93,10 @@
 (defn db! [{:keys [:db-uri]}]
   (d/db (d/connect db-uri)))
 
+(defn q! [agent q & args]
+  (let [db (db! agent)]
+    (apply d/q q db args)))
+
 (defn db< [conn]
   (sh/|!> conn :db-after))
 

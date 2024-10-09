@@ -1,4 +1,4 @@
-import pondermatic from '../dist/cjs/index.js'
+import pondermatic from './import.mjs'
 
 // pondermatic.logLevel("info")
 // pondermatic.portal()
@@ -117,4 +117,6 @@ test('production rule edn', done => {
   }])
   pondermatic.sh(engine, { "->db": rules })
   pondermatic.sh(engine, { "->db": tx })
+  const r = pondermatic.q$(engine, "[:find ?v . :where [?id :data/new-key ?v]]")
+  expect(r).toBe("value")
 });

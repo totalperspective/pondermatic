@@ -1,6 +1,7 @@
 (ns example.ui
   (:require [pondermatic.core :as p]
             [clojure.pprint :as cpp]
+            [hyperfiddle.rcf :refer [tests %] :as rcf]
             [pondermatic.shell :refer [|>]]))
 
 (def data
@@ -40,3 +41,6 @@
     (|> {:->db rules})
     (|> {:->db data})
     p/stop)
+
+(tests
+ (p/q! engine '[:find ?email :where [_ :data/email ?email]]) := [["example@example.com"]])

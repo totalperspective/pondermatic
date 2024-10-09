@@ -10,14 +10,14 @@
             [pondermatic.reader :as pr]
             [pondermatic.rules.production :as prod]
             [meander.epsilon :as m]
-            [portal.console :as log]
             [edn-query-language.core :as eql]))
 
 (defn ->engine [name & {:keys [:reset-db?] :or {reset-db? false}}]
   (let [db-uri (db/name->mem-uri name)
         conn (db/->conn db-uri reset-db?)
         session (rules/->session)]
-    (engine/->engine conn session)))
+    (assoc (engine/->engine conn session)
+           ::q! (partial db/q! conn))))
 
 (def clone> engine/clone>)
 
@@ -220,3 +220,8 @@
                                     (-> (.parse js/JSON json)
                                         (js->clj :keywordize-keys true)))])})
 
+(defn q! [engine q & args]
+  (let [q! (::q! engine)]
+    (if (fn? q!)
+      (apply q! q args)
+      (throw (ex-info "No q! function found in engine" {:engine engine})))))
