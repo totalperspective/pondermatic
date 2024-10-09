@@ -56,8 +56,8 @@
       "<rootDir>/js/"
     ],
     "testMatch": [
-      "**/*.mjs",
-      "**/*.js"
+      "**/*.test.mjs",
+      "**/*.test.js"
     ],
     "transform": {}
   },

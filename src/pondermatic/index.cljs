@@ -49,6 +49,14 @@
     id (apply -entity>< id args)
     :else (throw (ex-info "No engine or id provided" {:args args}))))
 
+(defn q! [{:keys [::id ::engine] :as agent} q & args]
+  (let [q (-read-string q)
+        args (js->clj args :keywordize-keys true)]
+    (cond
+      engine (apply p/q! engine q args)
+      id (throw (ex-info "q! not supported on pooled engine" {:agent agent}))
+      :else (throw (ex-info "No engine or id provided" {:agent agent})))))
+
 (def -entity< (with-agent< webe/entity<))
 
 (defn entity< [{:keys [::id ::engine]} args]
@@ -365,6 +373,7 @@
        :sh sh
        :cmd cmd
        :addRulesMsg add-rules-msg
+       :q$ q!
        :q q
        :qP (->promise-fn q)
        :entity entity
