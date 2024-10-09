@@ -2,10 +2,16 @@
   (:require ["source-map" :refer [SourceMapConsumer]]
             [clojure.string :as str]
             [kitchen-async.promise :as p]
+            [pondermatic.env :as env]
             #_[clojure.pprint :refer [pprint]]))
 
-(def fs (try (js/require "fs")
-             (catch js/Error _ nil)))
+(def require-fs
+  (memoize (fn []
+             (try
+               (when env/node? (js/require "fs"))
+               (catch js/Error e
+                 (println "Error requiring fs" e)
+                 nil)))))
 
 (def source-files! (atom {}))
 (def source-maps! (atom {}))
@@ -22,8 +28,7 @@
   ([source-file]
    (find-source-file source-file source-file))
   ([source-file root-file]
-   (if-not fs
-     root-file
+   (if-let [fs (require-fs)]
      (if (contains? @source-files! source-file)
        (get @source-files! source-file)
        (if (fs.existsSync source-file)
@@ -49,12 +54,13 @@
                           :source-file source-file
                           :root-file root-file})
                (swap! source-files! assoc root-file nil)
-               nil))))))))
+               nil)))))
+     root-file)))
 
 (defn async-load-file [file]
-  (if-not fs
-    (js/fetch file)
-    (fs.promise.readFile file "utf8")))
+  (if-let [fs (require-fs)]
+    (fs.promise.readFile file "utf8")
+    (js/fetch file)))
 
 (defn fetch-source-map [source-file]
   (if-not source-file

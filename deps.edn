@@ -31,7 +31,7 @@
    :jvm-opts ["-Djdk.attach.allowAttachSelf" "-Dtaoensso.elide-deprecated=true"]}
   :cljs
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.132"}
-                thheller/shadow-cljs {:mvn/version "2.27.5"}
+                thheller/shadow-cljs {:mvn/version "2.28.4"}
                 com.cognitect/transit-cljs {:mvn/version "0.8.280"}}}
   :test
   {:jvm-opts    ["-XX:-OmitStackTraceInFastThrow"

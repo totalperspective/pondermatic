@@ -4,6 +4,8 @@
             [pondermatic.portal.client :as pc]
             [pondermatic.rules.production :as prp]
             #?(:cljs [pondermatic.portal.utils :as utils])
+            #?(:cljs [pondermatic.portal.source-map :as source-map])
+            #?(:cljs [kitchen-async.promise :as pa])
             #?(:cljs [pondermatic.data :as data])
             [portal.console :as log]))
 
@@ -14,10 +16,16 @@
         patterns))
 
 (p/register! #'compile-pattern)
+
 #?(:cljs
    (p/register! #'data/read-transit))
+
 #?(:cljs
-   (p/register! #'utils/map-stack))
+   (do
+     (defn map-stack [stack-trace]
+       (pa/let [result (source-map/apply-source-maps stack-trace)]
+         (utils/text result)))
+     (p/register! #'map-stack)))
 
 (def port 5678)
 

@@ -2,7 +2,7 @@ import pondermatic from '../dist/cjs/index.js'
 
 // pondermatic.logLevel("info")
 // pondermatic.portal()
-// pondermatic.addTap()
+pondermatic.addTap()
 
 let engine
 beforeEach(() => {
