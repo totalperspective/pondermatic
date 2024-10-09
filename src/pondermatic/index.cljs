@@ -53,7 +53,7 @@
   (let [q (-read-string q)
         args (js->clj args :keywordize-keys true)]
     (cond
-      engine (apply p/q! engine q args)
+      engine (clj->js (apply p/q! engine q args))
       id (throw (ex-info "q! not supported on pooled engine" {:agent agent}))
       :else (throw (ex-info "No engine or id provided" {:agent agent})))))
 
