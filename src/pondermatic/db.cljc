@@ -55,9 +55,16 @@
                           deref
                           (update :tx-data (partial into ident-datoms))
                           (update :tx-data (partial mapv datom/as-vec))
-                          (assoc :db-uri db-uri))]
+                          (assoc :db-uri db-uri))
+               result-cb  (fn [result]
+                            (let [db-after (:db-after result)
+                                  query (fn [q & args]
+                                          (apply d/q q db-after args))]
+                              (cb (-> result
+                                      (dissoc :db-after :db-before)
+                                      (assoc :query query)))))]
            (when (fn? cb)
-             (cb result))
+             (result-cb result))
            result)
          :else (do
                  (log/warn (ex-info "Unknown Command" {::cmd cmd}))

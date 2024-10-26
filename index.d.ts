@@ -11,8 +11,7 @@ declare module '@totalperspective/pondermatic' {
   export type Datom = [string, string, unknown, number, boolean];
 
   export interface DBResult {
-    'db-before': object;
-    'db-after': object;
+    'query': (query: string) => any;
     'tx-data': Datom[];
     'tempids': Record<string, string>;
     'db-uri': string;
