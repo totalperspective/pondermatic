@@ -36,7 +36,8 @@
        (log/trace cmd)
        (cond
          (map? cmd)
-         (let [tx (update cmd :tx-data (partial remove nil?))
+         (let [{:keys [cb]} cmd
+               tx (update cmd :tx-data (partial remove nil?))
                conn (d/connect db-uri)
                idents (->> tx
                            :tx-data
@@ -48,13 +49,23 @@
                                    (d/transact {:tx-data idents})
                                    deref
                                    :tx-data))
-               ident-datoms (vec ident-tx-data)]
-           (-> conn
-               (d/transact tx)
-               deref
-               (update :tx-data (partial into ident-datoms))
-               (update :tx-data (partial mapv datom/as-vec))
-               (assoc :db-uri db-uri)))
+               ident-datoms (vec ident-tx-data)
+               result (-> conn
+                          (d/transact tx)
+                          deref
+                          (update :tx-data (partial into ident-datoms))
+                          (update :tx-data (partial mapv datom/as-vec))
+                          (assoc :db-uri db-uri))
+               result-cb  (fn [result]
+                            (let [db-after (:db-after result)
+                                  query (fn [q & args]
+                                          (apply d/q q db-after args))]
+                              (cb (-> result
+                                      (dissoc :db-after :db-before)
+                                      (assoc :query query)))))]
+           (when (fn? cb)
+             (result-cb result))
+           result)
          :else (do
                  (log/warn (ex-info "Unknown Command" {::cmd cmd}))
                  session)))))

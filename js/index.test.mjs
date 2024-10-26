@@ -120,3 +120,15 @@ test('production rule edn', done => {
   const r = pondermatic.q$(engine, "[:find ?v . :where [?id :data/new-key ?v]]")
   expect(r).toBe("value")
 });
+
+test('callback', done => {
+  const data = pondermatic.dataset([{ "id": "test", "key": "value" }])
+  pondermatic.sh(engine, {
+    "->db": data,
+    "cb": r => {
+      console.log('callback', r)
+      expect(r.tempids).toHaveProperty("test")
+      done()
+    }
+  })
+})

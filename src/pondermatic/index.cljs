@@ -142,10 +142,21 @@
       p/dataset
       (p.util/trace 'dataset)))
 
+(defn wrap-query [query-fn]
+  (if (fn? query-fn)
+    (fn [q & args]
+      (let [result (apply query-fn (-read-string q) args)]
+        (clj->js result)))
+    query-fn))
+
 (defn sh [{:keys [::id ::engine] :as agent} msg]
   (log/info {:agent agent :msg msg})
   (let [msg (-> msg
                 (js->clj :keywordize-keys true)
+                (update :cb (fn [cb]
+                              (when cb
+                                (fn [x]
+                                  (cb (clj->js (update x :query wrap-query)))))))
                 (p.util/trace 'sh))]
     (cond
       engine (sh/|> engine msg)
