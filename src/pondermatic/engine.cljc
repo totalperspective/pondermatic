@@ -30,7 +30,7 @@
            (map #(update % true (partial mapv datum->eav)))
            (map #(update % false (partial mapv datum->eav)))))
 
-(defn msg-type [_ cmd]
+(defn msg-type [_ cmd _]
   (first cmd))
 
 (defmulti dispatch msg-type)
@@ -53,7 +53,12 @@
           q-rules? (quiescent? rules)]
       (assoc
        (if (map? msg)
-         (reduce dispatch env (seq msg))
+         (let [{:keys [:cb]} msg
+               msg (dissoc msg :cb)]
+           (reduce (fn [env msg]
+                     (dispatch env msg cb))
+                   env
+                   (seq msg)))
          (dispatch env msg))
        ::quiescent? {::conn? q-conn?
                      ::rules? q-rules?}))))
@@ -267,21 +272,21 @@
               :rule-atom)
     atom))
 
-(defmethod dispatch :->db [{:keys [::conn] :as e} [_ data]]
+(defmethod dispatch :->db [{:keys [::conn] :as e} [_ data] cb]
   (when (seq data)
-    (sh/|> conn {:tx-data data}))
+    (sh/|> conn {:tx-data data :cb cb}))
   e)
 
-(defmethod dispatch :+>db [{:keys [::conn] :as e} [_ data]]
+(defmethod dispatch :+>db [{:keys [::conn] :as e} [_ data] cb]
   (when (seq data)
-    (sh/|> conn {:tx-data (db/upsert data)}))
+    (sh/|> conn {:tx-data (db/upsert data) :cb cb}))
   e)
 
-(defmethod dispatch :!>db [{:keys [::conn] :as e} [_ data]]
+(defmethod dispatch :!>db [{:keys [::conn] :as e} [_ data] _]
   (sh/|> conn data)
   e)
 
-(defmethod dispatch :->rules [{:keys [::rules] :as e} [_ msg]]
+(defmethod dispatch :->rules [{:keys [::rules] :as e} [_ msg] _]
   (sh/|> rules msg)
   e)
 

@@ -146,6 +146,10 @@
   (log/info {:agent agent :msg msg})
   (let [msg (-> msg
                 (js->clj :keywordize-keys true)
+                (update :cb (fn [cb]
+                              (when cb
+                                (fn [x]
+                                  (cb (clj->js x))))))
                 (p.util/trace 'sh))]
     (cond
       engine (sh/|> engine msg)

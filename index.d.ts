@@ -8,20 +8,31 @@ declare module '@totalperspective/pondermatic' {
   }
 
   export type Engine = Pool | Local;
+  export type Datom = [string, string, unknown, number, boolean];
 
-  interface InsertMessage {
+  export interface DBResult {
+    'db-before': object;
+    'db-after': object;
+    'tx-data': Datom[];
+    'tempids': Record<string, string>;
+    'db-uri': string;
+  }
+
+  interface TxMessage {
     '->db': {
       [key: string]: any;
     };
+    cb?: (result: DBResult) => void;
   }
 
   interface UpsertMessage {
     '+>db': {
       [key: string]: any;
     };
+    cb?: (result: DBResult) => void;
   }
 
-  export type Message = InsertMessage | UpsertMessage
+  export type Message = TxMessage | UpsertMessage
   export type Task = { __type: 'flow' } & (() => void)
 
   interface PondermaticAPI {
