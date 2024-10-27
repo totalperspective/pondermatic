@@ -293,13 +293,11 @@
 (defn q>< [engine q & args]
   (m/sp (let [conn (m/? (conn> engine))
               >q (apply db/q> q args)]
-          ;; (flow/updates)
           (sh/|< conn >q))))
 
 (defn entity>< [engine ident nested?]
   (m/sp (let [conn (m/? (conn> engine))
               >entity (db/entity> ident :nested? nested?)]
-          ;; (flow/updates)
           (sh/|< conn >entity))))
 
 (defn entity< [engine ident nested?]
@@ -313,6 +311,11 @@
   (m/sp (let [rules (m/? (rules> engine))
               query-rule< (apply rules/query< args)]
           (sh/|< rules query-rule<))))
+
+(defn t>< [engine]
+  (m/sp (let [conn (m/? (conn> engine))
+              >t (db/t>)]
+          (sh/|< conn >t))))
 
 (defn export< [engine]
   (m/sp

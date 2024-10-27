@@ -192,6 +192,8 @@
 
 (def export< engine/export<)
 
+(def t>< engine/t><)
+
 (def stop sh/stop)
 
 (defn export->! [engine !data]

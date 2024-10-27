@@ -126,6 +126,10 @@
   (|<= (map :db-after)
        (map #(-q query % args))))
 
+(defn t> []
+  (|<= (map :db-after)
+       (map :t)))
+
 (defn -entity [db id nested?]
   (p ::entity
      (when db

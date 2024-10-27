@@ -236,6 +236,13 @@
     (|->< <>entity
           (flow/drain-using {::flow :entity ::ident ident} (flow/tapper entity-cb)))))
 
+(defn basis-t [{:keys [::id ::engine]} cb]
+  (let [<>t (cond
+              engine (p/t>< engine)
+              id (pool/to-agent! pool id (p/t>< engine))
+              :else (throw (ex-info "No engine or id provided" {})))]
+    (|->< <>t (flow/drain-using {::flow :basis-t} (flow/tapper cb)))))
+
 (defn dispose! [task]
   (task))
 
@@ -384,6 +391,7 @@
        :sh sh
        :cmd cmd
        :addRulesMsg add-rules-msg
+       :basisT basis-t
        :q$ q!
        :q q
        :qP (->promise-fn q)

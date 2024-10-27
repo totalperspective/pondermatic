@@ -5,8 +5,14 @@ import pondermatic from './import.mjs'
 pondermatic.addTap()
 
 let engine
+let engineIndex = 0
+
 beforeEach(() => {
+  ++engineIndex
   engine = pondermatic.createEngine('tests', true)
+  pondermatic.basisT(engine, r => {
+    console.log(`[${engineIndex}] basisT`, r)
+  })
 })
 
 afterEach(done => {
