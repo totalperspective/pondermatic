@@ -47,6 +47,7 @@ declare module '@totalperspective/pondermatic' {
     q$(engine: Engine, query: string, ...args: any[]): any;
     entity(engine: Engine, ident: string | object, callback: (entity: any) => void): Task;
     entityP(engine: Engine, ident: string | object): Promise<any>;
+    basisT(engine: Engine, callback: (result: number) => void): Task;
     watchEntity(engine: Engine, ident: string | object, callback: (entity: any) => void): Task;
     hashId(obj: object): string;
     errorInfo(error: Error): object;
