@@ -241,7 +241,8 @@
               engine (p/t>< engine)
               id (pool/to-agent! pool id (p/t>< engine))
               :else (throw (ex-info "No engine or id provided" {})))]
-    (|->< <>t (flow/drain-using {::flow :basis-t} (flow/tapper cb)))))
+    (|->< <>t
+          (flow/drain-using {::flow :basis-t} (flow/tapper cb)))))
 
 (defn dispose! [task]
   (task))
