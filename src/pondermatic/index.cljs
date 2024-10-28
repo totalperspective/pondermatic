@@ -16,7 +16,8 @@
             [pondermatic.pool :as pool]
             [pondermatic.data :refer [uuid-hash] :as data]
             [pondermatic.env :as env]
-            [pondermatic.shell :as sh])
+            [pondermatic.shell :as sh]
+            [asami.core :as d])
   (:require-macros [pondermatic.macros :refer [|-><]]))
 
 (defonce pool (-> {}
@@ -55,7 +56,7 @@
     (cond
       engine (clj->js (apply p/q! engine q args))
       id (throw (ex-info "q! not supported on pooled engine" {:agent agent}))
-      :else (throw (ex-info "No engine or id provided" {:agent agent})))))
+      :else (clj->js (apply d/q q args)))))
 
 (def -entity< (with-agent< webe/entity<))
 
