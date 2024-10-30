@@ -32,7 +32,8 @@
   :cljs
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.11.132"}
                 thheller/shadow-cljs {:mvn/version "2.28.4"}
-                com.cognitect/transit-cljs {:mvn/version "0.8.280"}}}
+                com.cognitect/transit-cljs {:mvn/version "0.8.280"}
+                binaryage/devtools {:mvn/version "1.0.7"}}}
   :test
   {:jvm-opts    ["-XX:-OmitStackTraceInFastThrow"
                  "-Dhyperfiddle.rcf.generate-tests=true"]
