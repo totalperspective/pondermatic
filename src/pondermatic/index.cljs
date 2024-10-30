@@ -245,6 +245,18 @@
     (|->< <>t
           (flow/drain-using {::flow :basis-t} (flow/tapper cb)))))
 
+(defn quiescent? [{:keys [::engine]}]
+  (let [p (pa/deferred)
+        on-success (fn [quiescent?]
+                     (pa/resolve! p quiescent?))
+        on-error (fn [e]
+                   (pa/reject! p e))]
+    (cond
+      engine ((p/quiescent?> engine) on-success on-error)
+    ;; id (pool/quiescent? pool id)
+      :else (throw (ex-info "No engine or id provided" {})))
+    p))
+
 (defn dispose! [task]
   (task))
 
@@ -420,7 +432,8 @@
        :devtoolsFormatter devtoolsFormatter
        :stop stop
        :watchAgents watch-agents
-       :removeAgentsWatch remove-agents-watch})
+       :removeAgentsWatch remove-agents-watch
+       :isReady quiescent?})
 
 (defn- init-api [api]
   (if env/web-worker?
