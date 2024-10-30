@@ -17,7 +17,9 @@
             [pondermatic.data :refer [uuid-hash] :as data]
             [pondermatic.env :as env]
             [pondermatic.shell :as sh]
-            [asami.core :as d])
+            [asami.core :as d]
+            [devtools.core :as devtools])
+
   (:require-macros [pondermatic.macros :refer [|-><]]))
 
 (defonce pool (-> {}
@@ -363,6 +365,9 @@
        :header (fn [obj _config]
                  (clj->js [:object {:object obj}]))})
 
+(defn devtools-init []
+  (devtools/install!))
+
 (defn toJS [form]
   (->> form
        js->clj
@@ -379,7 +384,14 @@
   (js/console.log (pr-str x)))
 
 (defn raw-tap [x]
-  (js/console.log x))
+  (let [{:keys [:level]} x]
+    (condp = (keyword level)
+      :debug (js/console.debug x)
+      :trace (js/console.trace x)
+      :info (js/console.info x)
+      :warn (js/console.warn x)
+      :error (js/console.error x)
+      :fatal (js/console.error x))))
 
 (defn eval-string
   ([str]
@@ -433,7 +445,8 @@
        :stop stop
        :watchAgents watch-agents
        :removeAgentsWatch remove-agents-watch
-       :isReady quiescent?})
+       :isReady quiescent?
+       :devtoolsInit devtools-init})
 
 (defn- init-api [api]
   (if env/web-worker?
