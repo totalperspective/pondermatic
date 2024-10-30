@@ -192,6 +192,8 @@
 
 (def export< engine/export<)
 
+(def quiescent?> engine/quiescent?>)
+
 (def t>< engine/t><)
 
 (def stop sh/stop)
