@@ -5,10 +5,11 @@ p.devtoolsFormatter.id = '__pondermatic__'
 
 if (globalThis.window) {
   globalThis.window.pondermatic = p
-  window.devtoolsFormatters = window.devtoolsFormatters || []
-  if (!window.devtoolsFormatters.some(f => f.id === p.devtoolsFormatter.id)) {
-    window.devtoolsFormatters.push(p.devtoolsFormatter)
-  }
+  p.devtoolsInit()
+  // window.devtoolsFormatters = window.devtoolsFormatters || []
+  // if (!window.devtoolsFormatters.some(f => f.id === p.devtoolsFormatter.id)) {
+  //   window.devtoolsFormatters.push(p.devtoolsFormatter)
+  // }
 }
 
 export default p
