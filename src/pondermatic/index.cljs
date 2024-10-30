@@ -18,7 +18,7 @@
             [pondermatic.env :as env]
             [pondermatic.shell :as sh]
             [asami.core :as d]
-            [devtools.core :as devtools])
+            [devtools.formatters :as formatters])
 
   (:require-macros [pondermatic.macros :refer [|-><]]))
 
@@ -366,7 +366,7 @@
                  (clj->js [:object {:object obj}]))})
 
 (defn devtools-init []
-  (devtools/install!))
+  (formatters/install!))
 
 (defn toJS [form]
   (->> form
