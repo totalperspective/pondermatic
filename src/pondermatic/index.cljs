@@ -352,16 +352,16 @@
     (clj->js [:div {} (str "clj: " (pp/write obj :stream nil))])))
 
 (def devtoolsFormatter
-  #js {:header (fn [obj _config]
-                 (cond
-                   (coll? obj) (format-obj obj)
+  #js {:body (fn [obj _config]
+               (cond
+                 (coll? obj) (format-obj obj)
 
-                   (not (js? obj)) (format-obj obj)
+                 (not (js? obj)) (format-obj obj)
 
-                   :else nil))
+                 :else nil))
        :hasBody (constantly true)
-       :body (fn [obj _config]
-               (clj->js [:object {:object obj}]))})
+       :header (fn [obj _config]
+                 (clj->js [:object {:object obj}]))})
 
 (defn toJS [form]
   (->> form
