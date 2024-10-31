@@ -74,9 +74,9 @@ declare module '@totalperspective/pondermatic' {
     isReady(engine: Engine): boolean;
     devtoolsInit(): void;
     noop: {
-      rules: object;
-      engine: object;
-      db: object;
+      rules: Message;
+      engine: Message;
+      db: Message;
     };
   }
 
