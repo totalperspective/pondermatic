@@ -33,13 +33,14 @@ declare module '@totalperspective/pondermatic' {
 
   export type Message = TxMessage | UpsertMessage
   export type Task = { __type: 'flow' } & (() => void)
+  export type State = { 'quiescent?': boolean, 'prefix': string } & { [key: string]: any }
 
   interface PondermaticAPI {
     createEngine(name: string, resetDb?: boolean): Engine;
     copy(engine: Engine): Engine;
     ruleset(rules: string | object): object;
     dataset(data: string | object): object;
-    sh(engine: Engine, msg: Message): void;
+    sh(engine: Engine, msg: Message): Promise<State>;
     cmd(msg: object): void;
     addRulesMsg(rules: object): object;
     q(engine: Engine, query: string, args: any[], callback: (result: any) => void): Task;
