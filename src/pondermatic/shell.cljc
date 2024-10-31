@@ -1,9 +1,25 @@
 (ns pondermatic.shell
   (:require [missionary.core :as m]
             [pondermatic.flow :as f]
-            [portal.console :as log]))
+            [portal.console :as log]
+            [clojure.walk :as walk]))
 
 (def done ::done)
+
+(defn cb [cmd]
+  (let [cmd-meta (try (meta cmd)
+                      (catch #?(:clj Exception :cljs js/Error) _e nil))]
+    (get cmd-meta ::cb identity)))
+
+(defn elide-fns [x]
+  (walk/postwalk (fn [x]
+                   (if (fn? x)
+                     ::fn
+                     x))
+                 x))
+
+(defn equal? [a b]
+  (= (elide-fns a) (elide-fns b)))
 
 (defn actor
   ([init]
@@ -14,12 +30,26 @@
          self (m/mbx)
          >actor (m/ap
                  (loop [process init last-session nil]
-                   (let [cmd (m/? self)]
+                   (let [cmd (m/? self)
+                         cb (cb cmd)]
+                     (log/trace {:prefix prefix :cmd cmd :cb cb})
                      (reset! !quiescent? false)
                      (let [next> (process cmd)
                            session (m/? (next>))
-                           next (next> nil session)]
-                       (reset! !quiescent? (= session last-session))
+                           next (next> nil session)
+                           session-cb (::cb (meta session))
+                           {:keys [::safe-keys]} (meta session)
+                           safe-session (if (map? session)
+                                          (select-keys session safe-keys)
+                                          {:session session})]
+                       (reset! !quiescent? (equal? session last-session))
+                       (let [cb-msg {:prefix prefix
+                                     :quiescent? @!quiescent?}
+                             cb-msg (merge cb-msg safe-session)]
+                         (when cb
+                           (cb cb-msg))
+                         (when session-cb
+                           (session-cb cb-msg)))
                        (if (not= done cmd)
                          (m/amb  session
                                  (recur next session))
@@ -116,3 +146,10 @@
 (defn actor? [a]
   (and (map? a)
        (contains? a ::send)))
+
+(defn quiescent? [x]
+  (if-let [!quiescent? (::!quiescent? x)]
+    @!quiescent?
+    (do (log/warn {:message "no quiescent?"
+                   :x x})
+        true)))

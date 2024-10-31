@@ -132,9 +132,29 @@ test('callback', done => {
   pondermatic.sh(engine, {
     "->db": data,
     "cb": r => {
-      console.log('callback', r)
-      expect(r.tempids).toHaveProperty("test")
-      done()
+      try {
+        console.log('callback', r)
+        expect(r.tempids).toHaveProperty("test")
+        done()
+      } catch (e) {
+        done(e)
+      }
     }
   })
+})
+
+test('quiescent?', async () => {
+  console.log('quiescent?')
+  let quiescent = pondermatic.isReady(engine)
+  expect(quiescent).toBe(false)
+  const tx = pondermatic.dataset([{ "key": "value" }])
+  pondermatic.sh(engine, { "->db": tx })
+  console.log("Sending noop to db")
+  console.log("    db", await pondermatic.sh(engine, pondermatic.noop.db))
+  console.log("Sending noop to engine")
+  console.log("engine", await pondermatic.sh(engine, pondermatic.noop.engine))
+  console.log("Sending noop to rules")
+  console.log(" rules", await pondermatic.sh(engine, pondermatic.noop.rules))
+  quiescent = pondermatic.isReady(engine)
+  expect(quiescent).toBe(true)
 })

@@ -71,8 +71,13 @@ declare module '@totalperspective/pondermatic' {
     stop(engine: Engine): void;
     watchAgents(callback: (agents: any) => void): string;
     removeAgentsWatch(id: string): void;
-    isReady(engine: Engine): Promise<boolean>;
+    isReady(engine: Engine): boolean;
     devtoolsInit(): void;
+    noop: {
+      rules: object;
+      engine: object;
+      db: object;
+    };
   }
 
   const api: PondermaticAPI;

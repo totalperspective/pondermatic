@@ -152,19 +152,44 @@
         (clj->js result)))
     query-fn))
 
+(defn wrap-result [result]
+  (clj->js
+   (if (map? result)
+     (update result :query wrap-query)
+     result)))
+
 (defn sh [{:keys [::id ::engine] :as agent} msg]
+  (when-not msg
+    (throw (ex-info "No message provided" {})))
   (log/info {:agent agent :msg msg})
-  (let [msg (-> msg
+  (let [p (pa/deferred)
+        msg (if (fn? msg)
+              (msg)
+              msg)
+        msg (-> msg
                 (js->clj :keywordize-keys true)
-                (update :cb (fn [cb]
-                              (when cb
-                                (fn [x]
-                                  (cb (clj->js (update x :query wrap-query)))))))
-                (p.util/trace 'sh))]
-    (cond
-      engine (sh/|> engine msg)
-      id (pool/to-agent! pool id msg)
-      :else (throw (ex-info "No engine or id provided" {:msg msg})))))
+                (p.util/trace 'sh))
+        msg-cb (:cb msg)
+        msg (assoc msg
+                   :cb (fn [result & [error]]
+                         (if error
+                           (pa/reject! p error)
+                           (let [result (wrap-result result)]
+                             (js/console.debug "sh:", (clj->js msg) result)
+                             (when msg-cb
+                               (msg-cb result))
+                             (pa/resolve! p result)))))]
+    (when-not (and (map? msg) (seq msg))
+      (log/error {:error "Invalid message" :msg msg})
+      (throw (ex-info "Invalid message" {:msg msg})))
+    (try
+      (cond
+        engine (sh/|> engine msg)
+        id (pool/to-agent! pool id msg)
+        :else (throw (ex-info "No engine or id provided" {:msg msg})))
+      (catch js/Error e
+        (pa/reject! p e)))
+    p))
 
 (defn wrap-callbacks [msg]
   (w/postwalk (fn [node]
@@ -190,6 +215,10 @@
   (r/add-rules (-> rules
                    (js->clj :keywordize-keys true)
                    (p.util/trace 'add-rules-msg))))
+
+(defn noop-db [] {:!>db :noop})
+(defn noop-rules [] {:->rules '(noop)})
+(defn noop-engine [] {:noop true})
 
 (defn q [engine q args cb]
   (log/info {:msg "Executing query"
@@ -247,17 +276,11 @@
     (|->< <>t
           (flow/drain-using {::flow :basis-t} (flow/tapper cb)))))
 
-(defn quiescent? [{:keys [::engine]}]
-  (let [p (pa/deferred)
-        on-success (fn [quiescent?]
-                     (pa/resolve! p quiescent?))
-        on-error (fn [e]
-                   (pa/reject! p e))]
-    (cond
-      engine ((p/quiescent?> engine) on-success on-error)
-    ;; id (pool/quiescent? pool id)
-      :else (throw (ex-info "No engine or id provided" {})))
-    p))
+(defn quiescent? [{:keys [::engine ::id]}]
+  (cond
+    engine (sh/quiescent? engine)
+    id (throw (ex-info "quiescent? not supported on pooled engine" {}))
+    :else (throw (ex-info "No engine or id provided" {}))))
 
 (defn dispose! [task]
   (task))
@@ -381,17 +404,29 @@
        clj->js))
 
 (defn console-tap [x]
-  (js/console.log (pr-str x)))
+  (let [{:keys [:level]} x
+        level (if (keyword? level) level (keyword level))
+        msg (pr-str x)]
+    (condp = level
+      :debug (js/console.debug msg)
+      :trace (js/console.debug msg)
+      :info (js/console.info msg)
+      :warn (js/console.warn msg)
+      :error (js/console.error msg)
+      :fatal (js/console.error msg)
+      (js/console.log msg))))
 
 (defn raw-tap [x]
-  (let [{:keys [:level]} x]
-    (condp = (keyword level)
+  (let [{:keys [:level]} x
+        level (if (keyword? level) level (keyword level))]
+    (condp = level
       :debug (js/console.debug x)
-      :trace (js/console.trace x)
+      :trace (js/console.debug x)
       :info (js/console.info x)
       :warn (js/console.warn x)
       :error (js/console.error x)
-      :fatal (js/console.error x))))
+      :fatal (js/console.error x)
+      (js/console.log x))))
 
 (defn eval-string
   ([str]
@@ -446,7 +481,10 @@
        :watchAgents watch-agents
        :removeAgentsWatch remove-agents-watch
        :isReady quiescent?
-       :devtoolsInit devtools-init})
+       :devtoolsInit devtools-init
+       :noop #js {:rules noop-rules
+                  :engine noop-engine
+                  :db noop-db}})
 
 (defn- init-api [api]
   (if env/web-worker?

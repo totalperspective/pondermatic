@@ -35,33 +35,36 @@
 
 (defmulti dispatch msg-type)
 
-(defn quiescent? [x]
-  (if-let [!quiescent? (::sh/!quiescent? x)]
-    @!quiescent?
-    (do (log/warn {:message "no quiescent?"
-                   :x x})
-        true)))
-
-(defn engine-process [{:keys [::conn ::rules ::dispose:db=>rules] :as env} msg]
+(defn engine-process [{:keys [::conn ::rules ::dispose:db=>rules ::iteration] :as env} msg]
   (log/debug msg)
   (if (= msg sh/done)
     (do
       (sh/|> conn sh/done)
       (sh/|> rules sh/done)
       (dispose:db=>rules))
-    (let [q-conn? (quiescent? conn)
-          q-rules? (quiescent? rules)]
-      (assoc
-       (if (map? msg)
-         (let [{:keys [:cb]} msg
-               msg (dissoc msg :cb)]
-           (reduce (fn [env msg]
-                     (dispatch env msg cb))
-                   env
-                   (seq msg)))
-         (dispatch env msg))
-       ::quiescent? {::conn? q-conn?
-                     ::rules? q-rules?}))))
+    (let [q-conn? (sh/quiescent? conn)
+          q-rules? (sh/quiescent? rules)]
+      (vary-meta
+       (assoc
+        (if (map? msg)
+          (let [{:keys [:cb]} msg
+                msg (dissoc msg :cb)]
+            (reduce (fn [env msg]
+                      (vary-meta
+                       (dispatch env msg cb)
+                       merge (or (meta cb) {})))
+                    env
+                    (seq msg)))
+          (dispatch env msg))
+        ::actors {::conn? q-conn?
+                  ::rules? q-rules?}
+        ::iteration (if (and q-conn? q-rules?)
+                      0
+                      (inc (if (number? iteration)
+                             iteration
+                             0))))
+       merge
+       {::sh/safe-keys [::iteration ::actors]}))))
 
 (defn kw->ds [data]
   (w/postwalk (fn [node]
@@ -238,11 +241,7 @@
   (sh/|!> engine ::rules))
 
 (defn quiescent?> [engine]
-  (m/sp (let [conn (m/? (conn> engine))
-              rules (m/? (rules> engine))
-              qConn? (m/? (sh/quiescent?> conn))
-              qRules? (m/? (sh/quiescent?> rules))]
-          (and qConn? qRules?))))
+  (sh/|!> engine (comp (fnil deref (atom false)) ::quiescent?)))
 
 (defn clone> [engine]
   (m/sp
@@ -274,21 +273,28 @@
 
 (defmethod dispatch :->db [{:keys [::conn] :as e} [_ data] cb]
   (when (seq data)
-    (sh/|> conn {:tx-data data :cb cb}))
+    (sh/|> conn (with-meta {:tx-data data} {::sh/cb cb})))
   e)
 
 (defmethod dispatch :+>db [{:keys [::conn] :as e} [_ data] cb]
   (when (seq data)
-    (sh/|> conn {:tx-data (db/upsert data) :cb cb}))
+    (sh/|> conn (with-meta {:tx-data (db/upsert data)} {::sh/cb cb})))
   e)
 
-(defmethod dispatch :!>db [{:keys [::conn] :as e} [_ data] _]
-  (sh/|> conn data)
+(defmethod dispatch :!>db [{:keys [::conn] :as e} [_ data] cb]
+  (sh/|> conn (if (keyword? data)
+                (with-meta (list data) {::sh/cb cb})
+                (with-meta data {::sh/cb cb})))
   e)
 
-(defmethod dispatch :->rules [{:keys [::rules] :as e} [_ msg] _]
-  (sh/|> rules msg)
+(defmethod dispatch :->rules [{:keys [::rules] :as e} [_ msg] cb]
+  (log/trace {:->rules msg :cb cb})
+  (sh/|> rules (with-meta msg {::sh/cb cb}))
   e)
+
+(defmethod dispatch :noop [e _ cb]
+  (log/trace {::noop e})
+  (with-meta e {::sh/cb cb}))
 
 (defn q>< [engine q & args]
   (m/sp (let [conn (m/? (conn> engine))
