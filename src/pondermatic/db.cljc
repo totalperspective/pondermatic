@@ -29,6 +29,9 @@
                 tx)
     @!idents))
 
+(defn return-session [session]
+  (vary-meta session merge {::sh/safe-keys [:db-uri :query :tempids :tx-data]}))
+
 (defn transactor
   [{:keys [:db-uri] :as session} cmd]
   (p ::transactor
@@ -36,8 +39,7 @@
        (log/trace cmd)
        (cond
          (map? cmd)
-         (let [{:keys [cb]} cmd
-               tx (update cmd :tx-data (partial remove nil?))
+         (let [tx (update cmd :tx-data (partial remove nil?))
                conn (d/connect db-uri)
                idents (->> tx
                            :tx-data
@@ -56,19 +58,19 @@
                           (update :tx-data (partial into ident-datoms))
                           (update :tx-data (partial mapv datom/as-vec))
                           (assoc :db-uri db-uri))
-               result-cb  (fn [result]
-                            (let [db-after (:db-after result)
-                                  query (fn [q & args]
-                                          (apply d/q q db-after args))]
-                              (cb (-> result
-                                      (dissoc :db-after :db-before)
-                                      (assoc :query query)))))]
-           (when (fn? cb)
-             (result-cb result))
-           result)
+               query (fn [q & args]
+                       (apply d/q q (:db-after result) args))
+               result (assoc result :query query)]
+           (return-session result))
+
+         (= cmd (list :noop))
+         (do
+           (log/debug {::noop session})
+           (return-session session))
+
          :else (do
                  (log/warn (ex-info "Unknown Command" {::cmd cmd}))
-                 session)))))
+                 (return-session session))))))
 
 (defn ->conn
   ([db-uri]

@@ -59,6 +59,11 @@
           session
           id:attrs))
 
+(defmethod exec 'noop
+  [[_ _] session]
+  (log/trace {::noop session})
+  session)
+
 (defn add-rule [rule]
   (list 'add-rule rule))
 
@@ -77,6 +82,9 @@
 (defn retract* [id:attrs]
   (list 'retract* id:attrs))
 
+(defn noop []
+  (list 'noop))
+
 (def query-all< (|<= (map #(o/query-all %))
                      (dedupe)))
 
@@ -89,9 +97,12 @@
   (p ::process
      (when-not (= cmd sh/done)
        (log/debug {::cmd cmd})
-       (->> session
-            (exec cmd)
-            o/fire-rules))))
+       (vary-meta
+        (->> session
+             (exec cmd)
+             o/fire-rules)
+        merge
+        {::sh/safe-keys [:last-id]}))))
 
 (defn ->session []
   (->> (o/->session)
