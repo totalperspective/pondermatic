@@ -159,6 +159,10 @@
         rule (o/->rule ?id rule-spec)]
     rule))
 
+(defn retract-entity-tx [db id]
+  (d/q '[:find :db/retract ?e ?a ?v :where [?e ?a ?v] [?e :id ?id] :in $ ?id]
+       db id))
+
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn add-base-rules [conn rules env]
   (let [ruleset
@@ -166,6 +170,19 @@
          {::db-uri
           [:what
            [::db ::db-uri db-uri]]
+          ::tombstones
+          [:what
+           [?id ::tombstone true]
+           :then-finally
+           (let [{:keys [db-uri]} (o/query-one session ::db-uri)
+                 conn (get @!conns db-uri)
+                 db (db/db! conn)
+                 matches (o/query-all session ::tombstones)
+                 txes (->> matches
+                           (map #(get % '?id))
+                           (map (partial retract-entity-tx db))
+                           (reduce into []))]
+             (sh/|> conn {:tx-data txes}))]
           ::collection-head
           [:what
            [?first-node :a/first ?first-id]
@@ -271,6 +288,13 @@
               :rule-atom)
     atom))
 
+
+(defn retract-entities [engine ids]
+  (sh/|> engine {:!>db {:tx-triples (map (fn [id] [id ::tombstone true]) ids)}}))
+
+(defn retract-entity [engine id]
+  (retract-entities engine [id]))
+
 (defmethod dispatch :->db [{:keys [::conn] :as e} [_ data] cb]
   (when (seq data)
     (sh/|> conn (with-meta {:tx-data data} {::sh/cb cb})))
@@ -279,6 +303,23 @@
 (defmethod dispatch :+>db [{:keys [::conn] :as e} [_ data] cb]
   (when (seq data)
     (sh/|> conn (with-meta {:tx-data (db/upsert data)} {::sh/cb cb})))
+  e)
+
+(defn entity->id [entity]
+  (cond
+    (keyword? entity) entity
+    (map? entity) (or (:db/ident entity)
+                      (:db/id entity))
+    :else nil))
+
+(defmethod dispatch :-!>db [{:keys [::conn] :as e} [_ data] cb]
+  (when (seq data)
+    (let [ids (->> data
+                   (map entity->id)
+                   (filter identity))
+          db (db/db! conn)
+          tx (retract-entities db ids)]
+      (sh/|> conn (with-meta {:tx-triples tx} {::sh/cb cb}))))
   e)
 
 (defmethod dispatch :!>db [{:keys [::conn] :as e} [_ data] cb]
@@ -330,3 +371,4 @@
 
 (defn import [engine data]
   (sh/|> engine {:!>db {:tx-triples data}}))
+
