@@ -17,35 +17,49 @@ declare module '@totalperspective/pondermatic' {
     'db-uri': string;
   }
 
+  type InsertOp = '->db'
+  type UpsertOp = '+>db'
+  type DatomsOp = '!>db'
+  type RetractOp = '-!>db'
+  export type TxOp = InsertOp | UpsertOp | DatomsOp | RetractOp
+  export type TxCallback = (result: DBResult) => void
+  export type Entity = {
+    id: string;
+    [key: string]: any;
+  }
   interface TxMessage {
-    '->db': {
-      [key: string]: any;
-    }[];
-    cb?: (result: DBResult) => void;
+    [op: InsertOp]: Entity[];
+    cb?: TxCallback;
   }
 
   interface UpsertMessage {
-    '+>db': {
-      [key: string]: any;
-    }[];
-    cb?: (result: DBResult) => void;
+    [op: UpsertOp]: Entity[];
+    cb?: TxCallback;
   }
 
   interface RetractMessage {
-    '-!>db': {
-      [key: string]: any;
-    }[];
-    cb?: (result: DBResult) => void;
+    [op: RetractOp]: Entity[];
+    cb?: TxCallback;
   }
 
   type Op = 'db/add' | 'db/retract';
 
   interface DatomsMessage {
-    '!>db': [Op, string, string, unknown][];
-    cb?: (result: DBResult) => void;
+    [op: DatomsOp]: [Op, string, string, unknown][];
+    cb?: TxCallback;
   }
 
-  export type Message = TxMessage | UpsertMessage | RetractMessage | DatomsMessage
+  type Messages = {
+    'insert': TxMessage;
+    'upsert': UpsertMessage;
+    'retract': RetractMessage;
+    'datoms': DatomsMessage;
+  }
+
+  
+  export type TxType = keyof Messages
+  export type Message<T extends TxType = 'insert'> = Messages[T]
+
   export type Task = { __type: 'flow' } & (() => void)
   export type State = { 'quiescent?': boolean, 'prefix': string } & { [key: string]: any }
 
@@ -54,7 +68,7 @@ declare module '@totalperspective/pondermatic' {
     copy(engine: Engine): Engine;
     ruleset(rules: string | object): object[];
     dataset(data: string | object): object[];
-    sh(engine: Engine, msg: Message): Promise<State>;
+    sh<t extends TxType = 'insert'>(engine: Engine, msg: Message<O>): Promise<State>;
     cmd(msg: object): void;
     addRulesMsg(rules: object): object;
     q(engine: Engine, query: string, args: any[], callback: (result: any) => void): Task;
