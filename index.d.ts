@@ -52,8 +52,8 @@ declare module '@totalperspective/pondermatic' {
   interface PondermaticAPI {
     createEngine(name: string, resetDb?: boolean): Engine;
     copy(engine: Engine): Engine;
-    ruleset(rules: string | object): object;
-    dataset(data: string | object): object;
+    ruleset(rules: string | object): object[];
+    dataset(data: string | object): object[];
     sh(engine: Engine, msg: Message): Promise<State>;
     cmd(msg: object): void;
     addRulesMsg(rules: object): object;
