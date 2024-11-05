@@ -80,8 +80,11 @@
                (process cmd)
                engine)
            (catch #?(:cljs js/Error :default Exception) e
-             (log/error (ex-info "Engine process failed" {::cmd cmd} e))
-             (engine session))))))))
+             (let [cb (cb cmd)]
+               (when cb
+                 (cb nil e))
+               (log/error (ex-info "Engine process failed" {::cmd cmd} e))
+               (engine session)))))))))
 
 (defn |> [{:keys [::send] :as a} msg]
   (if send

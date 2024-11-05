@@ -27,25 +27,26 @@ declare module '@totalperspective/pondermatic' {
     id: string;
     [key: string]: any;
   }
+
   interface TxMessage {
-    [op: InsertOp]: Entity[];
+    '->db': Entity[];
     cb?: TxCallback;
   }
 
   interface UpsertMessage {
-    [op: UpsertOp]: Entity[];
+    '+>db': Entity[];
     cb?: TxCallback;
   }
 
   interface RetractMessage {
-    [op: RetractOp]: Entity[];
+    '-!>db': Entity[];
     cb?: TxCallback;
   }
 
   type Op = 'db/add' | 'db/retract';
 
   interface DatomsMessage {
-    [op: DatomsOp]: [Op, string, string, unknown][];
+    '!>db': [Op, string, string, unknown][];
     cb?: TxCallback;
   }
 
@@ -68,7 +69,7 @@ declare module '@totalperspective/pondermatic' {
     copy(engine: Engine): Engine;
     ruleset(rules: string | object): object[];
     dataset(data: string | object): object[];
-    sh<t extends TxType = 'insert'>(engine: Engine, msg: Message<O>): Promise<State>;
+    sh<T extends TxType = 'insert'>(engine: Engine, msg: Message<T>): Promise<State>;
     cmd(msg: object): void;
     addRulesMsg(rules: object): object;
     q(engine: Engine, query: string, args: any[], callback: (result: any) => void): Task;
