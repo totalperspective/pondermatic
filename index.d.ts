@@ -20,18 +20,32 @@ declare module '@totalperspective/pondermatic' {
   interface TxMessage {
     '->db': {
       [key: string]: any;
-    };
+    }[];
     cb?: (result: DBResult) => void;
   }
 
   interface UpsertMessage {
     '+>db': {
       [key: string]: any;
-    };
+    }[];
     cb?: (result: DBResult) => void;
   }
 
-  export type Message = TxMessage | UpsertMessage
+  interface RetractMessage {
+    '-!>db': {
+      [key: string]: any;
+    }[];
+    cb?: (result: DBResult) => void;
+  }
+
+  type Op = 'db/add' | 'db/retract';
+
+  interface DatomsMessage {
+    '!>db': [Op, string, string, unknown][];
+    cb?: (result: DBResult) => void;
+  }
+
+  export type Message = TxMessage | UpsertMessage | RetractMessage | DatomsMessage
   export type Task = { __type: 'flow' } & (() => void)
   export type State = { 'quiescent?': boolean, 'prefix': string } & { [key: string]: any }
 
