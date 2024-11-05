@@ -81,8 +81,9 @@
                engine)
            (catch #?(:cljs js/Error :default Exception) e
              (let [cb (cb cmd)]
-               (when cb
-                 (cb nil e))
+               (if cb
+                 (cb nil e)
+                 (do #?(:cljs (js/console.error "Engine process failed" e))))
                (log/error (ex-info "Engine process failed" {::cmd cmd} e))
                (engine session)))))))))
 
