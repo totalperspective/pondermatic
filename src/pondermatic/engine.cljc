@@ -322,7 +322,7 @@
                   (map :db/ident)
                   (filter identity)
                   (retract-entity-tx db))]
-      (sh/|> conn (with-meta {:tx-triples tx} {::sh/cb cb}))))
+      (sh/|> conn (with-meta {:tx-data tx} {::sh/cb cb}))))
   e)
 
 (defmethod dispatch :!>db [{:keys [::conn] :as e} [_ data] cb]
