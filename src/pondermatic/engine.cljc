@@ -174,7 +174,7 @@
           [:what
            [?id ::tombstone true]
            :then-finally
-           (let [{:keys [db-uri]} (o/query-one session ::db-uri)
+           (let [[{:keys [db-uri]}] (o/query-all session ::db-uri)
                  conn (get @!conns db-uri)
                  db (db/db! conn)
                  matches (o/query-all session ::tombstones)
