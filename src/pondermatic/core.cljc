@@ -194,6 +194,10 @@
 
 (def quiescent?> engine/quiescent?>)
 
+(def retract-entities engine/retract-entities)
+
+(def retract-entity engine/retract-entity)
+
 (def t>< engine/t><)
 
 (def stop sh/stop)
