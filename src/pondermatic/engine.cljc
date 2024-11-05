@@ -160,7 +160,7 @@
     rule))
 
 (defn retract-entity-tx [db ids]
-  (d/q '[:find :db/retract ?e ?a ?v :where [?e ?a ?v] [?e :id ?id] :in $ [?id ...]]
+  (d/q '[:find :db/retract ?id ?a ?v :where [?id ?a ?v] :in $ [?id ...]]
        db ids))
 
 #_{:clj-kondo/ignore [:unused-binding]}
