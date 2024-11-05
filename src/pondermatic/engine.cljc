@@ -317,7 +317,10 @@
     (let [ids (->> data
                    (map entity->id)
                    (filter identity))
-          tx (retract-entities ids)]
+          db (db/db! conn)
+          tx (into [] (->> ids
+                           (map (partial retract-entity-tx db))
+                           (filter identity)))]
       (sh/|> conn (with-meta {:tx-triples tx} {::sh/cb cb}))))
   e)
 
