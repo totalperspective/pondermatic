@@ -159,9 +159,9 @@
         rule (o/->rule ?id rule-spec)]
     rule))
 
-(defn retract-entity-tx [db id]
-  (d/q '[:find :db/retract ?e ?a ?v :where [?e ?a ?v] [?e :id ?id] :in $ ?id]
-       db id))
+(defn retract-entity-tx [db ids]
+  (d/q '[:find :db/retract ?e ?a ?v :where [?e ?a ?v] [?e :id ?id] :in $ [?id ...]]
+       db ids))
 
 #_{:clj-kondo/ignore [:unused-binding]}
 (defn add-base-rules [conn rules env]
@@ -318,9 +318,10 @@
                    (map entity->id)
                    (filter identity))
           db (db/db! conn)
-          tx (into [] (->> ids
-                           (map (partial retract-entity-tx db))
-                           (filter identity)))]
+          tx (->> ids
+                  (map :db/ident)
+                  (filter identity)
+                  (retract-entity-tx db))]
       (sh/|> conn (with-meta {:tx-triples tx} {::sh/cb cb}))))
   e)
 
