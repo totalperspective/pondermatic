@@ -289,11 +289,11 @@
     atom))
 
 
-(defn retract-entities [engine ids]
-  (sh/|> engine {:!>db {:tx-triples (map (fn [id] [id ::tombstone true]) ids)}}))
+(defn retract-entities [ids]
+  (map (fn [id] [id ::tombstone true]) ids))
 
-(defn retract-entity [engine id]
-  (retract-entities engine [id]))
+(defn retract-entity [id]
+  (retract-entities [id]))
 
 (defmethod dispatch :->db [{:keys [::conn] :as e} [_ data] cb]
   (when (seq data)
@@ -317,8 +317,7 @@
     (let [ids (->> data
                    (map entity->id)
                    (filter identity))
-          db (db/db! conn)
-          tx (retract-entities db ids)]
+          tx (retract-entities ids)]
       (sh/|> conn (with-meta {:tx-triples tx} {::sh/cb cb}))))
   e)
 
