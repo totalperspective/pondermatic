@@ -80,19 +80,16 @@
                (process cmd)
                engine)
            (catch #?(:cljs js/Error :default Exception) e
-             (let [cb (cb cmd)]
-               (if cb
-                 (cb nil e)
-                 (do #?(:cljs (js/console.error "Engine process failed" e))))
-               (log/error (ex-info "Engine process failed" {::cmd cmd} e))
-               (engine session)))))))))
+             #?(:cljs (js/console.error "Engine process failed" e))
+             (log/error (ex-info "Engine process failed" {::cmd cmd} e))
+             (engine session))))))))
 
 (defn |> [{:keys [::send] :as a} msg]
   (if send
     (do
       (send msg)
       a)
-    (throw (ex-info "Not a valid actor" {:actor a}))))
+    (throw (ex-info "Not a valid actor" {:cmd '|> :actor a}))))
 
 (defn stop [engine]
   (|> engine done))
@@ -104,7 +101,7 @@
                    receive))
     (m/ap
      (m/amb nil)
-     (throw (ex-info "Not a valid actor" {:actor a})))))
+     (throw (ex-info "Not a valid actor" {:cmd '|< :actor a})))))
 
 (defn >->< [flow]
   (->> flow
@@ -137,7 +134,7 @@
     (let [return (m/rdv)]
       (send {::rdv return})
       (m/sp (fn (m/? return))))
-    (throw (ex-info "Not a valid actor" {:actor a}))))
+    (throw (ex-info "Not a valid actor" {:cmd '|!> :actor a}))))
 
 (defn ->atom
   ([actor]

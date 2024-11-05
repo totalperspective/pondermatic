@@ -171,9 +171,12 @@
                 (p.util/trace 'sh))
         msg-cb (:cb msg)
         msg (assoc msg
-                   :cb (fn [result & [error]]
+                   :cb (fn [result error]
                          (if error
-                           (pa/reject! p error)
+                           (do
+                             (when msg-cb
+                               (msg-cb nil error))
+                             (pa/reject! p error))
                            (let [result (wrap-result result)]
                              (js/console.debug "sh:", (clj->js msg) result)
                              (when msg-cb
