@@ -8,7 +8,11 @@ declare module '@totalperspective/pondermatic' {
   }
 
   export type Engine = Pool | Local;
+  
   export type Datom = [string, string, unknown, number, boolean];
+  export type Op = 'db/add' | 'db/retract';
+  export type TxDatum = [Op, string, string, unknown]
+  export type TxData<T extends object> = (TxDatum | Entity<T>)[];
 
   export interface DBResult {
     'query': (query: string) => any;
@@ -23,53 +27,59 @@ declare module '@totalperspective/pondermatic' {
   type RetractOp = '-!>db'
   export type TxOp = InsertOp | UpsertOp | DatomsOp | RetractOp
   export type TxCallback = (result: DBResult) => void
-  export type Entity = {
+  export type Entity<T extends object> = {
     id: string;
-    [key: string]: any;
+    [key in Exclude<keyof T, 'id'>]: T[key];
   }
 
-  interface TxMessage {
-    '->db': Entity[];
+  export interface TxMessage<T extends object> {
+    '->db': TxData<T>;
     cb?: TxCallback;
   }
 
-  interface UpsertMessage {
-    '+>db': Entity[];
+  export interface UpsertMessage<T extends object> {
+    '+>db': TxData<T>;
     cb?: TxCallback;
   }
 
-  interface RetractMessage {
-    '-!>db': Entity[];
+  export interface RetractMessage<T extends object> {
+    '-!>db': TxData<T>;
     cb?: TxCallback;
   }
 
-  type Op = 'db/add' | 'db/retract';
-
-  interface DatomsMessage {
-    '!>db': [Op, string, string, unknown][];
+  export interface DatomsMessage {
+    '!>db': Datom[];
     cb?: TxCallback;
   }
 
-  type Messages = {
-    'insert': TxMessage;
-    'upsert': UpsertMessage;
-    'retract': RetractMessage;
+  type Messages<T extends object> = {
+    'insert': TxMessage<T>;
+    'upsert': UpsertMessage<T>;
+    'retract': RetractMessage<T>;
     'datoms': DatomsMessage;
   }
 
   
-  export type TxType = keyof Messages
-  export type Message<T extends TxType = 'insert'> = Messages[T]
+  export type TxType = keyof Messages<object>
+  export type Message<T extends TxType = 'insert', D extends object = object> = Messages<D>[T]
 
   export type Task = { __type: 'flow' } & (() => void)
   export type State = { 'quiescent?': boolean, 'prefix': string } & { [key: string]: any }
 
+  export interface Rule {
+    'id': string
+    'rule/when': WhenClause
+    'rule/then': ThenClause
+  }
+
+  export type RuleSet = Entity<Rule>[] & { __type: 'ruleset' }
+
   interface PondermaticAPI {
     createEngine(name: string, resetDb?: boolean): Engine;
     copy(engine: Engine): Engine;
-    ruleset(rules: string | object): object[];
-    dataset(data: string | object): object[];
-    sh<T extends TxType = 'insert'>(engine: Engine, msg: Message<T>): Promise<State>;
+    ruleset(rules: Rule[]): RuleSet;
+    dataset<A extends object, T extends A[] = A[]>(data: T): TxData<A>;
+    sh<T extends TxType = 'insert', D extends object = object>(engine: Engine, msg: Message<T, D>): Promise<State>;
     cmd(msg: object): void;
     addRulesMsg(rules: object): object;
     q(engine: Engine, query: string, args: any[], callback: (result: any) => void): Task;
