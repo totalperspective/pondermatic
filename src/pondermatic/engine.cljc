@@ -49,7 +49,7 @@
         (if (map? msg)
           (let [{:keys [:cb]} msg
                 msg (dissoc msg :cb)]
-            (reduce (fn [env msg]
+            (reduce (fn reduce-msg [env msg]
                       (vary-meta
                        (dispatch env msg cb)
                        merge (or (meta cb) {})))
@@ -67,7 +67,7 @@
        {::sh/safe-keys [::iteration ::actors]}))))
 
 (defn kw->ds [data]
-  (w/postwalk (fn [node]
+  (w/postwalk (fn kw->ds [node]
                 #_{:clj-kondo/ignore [:unresolved-symbol]}
                 (cond
                   (= :a/empty-list node) []

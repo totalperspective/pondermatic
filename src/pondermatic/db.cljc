@@ -18,7 +18,7 @@
 
 (defn idents [tx]
   (let [!idents (atom [])]
-    (w/postwalk (fn [node]
+    (w/postwalk (fn idents [node]
                   #_{:clj-kondo/ignore [:unresolved-symbol]}
                   (if (map-entry? node)
                     (let [[attr val] node]
@@ -58,7 +58,7 @@
                           (update :tx-data (partial into ident-datoms))
                           (update :tx-data (partial mapv datom/as-vec))
                           (assoc :db-uri db-uri))
-               query (fn [q & args]
+               query (fn query [q & args]
                        (apply d/q q (:db-after result) args))
                result (assoc result :query query)]
            (return-session result))
@@ -145,7 +145,7 @@
   (pr/-read-string (str attr "'")))
 
 (defn upsert [tx]
-  (w/postwalk (fn [node]
+  (w/postwalk (fn upsert [node]
                 #_{:clj-kondo/ignore [:unresolved-symbol]}
                 (if (map-entry? node)
                   (let [[attr val] node]

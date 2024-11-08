@@ -504,7 +504,7 @@
                  (unify-gen-pattern pattern (update b 'entities #(merge (or % {})
                                                                         entities)))))
           (reduce  (fn [m p]
-                     (let [p' (w/postwalk (fn [node]
+                     (let [p' (w/postwalk (fn unify-gen-pattern [node]
                                             (if (fn? node)
                                               (node)
                                               node))
@@ -531,7 +531,7 @@
                    {})
           vals
           (map (fn [p]
-                 (w/postwalk (fn [node]
+                 (w/postwalk (fn unify-gen-pattern [node]
                                (if (fn? node)
                                  (node nil)
                                  node))

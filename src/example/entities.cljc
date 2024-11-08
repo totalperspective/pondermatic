@@ -19,8 +19,8 @@
 
 (def with-agent< (partial pool/with-agent< pool))
 
-(def q>< (fn [id & args]
-           ((with-agent< p/q><) id args)))
+(defn q>< [id & args]
+  ((with-agent< p/q><) id args))
 
 (def data
   (p/dataset
@@ -40,7 +40,7 @@
 (def engine (->engine "fruit" :reset-db? true))
 
 (tests
- (def tap (flow/tapper (fn [x]
+ (def tap (flow/tapper (fn tap [x]
                          (log/info {::q x})
                          (rcf/tap x))))
  (def <>q (q>< engine '[:find ?f ?s ?c

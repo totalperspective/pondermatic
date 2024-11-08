@@ -24,11 +24,11 @@
 (eval-string '(math.round 122))
 
 (let [f (eval-string
-         (str '(fn [provides]
+         (str '(fn ->>provides [provides]
                  (->> provides
                       read-string
                       (w.postwalk
-                       (fn [node]
+                       (fn ->>provides [node]
                          (cond
                            (map-entry? node)
                            (let [[k v] node]

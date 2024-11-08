@@ -95,7 +95,7 @@
 
 (defn ->eql [node]
   (p.util/pprint
-   (w/postwalk (fn [node]
+   (w/postwalk (fn ->eql [node]
                  (cond
                    (map-entry? node)
                    (let [[k v] node]
@@ -104,7 +104,7 @@
                        [k nil]))
 
                    (map? node)
-                   (reduce-kv (fn [a k v]
+                   (reduce-kv (fn parse-map [a k v]
                                 (conj a (if v
                                           {k v}
                                           k)))
@@ -122,7 +122,7 @@
 
 (defn ->log-safe [node]
   (p.util/pprint
-   (w/postwalk (fn [node]
+   (w/postwalk (fn ->log-safe [node]
                  (cond
                    (p.util/exception? node) node
                    (uuid? node) node

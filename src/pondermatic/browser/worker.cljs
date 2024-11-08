@@ -104,7 +104,7 @@
           (post id :throw [(ex-message e) (ex-data e)]))))))
 
 (defn intern-callbacks [msg]
-  (w/postwalk (fn [node]
+  (w/postwalk (fn intern-callbacks [node]
                 (if (and (map? node) (::!/fn node))
                   (let [id (::!/fn node)]
                     (fn [msg]
