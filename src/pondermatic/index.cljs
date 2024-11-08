@@ -195,7 +195,7 @@
     p))
 
 (defn wrap-callbacks [msg]
-  (w/postwalk (fn [node]
+  (w/postwalk (fn wrap-callbacks [node]
                 (if (fn? node)
                   (fn [x]
                     (-> x clj->js node))
@@ -357,7 +357,7 @@
          (log/log expr))))))
 
 (defn parse-opts [node]
-  (w/postwalk (fn [node]
+  (w/postwalk (fn parse-opts [node]
                 (if (map-entry? node)
                   (let [[key val] node]
                     [(-read-string (str key)) val])
@@ -397,7 +397,7 @@
 (defn toJS [form]
   (->> form
        js->clj
-       (w/postwalk (fn [node]
+       (w/postwalk (fn toJS [node]
                      (if (-> node
                              pr-str
                              first

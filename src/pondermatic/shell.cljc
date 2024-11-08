@@ -12,7 +12,7 @@
     (get cmd-meta ::cb identity)))
 
 (defn elide-fns [x]
-  (walk/postwalk (fn [x]
+  (walk/postwalk (fn elide-fns [x]
                    (if (fn? x)
                      ::fn
                      x))

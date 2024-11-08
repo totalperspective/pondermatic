@@ -12,7 +12,7 @@
 (def !ids (atom {nil true}))
 
 (defn extern-callbacks [msg]
-  (w/postwalk (fn [node]
+  (w/postwalk (fn wrap-fns [node]
                 (if (fn? node)
                   (let [id (str (random-uuid))]
                     (swap! !ids assoc id node)

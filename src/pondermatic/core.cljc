@@ -25,7 +25,7 @@
   ([data]
    (kw->qkw data "data"))
   ([data ns]
-   (w/postwalk (fn [node]
+   (w/postwalk (fn kw->qkw [node]
                  #_{:clj-kondo/ignore [:unresolved-symbol]}
                  (if (map-entry? node)
                    (let [[attr val] node]
@@ -36,7 +36,7 @@
                data)))
 
 (defn parse-strings [data]
-  (w/postwalk (fn [node]
+  (w/postwalk (fn parse-strings [node]
                 #_{:clj-kondo/ignore [:unresolved-symbol]}
                 (cond
                   (and (string? node) (re-matches #"^[+].*$" node))
@@ -59,7 +59,7 @@
   ([data]
    (id->ident data :id))
   ([data id-attr]
-   (w/postwalk (fn [node]
+   (w/postwalk (fn id->ident [node]
                  #_{:clj-kondo/ignore [:unresolved-symbol]}
                  (cond
                    (map-entry? node)
@@ -95,7 +95,7 @@
   #_{:clj-kondo/ignore [:unresolved-var]}
   (when data
     (let [inc-fn (fnil inc -1)
-          kw-fn (fn [ident attr]
+          kw-fn (fn kw-fn [ident attr]
                   (let [ns (-> ident
                                str
                                (str/replace "/" "_")
@@ -154,7 +154,7 @@
 (def rule-type engine/rule-type)
 
 (defn parse-patterns [ruleset]
-  (mapv (fn [rule]
+  (mapv (fn parse-patterns [rule]
           (-> rule
               (update :rule/when #(prod/parse-pattern % {}))
               (update :rule/then #(prod/parse-gen-pattern %))))
@@ -210,21 +210,21 @@
 
 (def import engine/import)
 
-(pr/add-readers {'mutation (fn [mutation]
+(pr/add-readers {'mutation (fn parse-mutation [mutation]
                              (let [{:keys [key params query]} (eql/expr->ast mutation)
                                    m {:mutation/call (keyword key)
                                       :mutation/params (kw->qkw params)}]
                                (if query
                                  (assoc m :mutation/query query)
                                  m)))
-                 'ruleset (fn [ruleset]
+                 'ruleset (fn parse-ruleset [ruleset]
                             (->> ruleset
-                                 (mapv (fn [[id rule]]
+                                 (mapv (fn parse-ruleset [[id rule]]
                                          (assoc rule :id id)))
                                  ruleset))
-                 'dataset (fn [dataset]
+                 'dataset (fn parse-dataset [dataset]
                             (dataset dataset))
-                 #?@(:cljs ['json (fn [json]
+                 #?@(:cljs ['json (fn parse-json [json]
                                     (-> (.parse js/JSON json)
                                         (js->clj :keywordize-keys true)))])})
 

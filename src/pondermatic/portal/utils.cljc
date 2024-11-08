@@ -56,10 +56,10 @@
   (instance? #?(:cljs js/Error :default Exception) e))
 
 (def datafy-value
-  (memoize (fn [value]
+  (memoize (fn datafy-value [value]
              (let [{:keys [trace?]} (meta value)]
                (->> value
-                    (w/postwalk (fn [value]
+                    (w/postwalk (fn datafy-value [value]
                                   (when trace?
                                     (println (exception? value)
                                              value))
