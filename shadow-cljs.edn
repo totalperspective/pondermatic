@@ -85,6 +85,7 @@
    :output-dir "dist/browser"
    :compiler-options {:reader-features #{:cljs/esm :cljs/browser}
                       :output-feature-set :browser-2020
+                      :source-map true
                       :pseudo-names true
                       :pretty-print true}
    :modules {:index

@@ -27,10 +27,7 @@ declare module '@totalperspective/pondermatic' {
   type RetractOp = '-!>db'
   export type TxOp = InsertOp | UpsertOp | DatomsOp | RetractOp
   export type TxCallback = (result: DBResult) => void
-  export type Entity<T extends object> = {
-    id: string;
-    [key in Exclude<keyof T, 'id'>]: T[key];
-  }
+  export type Entity<T extends object> = { id: string } & Omit<T, 'id'>
 
   export interface TxMessage<T extends object> {
     '->db': TxData<T>;
@@ -65,6 +62,10 @@ declare module '@totalperspective/pondermatic' {
 
   export type Task = { __type: 'flow' } & (() => void)
   export type State = { 'quiescent?': boolean, 'prefix': string } & { [key: string]: any }
+
+  export type ThenClause = string | number | boolean | { [key: string]: ThenClause | [ThenClause] }
+
+  export type WhenClause = string
 
   export interface Rule {
     'id': string
